@@ -1,14 +1,17 @@
 package com.macrosoft.modakserver.global;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.time.LocalDateTime;
 import lombok.*;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"code", "message", "data"})
+@JsonPropertyOrder({"timeStamp", "code", "message", "data"})
 public class BaseResponse<T> {
+    private LocalDateTime timeStamp = LocalDateTime.now();
+    private int status;
     private String code;
     private String message;
     private T data;
