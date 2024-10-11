@@ -1,5 +1,6 @@
 package com.macrosoft.modakserver.member.model;
 
+import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,8 @@ import lombok.*;
 @Table(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Member {
+public class Member extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,7 +21,6 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    @Column(name = "social_id")
     private String socialId;
 
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
