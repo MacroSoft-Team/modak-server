@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - develop
-      - master
   pull_request:
     branches:
       - develop
-      - master
 
 env:
   AWS_REGION: ap-northeast-2
