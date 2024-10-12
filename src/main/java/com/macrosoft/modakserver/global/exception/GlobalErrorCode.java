@@ -19,7 +19,8 @@ public enum GlobalErrorCode implements ErrorCodeInterface {
     METHOD_NOT_SUPPORTED("GLOBAL010", "지원하지 않는 HTTP 메서드", HttpStatus.METHOD_NOT_ALLOWED),
     MEDIA_TYPE_NOT_SUPPORTED("GLOBAL011", "지원하지 않는 미디어 타입", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
     CLIENT_ERROR("GLOBAL012", "클라이언트 오류", HttpStatus.BAD_REQUEST),
-    SERVER_ERROR("GLOBAL013", "서버 오류", HttpStatus.INTERNAL_SERVER_ERROR)
+    SERVER_ERROR("GLOBAL013", "서버 오류", HttpStatus.INTERNAL_SERVER_ERROR),
+    ETC_SERVER_ERROR("GLOBAL014", "기타 서버 오류", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     private final String code;

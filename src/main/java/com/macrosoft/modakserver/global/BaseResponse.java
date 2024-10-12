@@ -3,32 +3,22 @@ package com.macrosoft.modakserver.global;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 @Getter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({"timeStamp", "code", "message", "data"})
 public class BaseResponse<T> {
-    private LocalDateTime timeStamp = LocalDateTime.now();
-    private int status;
-    private String code;
-    private String message;
+    private final LocalDateTime timeStamp = LocalDateTime.now();
+    private final String code;
+    private final String message;
     private T data;
 
     public static <T> BaseResponse<T> onSuccess(T data) {
-        return BaseResponse.<T>builder()
-                .code("200")
-                .message("요청이 성공적으로 처리되었습니다.")
-                .data(data)
-                .build();
+        return new BaseResponse<>("COMMON200", "요청이 성공적으로 처리되었습니다.", data);
     }
 
     public static <T> BaseResponse<T> onFailure(String code, String message, T data) {
-        return BaseResponse.<T>builder()
-                .code(code)
-                .message(message)
-                .data(data)
-                .build();
+        return new BaseResponse<>(code, message, data);
     }
 }

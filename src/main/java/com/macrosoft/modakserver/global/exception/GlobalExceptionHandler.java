@@ -8,7 +8,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -96,11 +95,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return createResponseEntity(GlobalErrorCode.ACCESS_DENIED.getErrorCode());
     }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<BaseResponse<String>> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException e) {
-        return createResponseEntity(GlobalErrorCode.METHOD_NOT_SUPPORTED.getErrorCode());
-    }
-
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<BaseResponse<String>> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException e) {
         return createResponseEntity(GlobalErrorCode.MEDIA_TYPE_NOT_SUPPORTED.getErrorCode());
@@ -114,6 +108,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(HttpServerErrorException.class)
     public ResponseEntity<BaseResponse<String>> handleHttpServerErrorException(HttpServerErrorException e) {
         return createResponseEntity(GlobalErrorCode.SERVER_ERROR.getErrorCode());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseResponse<String>> handleAllExceptions(Exception e) {
+        return createResponseEntity(GlobalErrorCode.ETC_SERVER_ERROR.getErrorCode());
     }
 
     private ResponseEntity<BaseResponse<String>> createResponseEntity(ErrorCode errorCode) {
