@@ -16,10 +16,12 @@ jobs:
   build-with-gradle:
     runs-on: ubuntu-latest
     steps:
-      - name: develop 브랜치로 이동
+      - name: develop 브랜치로 이동 및 서브모듈 초기화
         uses: actions/checkout@v4
         with:
           ref: develop
+          submodules: true
+          token: ${{ secrets.SUBMODULE_ACCESS_TOKEN }}
       - name: JDK 17 설치
         uses: actions/setup-java@v4.4.0
         with:
