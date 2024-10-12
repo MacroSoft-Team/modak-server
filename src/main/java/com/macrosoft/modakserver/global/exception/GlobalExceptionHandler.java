@@ -4,6 +4,7 @@ import com.macrosoft.modakserver.global.BaseResponse;
 import jakarta.validation.ConstraintViolationException;
 import java.nio.file.AccessDeniedException;
 import javax.naming.AuthenticationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+@Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
     /**
      * CustomException 을 처리하는 핸들러
@@ -33,6 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<String>> handleGeneralException(Exception e) {
+        log.error("CustomException: {}", e.getMessage());
         return createResponseEntity(GlobalErrorCode.INTERNAL_SERVER_ERROR.getErrorCode());
     }
 

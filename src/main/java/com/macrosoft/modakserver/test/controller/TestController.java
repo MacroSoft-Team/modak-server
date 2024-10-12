@@ -1,24 +1,21 @@
 package com.macrosoft.modakserver.test.controller;
 
 import com.macrosoft.modakserver.global.BaseResponse;
-import com.macrosoft.modakserver.global.exception.CustomException;
-import com.macrosoft.modakserver.global.exception.GlobalErrorCode;
+import com.macrosoft.modakserver.member.model.Member;
+import com.macrosoft.modakserver.test.service.TestService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/test")
 public class TestController {
+    private final TestService testService;
 
-    @GetMapping
-    public ResponseEntity<BaseResponse<String>> home() {
-        return ResponseEntity.ok(BaseResponse.onSuccess("HOME"));
-    }
-
-    @GetMapping("/test")
-    public BaseResponse<String> test() {
-        return BaseResponse.onSuccess("TEST");
+    @GetMapping("/get")
+    public BaseResponse<List<Member>> get() {
+        List<Member> memberList = testService.get();
+        return BaseResponse.onSuccess(memberList);
     }
 }
