@@ -110,11 +110,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return createResponseEntity(GlobalErrorCode.SERVER_ERROR.getErrorCode());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<BaseResponse<String>> handleAllExceptions(Exception e) {
-        return createResponseEntity(GlobalErrorCode.ETC_SERVER_ERROR.getErrorCode());
-    }
-
     private ResponseEntity<BaseResponse<String>> createResponseEntity(ErrorCode errorCode) {
         return ResponseEntity
                 .status(errorCode.getHttpStatus().value())
