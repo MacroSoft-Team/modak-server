@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: modak-server
+  profiles:
+    include: local

@@ -1,3 +1,8 @@
+### application config ###
+application-*.yml
+
+### default ###
+
 HELP.md
 .gradle
 build/
