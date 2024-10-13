@@ -1,7 +1,7 @@
 package com.macrosoft.modakserver.test.controller;
 
 import com.macrosoft.modakserver.global.BaseResponse;
-import com.macrosoft.modakserver.member.model.Member;
+import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.test.service.TestService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

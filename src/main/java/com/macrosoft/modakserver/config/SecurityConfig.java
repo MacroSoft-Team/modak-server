@@ -16,18 +16,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf((auth) -> auth.disable()) ;// csrf 비활성화
-        http
-                .formLogin((auth) -> auth.disable()) ;// form 로그인 방식 비활성화
-        http
-                .httpBasic((auth) -> auth.disable()) ;// http basic 인증 비활성화
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(HttpMethod.GET
-                                ,"/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/test/**").permitAll()
-                        .anyRequest().authenticated()
-                ) ;// 경로별 인가 작업
+                .csrf(auth -> auth.disable())
+                .formLogin(auth -> auth.disable())
+                .httpBasic(auth -> auth.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger 허용
+                        .requestMatchers("/test/**").permitAll() // 테스트 경로 허용
+                        .requestMatchers("/login/**").permitAll() // 소셜 로그인 API 허용
+                        .anyRequest().authenticated() // 다른 요청은 인증 필요
+                );
         return http.build();
     }
 }
