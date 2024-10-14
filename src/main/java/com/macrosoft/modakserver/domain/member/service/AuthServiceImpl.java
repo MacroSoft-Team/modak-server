@@ -3,6 +3,7 @@ package com.macrosoft.modakserver.domain.member.service;
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
 import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
                         .clientId(clientId)
                         .socialType(socialType)
                         .nickname(nickname)
+                        .permissionRole(PermissionRole.CLIENT)
                         .build());
     }
 
