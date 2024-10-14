@@ -1,4 +1,4 @@
-package com.macrosoft.modakserver.member.model;
+package com.macrosoft.modakserver.domain.member.entity;
 
 import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.*;
@@ -16,12 +16,21 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nickname;
+    @Column(nullable = false)
+    private String clientId;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    private String socialId;
+    @Column(nullable = false)
+    private String nickname;
+
+    private String deviceToken;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PermissionRole permissionRole;
 
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 //    private List<Log> logs; // 1:N 관계
