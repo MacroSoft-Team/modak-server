@@ -9,15 +9,14 @@ public class MemberRequest {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class MemberSignUp {
-        @Schema(description = "애플로부터 받은 Authorization Code", defaultValue = "eyJhbGciOi")
+    public static class MemberSignIn {
+        @Schema(description = "애플로부터 받은 Authorization Code", defaultValue = "c19074541137c4508ad5ab04301028c28.0.rrwuz.9laqvPNEVlUKyJ7AY-QeLw")
         private String authorizationCode;
 
-        @Schema(description = "애플로부터 받은 ID Token.", defaultValue = "eyJhbGciOi")
+        @Schema(description = "애플로부터 받은 ID Token.", defaultValue = "eyJraWQiOiJmaDZCczhDIiwiYWaxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcExlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm9zZ")
         private String identityToken;
 
-        @Schema(description = "해시된 User Id", defaultValue = "hashedUserId123")
-        private String hashedUserId;
+        @Schema(description = "암호화 된 UserIdentifier", defaultValue = "614c0236d8480a64d9f2214e2486317de1ede78dc59250c806650bce3cbf6ed9")
+        private String encryptedUserIdentifier;
     }
-
 }

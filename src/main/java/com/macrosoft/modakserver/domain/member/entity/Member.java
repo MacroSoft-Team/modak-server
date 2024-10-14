@@ -28,6 +28,10 @@ public class Member extends BaseEntity {
 
     private String deviceToken;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PermissionRole permissionRole;
+
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 //    private List<Log> logs; // 1:N 관계
 }
