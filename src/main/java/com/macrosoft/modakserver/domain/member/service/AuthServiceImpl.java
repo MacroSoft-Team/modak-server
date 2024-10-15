@@ -47,16 +47,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private String makeRandomNickname() {
-        return NicknameGenerator.generateRandomNickname() + "1"; // TODO: 회원가입 순서대로 숫자 부여
+        return NicknameGenerator.generateRandomNickname();
     }
 
     private String generateAccessToken(Member member) {
-        // accessToken 생성 로직 구현
         return jwtUtil.createAccessToken(member);
     }
 
     private String generateRefreshToken(Member member) {
-        // refreshToken 생성 로직 구현
         return jwtUtil.createRefreshToken(member);
     }
 }

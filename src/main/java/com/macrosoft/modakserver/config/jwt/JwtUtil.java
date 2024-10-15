@@ -1,27 +1,34 @@
 package com.macrosoft.modakserver.config.jwt;
 
 import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
 import com.macrosoft.modakserver.global.exception.AuthErrorCode;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
+import jakarta.annotation.PostConstruct;
 import java.util.Date;
 import java.util.Optional;
 import javax.crypto.SecretKey;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
     private final JwtProperties jwtProperties;
-    private final SecretKey secretKey;
+    private SecretKey secretKey;
+    private final UserDetailsService customUserDetailService;
 
-    public JwtUtil(JwtProperties jwtProperties) {
-        this.jwtProperties = jwtProperties;
+    @PostConstruct
+    protected void init() {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getSecret()));
     }
 
@@ -33,16 +40,15 @@ public class JwtUtil {
     public String createAccessToken(Member member) {
         Long expiredTime = Optional.ofNullable(jwtProperties.getAccess_token_expiration())
                 .orElseThrow(() -> new CustomException(AuthErrorCode.INVALID_TOKEN_TYPE));
-        Date expiration = new Date(new Date().getTime() + expiredTime);
+        Date expiration = new Date(System.currentTimeMillis() + expiredTime);
 
         return Jwts.builder()
-                .subject(member.getNickname())
-                .claim("tokenType", "access")
-                .claim("memberId", member.getId())
-                .claim("clientId", member.getClientId())
-                .claim("permissionRole", member.getPermissionRole())
+                .subject(member.getId().toString())
                 .issuedAt(new Date())
                 .expiration(expiration)
+                .claim("tokenType", "access")
+                .claim("memberId", member.getId())
+                .claim("permissionRole", member.getPermissionRole())
                 .signWith(secretKey)
                 .compact();
     }
@@ -55,16 +61,15 @@ public class JwtUtil {
     public String createRefreshToken(Member member) {
         Long expiredTime = Optional.ofNullable(jwtProperties.getRefresh_token_expiration())
                 .orElseThrow(() -> new CustomException(AuthErrorCode.INVALID_TOKEN_TYPE));
-        Date expiration = new Date(new Date().getTime() + expiredTime);
+        Date expiration = new Date(System.currentTimeMillis() + expiredTime);
 
         return Jwts.builder()
-                .subject(member.getNickname())
+                .subject(member.getId().toString())
+                .issuedAt(new Date())
+                .expiration(expiration)
                 .claim("tokenType", "refresh")
                 .claim("memberId", member.getId())
                 .claim("clientId", member.getClientId())
-                .claim("permissionRole", member.getPermissionRole())
-                .issuedAt(new Date())
-                .expiration(expiration)
                 .signWith(secretKey)
                 .compact();
     }
@@ -74,26 +79,28 @@ public class JwtUtil {
      * @param token
      * @return boolean
      */
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-            return true;
+            Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
         } catch (SecurityException | MalformedJwtException e) {
-            log.info(e.getLocalizedMessage());
             throw new CustomException(AuthErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
-            log.info(e.getLocalizedMessage());
             throw new CustomException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
-            log.info(e.getLocalizedMessage());
             throw new CustomException(AuthErrorCode.UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
-            log.info(e.getLocalizedMessage());
             throw new CustomException(AuthErrorCode.EMPTY_TOKEN);
         } catch (Exception e) {
-            log.info(e.getLocalizedMessage());
             throw new CustomException(AuthErrorCode.TOKEN_VALIDATION_FAIL);
         }
+    }
+
+    public Authentication getAuthentication(String token) {
+        Long memberId = this.getMemberId(token);
+        UserDetails userDetails = Optional.ofNullable(customUserDetailService.loadUserByUsername(memberId.toString()))
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     /**
