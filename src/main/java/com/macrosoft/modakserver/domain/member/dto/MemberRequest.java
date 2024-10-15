@@ -19,4 +19,13 @@ public class MemberRequest {
         @Schema(description = "암호화 된 UserIdentifier", defaultValue = "614c0236d8480a64d9f2214e2486317de1ede78dc59250c806650bce3cbf6ed9")
         private String encryptedUserIdentifier;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MemberNickname {
+        @Schema(description = "변경할 닉네임", defaultValue = "새로운 닉네임")
+        private String nickname;
+    }
 }

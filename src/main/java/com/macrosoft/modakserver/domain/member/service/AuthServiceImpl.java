@@ -6,6 +6,7 @@ import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
+import com.macrosoft.modakserver.domain.member.util.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,16 +47,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private String makeRandomNickname() {
-        return "nickname" + (int)(Math.random() * 1000);
+        return NicknameGenerator.generateRandomNickname();
     }
 
     private String generateAccessToken(Member member) {
-        // accessToken 생성 로직 구현
         return jwtUtil.createAccessToken(member);
     }
 
     private String generateRefreshToken(Member member) {
-        // refreshToken 생성 로직 구현
         return jwtUtil.createRefreshToken(member);
     }
 }
