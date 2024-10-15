@@ -23,4 +23,12 @@ public class MemberResponse {
         private Long memberId;
         private String nickname;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MemberId {
+        private String memberId;
+    }
 }

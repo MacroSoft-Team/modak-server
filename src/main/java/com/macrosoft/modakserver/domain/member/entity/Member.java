@@ -23,6 +23,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
+    @Setter
     @Column(nullable = false)
     private String nickname;
 
