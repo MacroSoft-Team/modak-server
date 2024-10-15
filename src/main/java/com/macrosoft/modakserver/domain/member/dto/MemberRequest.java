@@ -28,4 +28,10 @@ public class MemberRequest {
         @Schema(description = "변경할 닉네임", defaultValue = "새로운 닉네임")
         private String nickname;
     }
+
+    @Data
+    public static class RefreshTokenRequest {
+        private String encryptedUserIdentifier;
+        private String refreshToken;
+    }
 }

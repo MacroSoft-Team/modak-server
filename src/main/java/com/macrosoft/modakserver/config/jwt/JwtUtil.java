@@ -39,7 +39,7 @@ public class JwtUtil {
      */
     public String createAccessToken(Member member) {
         Long expiredTime = Optional.ofNullable(jwtProperties.getAccess_token_expiration())
-                .orElseThrow(() -> new CustomException(AuthErrorCode.INVALID_TOKEN_TYPE));
+                .orElseThrow(() -> new CustomException(AuthErrorCode.TOKEN_CREATE_FAIL));
         Date expiration = new Date(System.currentTimeMillis() + expiredTime);
 
         return Jwts.builder()
@@ -60,7 +60,7 @@ public class JwtUtil {
      */
     public String createRefreshToken(Member member) {
         Long expiredTime = Optional.ofNullable(jwtProperties.getRefresh_token_expiration())
-                .orElseThrow(() -> new CustomException(AuthErrorCode.INVALID_TOKEN_TYPE));
+                .orElseThrow(() -> new CustomException(AuthErrorCode.TOKEN_CREATE_FAIL));
         Date expiration = new Date(System.currentTimeMillis() + expiredTime);
 
         return Jwts.builder()
@@ -68,20 +68,30 @@ public class JwtUtil {
                 .issuedAt(new Date())
                 .expiration(expiration)
                 .claim("tokenType", "refresh")
-                .claim("memberId", member.getId())
                 .claim("clientId", member.getClientId())
                 .signWith(secretKey)
                 .compact();
     }
 
-    /**
-     * 토큰 유효성 검사
-     * @param token
-     * @return boolean
-     */
-    public void validateToken(String token) {
+    public void validateAccessToken(String token) throws CustomException {
+        Claims claims = this.validateToken(token);
+
+        if (!claims.get("tokenType").equals("access")) {
+            throw new CustomException(AuthErrorCode.INVALID_TOKEN_TYPE);
+        }
+    }
+
+    public void validateRefreshToken(String token) throws CustomException {
+        Claims claims = this.validateToken(token);
+
+        if (!claims.get("tokenType").equals("refresh")) {
+            throw new CustomException(AuthErrorCode.INVALID_TOKEN_TYPE);
+        }
+    }
+
+    private Claims validateToken(String token) {
         try {
-            Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
         } catch (SecurityException | MalformedJwtException e) {
             throw new CustomException(AuthErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
@@ -110,5 +120,18 @@ public class JwtUtil {
      */
     public Long getMemberId(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("memberId", Long.class);
+    }
+
+    public String getClientIdFromRefreshToken(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("clientId", String.class);
+    }
+
+    public boolean isExpired(String token) {
+        try {
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration()
+                    .before(new Date());
+        } catch (JwtException e) {
+            throw new CustomException(AuthErrorCode.TOKEN_VALIDATION_FAIL);
+        }
     }
 }

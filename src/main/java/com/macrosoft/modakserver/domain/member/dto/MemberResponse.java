@@ -12,7 +12,6 @@ public class MemberResponse {
         private Long memberId;
         private String accessToken;
         private String refreshToken;
-        private boolean isServiced;
     }
 
     @Getter
@@ -30,5 +29,13 @@ public class MemberResponse {
     @NoArgsConstructor
     public static class MemberId {
         private String memberId;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class accessToken {
+        private String accessToken;
     }
 }

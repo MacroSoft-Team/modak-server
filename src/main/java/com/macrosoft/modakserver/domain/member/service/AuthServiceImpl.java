@@ -1,21 +1,30 @@
 package com.macrosoft.modakserver.domain.member.service;
 
+import com.macrosoft.modakserver.config.jwt.JwtProperties;
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
-import com.macrosoft.modakserver.domain.member.entity.Member;
-import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
-import com.macrosoft.modakserver.domain.member.entity.SocialType;
+import com.macrosoft.modakserver.domain.member.entity.*;
+import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
+import com.macrosoft.modakserver.domain.member.repository.RefreshTokenRepository;
 import com.macrosoft.modakserver.domain.member.util.NicknameGenerator;
+import com.macrosoft.modakserver.global.exception.AuthErrorCode;
+import com.macrosoft.modakserver.global.exception.CustomException;
+import java.util.Date;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
+    private final JwtProperties jwtProperties;
 
     @Override
     @Transactional
@@ -23,20 +32,20 @@ public class AuthServiceImpl implements AuthService {
         Member member = memberRepository.findByClientId(encryptedUserIdentifier)
                 .orElseGet(() -> createNewMember(encryptedUserIdentifier, socialType));
 
-        // 1. 토큰 유효 검사, 토큰 만료시 재발급
-        String accessToken = generateAccessToken(member);
-        String refreshToken = generateRefreshToken(member);
+        String accessToken = jwtUtil.createAccessToken(member);
+        String refreshToken = jwtUtil.createRefreshToken(member);
+
+        updateOrCreateRefreshToken(encryptedUserIdentifier, refreshToken);
 
         return MemberResponse.MemberLogin.builder()
                 .memberId(member.getId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .isServiced(true)
                 .build();
     }
 
     private Member createNewMember(String clientId, SocialType socialType) {
-        String nickname = makeRandomNickname();
+        String nickname = NicknameGenerator.generateRandomNickname();
         return memberRepository.save(
                 Member.builder()
                         .clientId(clientId)
@@ -46,15 +55,53 @@ public class AuthServiceImpl implements AuthService {
                         .build());
     }
 
-    private String makeRandomNickname() {
-        return NicknameGenerator.generateRandomNickname();
+    private void updateOrCreateRefreshToken(String clientId, String refreshToken) {
+        Date expirationDate = new Date(System.currentTimeMillis() + jwtProperties.getRefresh_token_expiration());
+        refreshTokenRepository.findByClientId(clientId)
+                .ifPresentOrElse(
+                        existingStoredToken -> updateRefreshToken(existingStoredToken, refreshToken, expirationDate),
+                        () -> saveNewRefreshToken(clientId, refreshToken, expirationDate)
+                );
     }
 
-    private String generateAccessToken(Member member) {
-        return jwtUtil.createAccessToken(member);
+    private void updateRefreshToken(RefreshToken existingStoredToken, String newToken, Date expirationDate) {
+        existingStoredToken.setToken(newToken);
+        existingStoredToken.setExpirationDate(expirationDate);
+        refreshTokenRepository.save(existingStoredToken);
     }
 
-    private String generateRefreshToken(Member member) {
-        return jwtUtil.createRefreshToken(member);
+    private void saveNewRefreshToken(String clientId, String refreshToken, Date expirationDate) {
+        RefreshToken newRefreshToken = RefreshToken.builder()
+                .clientId(clientId)
+                .token(refreshToken)
+                .expirationDate(expirationDate)
+                .build();
+        refreshTokenRepository.save(newRefreshToken);
+    }
+
+    @Override
+    @Transactional
+    public MemberResponse.accessToken refreshAccessToken(String encryptedUserIdentifier, String refreshToken) {
+        // Refresh Token 검증
+        jwtUtil.validateRefreshToken(refreshToken);
+
+        // Refresh Token 에서 clientId 추출
+        String clientId = jwtUtil.getClientIdFromRefreshToken(refreshToken);
+
+        RefreshToken storedRefreshToken = refreshTokenRepository.findByClientId(clientId)
+                .orElseThrow(() -> new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN));
+
+        if (!storedRefreshToken.getToken().equals(refreshToken)) {
+            throw new CustomException(AuthErrorCode.INVALID_TOKEN);
+        }
+
+        // 새로운 Access Token 발급
+        Member member = memberRepository.findByClientId(encryptedUserIdentifier)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+        String newAccessToken = jwtUtil.createAccessToken(member);
+
+        return MemberResponse.accessToken.builder()
+                .accessToken(newAccessToken)
+                .build();
     }
 }
