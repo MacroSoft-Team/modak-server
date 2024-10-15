@@ -27,8 +27,8 @@ public class SwaggerConfig {
                 .description("Modak 서버의 API 문서입니다.");
 
         List<Server> servers = List.of(
-                new Server().url("http://localhost:8080").description("Local development server (HTTP)"),
-                new Server().url(devServerUrl).description("Remote Development server (HTTPS)"));
+                new Server().url("http://localhost:8080").description("로컬 테스트 서버 (HTTP)"),
+                new Server().url(devServerUrl).description("원격 개발 서버 (HTTPS)"));
 
 
         String JWT = "JWT";
