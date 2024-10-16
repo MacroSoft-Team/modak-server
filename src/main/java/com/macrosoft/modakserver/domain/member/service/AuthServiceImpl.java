@@ -11,7 +11,6 @@ import com.macrosoft.modakserver.domain.member.util.NicknameGenerator;
 import com.macrosoft.modakserver.global.exception.AuthErrorCode;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import java.util.Date;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -81,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public MemberResponse.accessToken refreshAccessToken(SocialType socialType, String encryptedUserIdentifier, String refreshToken) {
+    public MemberResponse.AccessToken refreshAccessToken(SocialType socialType, String encryptedUserIdentifier, String refreshToken) {
         // Refresh Token 검증
         jwtUtil.validateRefreshToken(refreshToken);
 
@@ -91,17 +90,38 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken storedRefreshToken = refreshTokenRepository.findByClientId(clientId)
                 .orElseThrow(() -> new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN));
 
-        if (!storedRefreshToken.getToken().equals(refreshToken)) {
+        if (!storedRefreshToken.getToken().equals(refreshToken) || !clientId.equals(encryptedUserIdentifier)) {
             throw new CustomException(AuthErrorCode.INVALID_TOKEN);
         }
 
         // 새로운 Access Token 발급
-        Member member = memberRepository.findByClientId(encryptedUserIdentifier)
-                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = findMemberByClientId(clientId);
         String newAccessToken = jwtUtil.createAccessToken(member);
 
-        return MemberResponse.accessToken.builder()
+        return MemberResponse.AccessToken.builder()
                 .accessToken(newAccessToken)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void logout(String clientId) {
+        if (refreshTokenRepository.deleteByClientId(clientId) == 0) {
+            throw new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deactivate(String clientId) {
+        logout(clientId);
+        Member member = findMemberByClientId(clientId);
+
+        member.deactivate();
+    }
+
+    private Member findMemberByClientId(String clientId) {
+        return memberRepository.findByClientId(clientId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 }

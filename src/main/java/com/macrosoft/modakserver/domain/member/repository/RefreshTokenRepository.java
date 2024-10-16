@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByToken(String token);
     Optional<RefreshToken> findByClientId(String clientId);
-    void deleteByExpirationDateBefore(Date now);
+    int deleteByExpirationDateBefore(Date now);
+    int deleteByClientId(String clientId);
 }

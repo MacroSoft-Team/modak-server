@@ -3,7 +3,7 @@ package com.macrosoft.modakserver.domain.member.controller;
 import com.macrosoft.modakserver.config.security.CustomUserDetails;
 import com.macrosoft.modakserver.domain.member.dto.MemberRequest;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
-import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.domain.member.dto.MemberResponse.AccessToken;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.service.AuthService;
 import com.macrosoft.modakserver.global.BaseResponse;
@@ -34,9 +34,29 @@ public class AuthController {
                 request.getEncryptedUserIdentifier()));
     }
 
+    @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다. `Refresh Token` 을 삭제합니다.")
+    @PostMapping("/logout")
+    public BaseResponse<Void> logout(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        String clientId = userDetails.getMember().getClientId();
+        authService.logout(clientId);
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 진행합니다. 유저의 식별 정보와 닉네임이 삭제됩니다.")
+    @DeleteMapping("/deactivate")
+    public BaseResponse<Void> deactivate(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        String clientId = userDetails.getMember().getClientId();
+        authService.deactivate(clientId);
+        return BaseResponse.onSuccess(null);
+    }
+
     @PostMapping("/{socialType}/refresh-access-token")
     @Operation(summary = "Access Token 재발급", description = "`Access Token` 이 만료됐을 경우 호출해 주세요. `Refresh Token` 과 `encryptedUserIdentifier` 로 `Access Token` 을 재발급합니다.")
-    public BaseResponse<MemberResponse.accessToken> refreshAccessToken(
+    public BaseResponse<MemberResponse.AccessToken> refreshAccessToken(
             @PathVariable("socialType") SocialType socialType,
             @RequestBody MemberRequest.RefreshTokenRequest request) {
 
