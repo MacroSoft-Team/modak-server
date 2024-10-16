@@ -16,18 +16,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    private final String[] whiteList = {"/api/test/", "/api/auth/"};
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        for (String path : whiteList) {
-            if (request.getRequestURI().startsWith(path)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-        }
 
         String authorization = request.getHeader("Authorization");
 

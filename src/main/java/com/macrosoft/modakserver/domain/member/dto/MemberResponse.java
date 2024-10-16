@@ -35,7 +35,7 @@ public class MemberResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class accessToken {
+    public static class AccessToken {
         private String accessToken;
     }
 }

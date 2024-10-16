@@ -3,6 +3,7 @@ package com.macrosoft.modakserver.domain.member.controller;
 import com.macrosoft.modakserver.config.security.CustomUserDetails;
 import com.macrosoft.modakserver.domain.member.dto.MemberRequest;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
+import com.macrosoft.modakserver.domain.member.dto.MemberResponse.AccessToken;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.service.AuthService;
 import com.macrosoft.modakserver.global.BaseResponse;
@@ -55,7 +56,7 @@ public class AuthController {
 
     @PostMapping("/{socialType}/refresh-access-token")
     @Operation(summary = "Access Token 재발급", description = "`Access Token` 이 만료됐을 경우 호출해 주세요. `Refresh Token` 과 `encryptedUserIdentifier` 로 `Access Token` 을 재발급합니다.")
-    public BaseResponse<MemberResponse.accessToken> refreshAccessToken(
+    public BaseResponse<MemberResponse.AccessToken> refreshAccessToken(
             @PathVariable("socialType") SocialType socialType,
             @RequestBody MemberRequest.RefreshTokenRequest request) {
 
