@@ -95,8 +95,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 새로운 Access Token 발급
-        Member member = memberRepository.findByClientId(encryptedUserIdentifier)
-                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = findMemberByClientId(clientId);
         String newAccessToken = jwtUtil.createAccessToken(member);
 
         return MemberResponse.accessToken.builder()
@@ -107,17 +106,22 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logout(String clientId) {
-        refreshTokenRepository.deleteByClientId(clientId);
+        if (refreshTokenRepository.deleteByClientId(clientId) == 0) {
+            throw new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN);
+        }
     }
 
     @Override
     @Transactional
     public void deactivate(String clientId) {
         logout(clientId);
-        Member member = memberRepository.findByClientId(clientId)
-                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = findMemberByClientId(clientId);
 
         member.deactivate();
-        refreshTokenRepository.deleteByClientId(clientId);
+    }
+
+    private Member findMemberByClientId(String clientId) {
+        return memberRepository.findByClientId(clientId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 }
