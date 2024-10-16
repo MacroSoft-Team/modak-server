@@ -21,23 +21,25 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "애플 소셜 로그인", description = "로그인을 하고 `Access Token` 과 `Refresh Token` 을 발급합니다. Apple 로부터 받은 UserId 를 SHA256으로 해시해서 `encryptedUserIdentifier` 로 보내주세요. 나머지 정보는 아직 사용하지 않습니다.")
-    @PostMapping("/login")
+    @Operation(summary = "소셜 로그인", description = "로그인을 하고 `Access Token` 과 `Refresh Token` 을 발급합니다. 유저를 식별할 수 있는 값을 (Apple: user) SHA256으로 해시해서 `encryptedUserIdentifier` 로 보내주세요. 나머지 정보는 아직 사용하지 않습니다.")
+    @PostMapping("/{socialType}/login")
     public BaseResponse<MemberResponse.MemberLogin> signIn(
+            @PathVariable("socialType") SocialType socialType,
             @RequestBody MemberRequest.MemberSignIn request) {
 
         return BaseResponse.onSuccess(authService.login(
-                request.getSocialType(),
+                socialType,
                 request.getAuthorizationCode(),
                 request.getIdentityToken(),
                 request.getEncryptedUserIdentifier()));
     }
 
-    @PostMapping("/refresh-access-token")
-    @Operation(summary = "Access Token 재발급", description = "`Access Token` 이 만료됐을 경우 호출해 주세요. `Refresh Token` 과 `EncryptedUserIdentifier` 로 `Access Token` 을 재발급합니다.")
+    @PostMapping("/{socialType}/refresh-access-token")
+    @Operation(summary = "Access Token 재발급", description = "`Access Token` 이 만료됐을 경우 호출해 주세요. `Refresh Token` 과 `encryptedUserIdentifier` 로 `Access Token` 을 재발급합니다.")
     public BaseResponse<MemberResponse.accessToken> refreshAccessToken(
+            @PathVariable("socialType") SocialType socialType,
             @RequestBody MemberRequest.RefreshTokenRequest request) {
 
-        return BaseResponse.onSuccess(authService.refreshAccessToken(request.getSocialType(), request.getEncryptedUserIdentifier(), request.getRefreshToken()));
+        return BaseResponse.onSuccess(authService.refreshAccessToken(socialType, request.getEncryptedUserIdentifier(), request.getRefreshToken()));
     }
 }
