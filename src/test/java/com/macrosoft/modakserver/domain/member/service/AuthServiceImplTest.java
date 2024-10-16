@@ -146,7 +146,8 @@ class AuthServiceImplTest {
         @Test
         void 로그아웃_실패_유저ID_불일치() {
             // when
-            authService.logout("invalid" + encryptedUserIdentifier);
+            assertThatThrownBy(() ->authService.logout("invalid" + encryptedUserIdentifier))
+                    .isInstanceOf(CustomException.class);
 
             // then
             assertThat(refreshTokenRepository.findByClientId(encryptedUserIdentifier)).isNotEmpty();
