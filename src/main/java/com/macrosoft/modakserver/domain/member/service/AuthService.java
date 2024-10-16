@@ -6,5 +6,5 @@ import com.macrosoft.modakserver.domain.member.entity.SocialType;
 
 public interface AuthService {
     MemberResponse.MemberLogin login(SocialType socialType, String authorizationCode, String identityToken, String encryptedUserIdentifier);
-    MemberResponse.accessToken refreshAccessToken(String encryptedUserIdentifier, String refreshToken);
+    MemberResponse.accessToken refreshAccessToken(SocialType socialType, String encryptedUserIdentifier, String refreshToken);
 }

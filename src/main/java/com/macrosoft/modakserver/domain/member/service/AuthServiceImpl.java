@@ -81,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public MemberResponse.accessToken refreshAccessToken(String encryptedUserIdentifier, String refreshToken) {
+    public MemberResponse.accessToken refreshAccessToken(SocialType socialType, String encryptedUserIdentifier, String refreshToken) {
         // Refresh Token 검증
         jwtUtil.validateRefreshToken(refreshToken);
 

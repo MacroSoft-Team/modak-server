@@ -18,7 +18,7 @@ public class MemberResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class MemberInfo {
+    public static class MemberNickname {
         private Long memberId;
         private String nickname;
     }
