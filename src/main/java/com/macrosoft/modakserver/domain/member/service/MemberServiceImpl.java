@@ -1,9 +1,7 @@
 package com.macrosoft.modakserver.domain.member.service;
 
-import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
-import com.macrosoft.modakserver.domain.member.dto.MemberResponse.MemberInfo;
+import com.macrosoft.modakserver.domain.member.dto.MemberResponse.MemberNickname;
 import com.macrosoft.modakserver.domain.member.entity.Member;
-import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,8 +14,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
 
     @Override
-    public MemberInfo getMemberInfo(Member member) {
-        return MemberInfo.builder()
+    public MemberNickname getMemberNickname(Member member) {
+        return MemberNickname.builder()
                 .memberId(member.getId())
                 .nickname(member.getNickname())
                 .build();
@@ -25,10 +23,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public MemberInfo updateNickname(Member member, String nickname) {
+    public MemberNickname updateNickname(Member member, String nickname) {
         member.setNickname(nickname);
         memberRepository.save(member);
-        return MemberInfo.builder()
+        return MemberNickname.builder()
                 .memberId(member.getId())
                 .nickname(member.getNickname())
                 .build();

@@ -19,18 +19,18 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "회원 정보 가져오기", description = "회원의 정보를 가져옵니다.")
+    @Operation(summary = "회원 닉네임 가져오기", description = "회원의 닉네임을 가져옵니다.")
     @GetMapping("/nickname")
-    public BaseResponse<MemberResponse.MemberInfo> getMemberInfo(
+    public BaseResponse<MemberResponse.MemberNickname> getMemberNickname(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Member member = userDetails.getMember();
-        return BaseResponse.onSuccess(memberService.getMemberInfo(member));
+        return BaseResponse.onSuccess(memberService.getMemberNickname(member));
     }
 
     @Operation(summary = "회원 닉네임 변경", description = "회원의 닉네임을 변경합니다.")
     @PatchMapping("/nickname")
-    public BaseResponse<MemberResponse.MemberInfo> updateNickname(
+    public BaseResponse<MemberResponse.MemberNickname> updateNickname(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam String nickname) {
 
