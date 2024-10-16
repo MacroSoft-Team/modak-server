@@ -35,4 +35,10 @@ public class Member extends BaseEntity {
 
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 //    private List<Log> logs; // 1:N 관계
+
+    public void deactivate() {
+        this.clientId = "";
+        this.nickname = "알 수 없음";
+        this.deviceToken = null;
+    }
 }

@@ -11,7 +11,6 @@ import com.macrosoft.modakserver.domain.member.util.NicknameGenerator;
 import com.macrosoft.modakserver.global.exception.AuthErrorCode;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import java.util.Date;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -103,5 +102,22 @@ public class AuthServiceImpl implements AuthService {
         return MemberResponse.accessToken.builder()
                 .accessToken(newAccessToken)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void logout(String clientId) {
+        refreshTokenRepository.deleteByClientId(clientId);
+    }
+
+    @Override
+    @Transactional
+    public void deactivate(String clientId) {
+        logout(clientId);
+        Member member = memberRepository.findByClientId(clientId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        member.deactivate();
+        refreshTokenRepository.deleteByClientId(clientId);
     }
 }
