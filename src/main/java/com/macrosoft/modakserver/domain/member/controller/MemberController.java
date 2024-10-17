@@ -9,21 +9,24 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
 @Tag(name = "Member API", description = "회원 정보 관련 API 입니다.")
 public class MemberController {
-
     private final MemberService memberService;
 
     @Operation(summary = "회원 닉네임 가져오기", description = "회원의 닉네임을 가져옵니다.")
     @GetMapping("/nickname")
     public BaseResponse<MemberResponse.MemberNickname> getMemberNickname(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         Member member = userDetails.getMember();
         return BaseResponse.onSuccess(memberService.getMemberNickname(member));
     }
@@ -32,8 +35,8 @@ public class MemberController {
     @PatchMapping("/nickname")
     public BaseResponse<MemberResponse.MemberNickname> updateNickname(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam String nickname) {
-
+            @RequestParam String nickname
+    ) {
         Member member = userDetails.getMember();
         return BaseResponse.onSuccess(memberService.updateNickname(member, nickname));
     }

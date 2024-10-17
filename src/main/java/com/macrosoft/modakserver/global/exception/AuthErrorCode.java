@@ -17,7 +17,7 @@ public enum AuthErrorCode implements ErrorCodeInterface {
     TOKEN_CREATE_FAIL("AUTH008", "토큰 생성에 실패했습니다.", HttpStatus.UNAUTHORIZED),
     MEMBER_NOT_HAVE_TOKEN("AUTH009", "회원이 리프레시 토큰 정보를 가지고 있지 않습니다.", HttpStatus.UNAUTHORIZED),
     ;
-
+    
     private final String code;
     private final String message;
     private final HttpStatus httpStatus;

@@ -22,7 +22,7 @@ public enum GlobalErrorCode implements ErrorCodeInterface {
     SERVER_ERROR("GLOBAL013", "서버 오류", HttpStatus.INTERNAL_SERVER_ERROR),
     ETC_SERVER_ERROR("GLOBAL014", "기타 서버 오류", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
-
+    
     private final String code;
     private final String message;
     private final HttpStatus httpStatus;

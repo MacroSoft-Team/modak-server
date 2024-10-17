@@ -1,9 +1,11 @@
 package com.macrosoft.modakserver.domain.member.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class MemberResponse {
-
     @Getter
     @Builder
     @AllArgsConstructor

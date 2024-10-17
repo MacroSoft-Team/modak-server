@@ -1,29 +1,24 @@
 package com.macrosoft.modakserver.domain.member.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
-import com.macrosoft.modakserver.domain.member.dto.MemberResponse.AccessToken;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.RefreshToken;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.repository.RefreshTokenRepository;
-import com.macrosoft.modakserver.global.exception.AuthErrorCode;
 import com.macrosoft.modakserver.global.exception.CustomException;
-import io.jsonwebtoken.Jwts;
-import java.util.Date;
-import org.junit.jupiter.api.*;
 import java.util.Optional;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -55,7 +50,8 @@ class AuthServiceImplTest {
         @Test
         void 로그인_성공_반환값_검사() {
             // when
-            MemberResponse.MemberLogin memberLogin = authService.login(socialType, authorizationCode, identityToken, encryptedUserIdentifier);
+            MemberResponse.MemberLogin memberLogin = authService.login(socialType, authorizationCode, identityToken,
+                    encryptedUserIdentifier);
 
             // then
             String accessToken = memberLogin.getAccessToken();
@@ -68,7 +64,8 @@ class AuthServiceImplTest {
         @Test
         void 로그인_성공_Member_테이블_검사() {
             // when
-            MemberResponse.MemberLogin memberLogin = authService.login(socialType, authorizationCode, identityToken, encryptedUserIdentifier);
+            MemberResponse.MemberLogin memberLogin = authService.login(socialType, authorizationCode, identityToken,
+                    encryptedUserIdentifier);
 
             // then
             Long memberId = memberLogin.getMemberId();
@@ -87,7 +84,8 @@ class AuthServiceImplTest {
             authService.login(socialType, authorizationCode, identityToken, encryptedUserIdentifier);
 
             // then
-            Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByClientId(encryptedUserIdentifier);
+            Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByClientId(
+                    encryptedUserIdentifier);
             assertThat(optionalRefreshToken).isPresent();
             RefreshToken refreshToken = optionalRefreshToken.get();
 
@@ -100,7 +98,8 @@ class AuthServiceImplTest {
         @Disabled
         void 로그인_실패_OAuth_인증_실패() {
             // when then
-            assertThatThrownBy(() -> authService.login(socialType, authorizationCode, identityToken, encryptedUserIdentifier))
+            assertThatThrownBy(
+                    () -> authService.login(socialType, authorizationCode, identityToken, encryptedUserIdentifier))
                     .isInstanceOf(CustomException.class);
         }
     }
@@ -110,11 +109,13 @@ class AuthServiceImplTest {
         @Test
         void 엑세스토큰_재발급_성공() {
             // given
-            MemberResponse.MemberLogin memberLogin = authService.login(socialType, authorizationCode, identityToken, encryptedUserIdentifier);
+            MemberResponse.MemberLogin memberLogin = authService.login(socialType, authorizationCode, identityToken,
+                    encryptedUserIdentifier);
             String refreshToken = memberLogin.getRefreshToken();
 
             // when
-            MemberResponse.AccessToken accessToken = authService.refreshAccessToken(socialType, encryptedUserIdentifier, refreshToken);
+            MemberResponse.AccessToken accessToken = authService.refreshAccessToken(socialType, encryptedUserIdentifier,
+                    refreshToken);
 
             // then
             String accessTokenString = accessToken.getAccessToken();
@@ -146,7 +147,7 @@ class AuthServiceImplTest {
         @Test
         void 로그아웃_실패_유저ID_불일치() {
             // when
-            assertThatThrownBy(() ->authService.logout("invalid" + encryptedUserIdentifier))
+            assertThatThrownBy(() -> authService.logout("invalid" + encryptedUserIdentifier))
                     .isInstanceOf(CustomException.class);
 
             // then

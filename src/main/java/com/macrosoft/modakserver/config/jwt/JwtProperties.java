@@ -1,9 +1,5 @@
 package com.macrosoft.modakserver.config.jwt;
 
-import io.jsonwebtoken.io.Decoders;
-import jakarta.annotation.PostConstruct;
-import java.security.Key;
-import java.util.Base64;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

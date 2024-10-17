@@ -3,7 +3,10 @@ package com.macrosoft.modakserver.domain.member.service;
 import com.macrosoft.modakserver.config.jwt.JwtProperties;
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
-import com.macrosoft.modakserver.domain.member.entity.*;
+import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
+import com.macrosoft.modakserver.domain.member.entity.RefreshToken;
+import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.repository.RefreshTokenRepository;
@@ -27,7 +30,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public MemberResponse.MemberLogin login(SocialType socialType, String authorizationCode, String identityToken, String encryptedUserIdentifier) {
+    public MemberResponse.MemberLogin login(
+            SocialType socialType, String authorizationCode, String identityToken, String encryptedUserIdentifier
+    ) {
         Member member = memberRepository.findByClientId(encryptedUserIdentifier)
                 .orElseGet(() -> createNewMember(encryptedUserIdentifier, socialType));
 
@@ -80,7 +85,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public MemberResponse.AccessToken refreshAccessToken(SocialType socialType, String encryptedUserIdentifier, String refreshToken) {
+    public MemberResponse.AccessToken refreshAccessToken(
+            SocialType socialType, String encryptedUserIdentifier, String refreshToken
+    ) {
         // Refresh Token 검증
         jwtUtil.validateRefreshToken(refreshToken);
 

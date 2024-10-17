@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-
     private final MemberRepository memberRepository;
 
     @Override
