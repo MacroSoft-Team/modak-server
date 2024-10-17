@@ -183,6 +183,19 @@ class AuthServiceImplTest {
         }
 
         @Test
+        void 회원탈퇴_성공_프라이빗로그_삭제() {
+            // given
+            Member member = memberRepository.findByClientId(encryptedUserIdentifier).get();
+            //            member.addPrivateLog();
+
+            // when
+            authService.deactivate(encryptedUserIdentifier);
+
+            // then
+            assertThat(member.getPrivateLogs()).isEmpty();
+        }
+
+        @Test
         void 회원탈퇴_실패_유저ID_불일치() {
             // when
             assertThatThrownBy(() -> authService.deactivate("invalid" + encryptedUserIdentifier))
