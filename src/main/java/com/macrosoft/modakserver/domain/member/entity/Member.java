@@ -1,8 +1,20 @@
 package com.macrosoft.modakserver.domain.member.entity;
 
 import com.macrosoft.modakserver.global.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -11,7 +23,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Member extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,8 +44,8 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PermissionRole permissionRole;
 
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-//    private List<Log> logs; // 1:N 관계
+    //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    //    private List<Log> logs; // 1:N 관계
 
     public void deactivate() {
         this.clientId = "";

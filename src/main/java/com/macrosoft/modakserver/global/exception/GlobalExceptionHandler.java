@@ -20,7 +20,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     /**
      * CustomException 을 처리하는 핸들러
      */
@@ -43,7 +42,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<BaseResponse<String>> handleConstraintViolationException(
-            ConstraintViolationException e) {
+            ConstraintViolationException e
+    ) {
         return createResponseEntity(GlobalErrorCode.VALIDATION_FAILED.getErrorCode());
     }
 
@@ -52,7 +52,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<BaseResponse<String>> handleMethodArgumentTypeMismatch(
-            MethodArgumentTypeMismatchException e) {
+            MethodArgumentTypeMismatchException e
+    ) {
         return createResponseEntity(GlobalErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH.getErrorCode());
     }
 
@@ -61,7 +62,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseResponse<String>> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException e) {
+            MethodArgumentNotValidException e
+    ) {
         return createResponseEntity(GlobalErrorCode.METHOD_ARGUMENT_NOT_VALID.getErrorCode());
     }
 
@@ -70,7 +72,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<BaseResponse<String>> handleNoHandlerFoundException(
-            NoHandlerFoundException e) {
+            NoHandlerFoundException e
+    ) {
         return createResponseEntity(GlobalErrorCode.NO_HANDLER_FOUND.getErrorCode());
     }
 
@@ -78,7 +81,9 @@ public class GlobalExceptionHandler {
      * DataIntegrityViolationException 예외 처리
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<BaseResponse<String>> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+    public ResponseEntity<BaseResponse<String>> handleDataIntegrityViolationException(
+            DataIntegrityViolationException e
+    ) {
         return createResponseEntity(GlobalErrorCode.DATA_INTEGRITY_VIOLATION.getErrorCode());
     }
 

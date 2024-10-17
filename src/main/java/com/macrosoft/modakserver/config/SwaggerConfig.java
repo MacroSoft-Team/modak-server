@@ -6,19 +6,16 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
 @Configuration
 public class SwaggerConfig {
-
     @Value("${server.dev.url}")
     private String devServerUrl;
-
-
+    
     @Bean
     public OpenAPI customOpenAPI() {
         Info info = new Info()
@@ -30,7 +27,6 @@ public class SwaggerConfig {
                 new Server().url("http://localhost:8080").description("로컬 테스트 서버 (HTTP)"),
                 new Server().url(devServerUrl).description("원격 개발 서버 (HTTPS)"));
 
-
         String JWT = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(JWT);
         Components components = new Components().addSecuritySchemes(JWT, new SecurityScheme()
@@ -40,8 +36,6 @@ public class SwaggerConfig {
                 .name(JWT)
                 .description("Access Token 을 입력하세요")
         );
-
-
 
         return new OpenAPI()
                 .servers(servers)

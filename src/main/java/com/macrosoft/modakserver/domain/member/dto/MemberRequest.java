@@ -1,23 +1,34 @@
 package com.macrosoft.modakserver.domain.member.dto;
 
-import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class MemberRequest {
-
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class MemberSignIn {
-        @Schema(description = "애플로부터 받은 Authorization Code", defaultValue = "c19074541137c4508ad5ab04301028c28.0.rrwuz.9laqvPNEVlUKyJ7AY-QeLw")
+        @Schema(
+                description = "애플로부터 받은 Authorization Code",
+                defaultValue = "c19074541137c4508ad5ab04301028c28.0.rrwuz.9laqvPNEVlUKyJ7AY-QeLw"
+        )
         private String authorizationCode;
 
-        @Schema(description = "애플로부터 받은 ID Token.", defaultValue = "eyJraWQiOiJmaDZCczhDIiwiYWaxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcExlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm9zZ")
+        @Schema(
+                description = "애플로부터 받은 ID Token.",
+                defaultValue = "eyJraWQiOiJmaDZCczhDIiwiYWaxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcExlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLm9zZ"
+        )
         private String identityToken;
 
-        @Schema(description = "암호화 된 UserIdentifier", defaultValue = "614c0236d8480a64d9f2214e2486317de1ede78dc59250c806650bce3cbf6ed9")
+        @Schema(
+                description = "암호화 된 UserIdentifier",
+                defaultValue = "614c0236d8480a64d9f2214e2486317de1ede78dc59250c806650bce3cbf6ed9"
+        )
         private String encryptedUserIdentifier;
     }
 
@@ -32,7 +43,10 @@ public class MemberRequest {
 
     @Data
     public static class RefreshTokenRequest {
-        @Schema(description = "암호화 된 UserIdentifier", defaultValue = "614c0236d8480a64d9f2214e2486317de1ede78dc59250c806650bce3cbf6ed9")
+        @Schema(
+                description = "암호화 된 UserIdentifier",
+                defaultValue = "614c0236d8480a64d9f2214e2486317de1ede78dc59250c806650bce3cbf6ed9"
+        )
         private String encryptedUserIdentifier;
 
         @Schema(description = "Refresh Token", defaultValue = "refreshToken")

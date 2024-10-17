@@ -1,6 +1,5 @@
 package com.macrosoft.modakserver.config.jwt;
 
-import com.macrosoft.modakserver.global.exception.CustomException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

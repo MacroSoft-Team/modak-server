@@ -4,7 +4,12 @@ import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
 import com.macrosoft.modakserver.global.exception.AuthErrorCode;
 import com.macrosoft.modakserver.global.exception.CustomException;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
@@ -22,7 +27,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-
     private final JwtProperties jwtProperties;
     private SecretKey secretKey;
     private final UserDetailsService customUserDetailService;
@@ -34,6 +38,7 @@ public class JwtUtil {
 
     /**
      * Access Token 생성
+     *
      * @param member
      * @return accessToken
      */
@@ -55,6 +60,7 @@ public class JwtUtil {
 
     /**
      * Refresh Token 생성
+     *
      * @param member
      * @return refreshToken
      */
@@ -115,15 +121,26 @@ public class JwtUtil {
 
     /**
      * 토큰에서 memberId 추출
+     *
      * @param token
      * @return memberId
      */
     public Long getMemberId(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("memberId", Long.class);
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("memberId", Long.class);
     }
 
     public String getClientIdFromRefreshToken(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("clientId", String.class);
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("clientId", String.class);
     }
 
     public boolean isExpired(String token) {
