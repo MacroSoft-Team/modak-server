@@ -51,6 +51,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PermissionRole permissionRole;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PrivateLog> privateLogs = new ArrayList<>();
 
@@ -58,6 +59,8 @@ public class Member extends BaseEntity {
         this.clientId = "";
         this.nickname = "알 수 없음";
         this.deviceToken = null;
-        privateLogs.clear();
+        if (!privateLogs.isEmpty()) {
+            privateLogs.clear();
+        }
     }
 }

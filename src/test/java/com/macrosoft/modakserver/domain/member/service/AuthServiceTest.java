@@ -164,7 +164,6 @@ class AuthServiceTest {
             memberLogin = authService.login(socialType, authorizationCode, identityToken, encryptedUserIdentifier);
         }
 
-        @Disabled
         @Test
         void 회원탈퇴_성공_멤버정보와_리프레시토큰_삭제() {
             // when
@@ -182,7 +181,6 @@ class AuthServiceTest {
             assertThat(refreshTokenRepository.findByClientId(encryptedUserIdentifier)).isEmpty();
         }
 
-        @Disabled
         @Test
         void 회원탈퇴_성공_프라이빗로그_삭제() {
             // given
