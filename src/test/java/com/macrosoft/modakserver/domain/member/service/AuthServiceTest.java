@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfo;
-import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfoList;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse;
+import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfos;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogIds;
 import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
 import com.macrosoft.modakserver.domain.log.repository.PrivateLogRepository;
 import com.macrosoft.modakserver.domain.log.service.LogService;
@@ -198,8 +198,8 @@ class AuthServiceTest {
         void 회원탈퇴_성공_프라이빗로그_삭제() {
             // given
             Member member = memberRepository.findByClientId(encryptedUserIdentifier).get();
-            LogResponse.logIdList logIdList = logService.uploadPrivateLog(member, PrivateLogInfoList.builder()
-                    .privateLogInfoList(List.of(PrivateLogInfo.builder()
+            LogIds LogIds = logService.uploadPrivateLog(member, PrivateLogInfos.builder()
+                    .privateLogInfos(List.of(PrivateLogInfo.builder()
                             .address("주소")
                             .minLatitude(1.0)
                             .maxLatitude(2.0)
@@ -211,7 +211,7 @@ class AuthServiceTest {
                     ))
                     .build());
 
-            PrivateLog privateLog = privateLogRepository.findById(logIdList.getLogIdList().get(0)).get();
+            PrivateLog privateLog = privateLogRepository.findById(LogIds.getLogIds().get(0)).get();
             System.out.println(privateLog.getMember().getPrivateLogs().get(0).getLocation().getAddress());
 
             assertThat(member.getPrivateLogs()).isNotEmpty();
