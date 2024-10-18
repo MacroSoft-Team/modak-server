@@ -3,7 +3,6 @@ package com.macrosoft.modakserver.domain.log.service;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfoList;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogId;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.logIdList;
 import com.macrosoft.modakserver.domain.log.entity.Location;
 import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
@@ -23,8 +22,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public logIdList uploadPrivateLog(Member member, PrivateLogInfoList privateLogInfoList) {
-        log.info("uploadPrivateLog");
-        List<LogId> logIdList = new ArrayList<>();
+        List<Long> longList = new ArrayList<>();
 
         for (PrivateLogInfo logInfo : privateLogInfoList.getPrivateLogInfoList()) {
             // PrivateLog 엔티티 생성
@@ -43,13 +41,11 @@ public class LogServiceImpl implements LogService {
                     .build();
 
             PrivateLog savedLog = privateLogRepository.save(privateLog);
-            logIdList.add(LogId.builder()
-                    .logId(savedLog.getId())
-                    .build());
+            longList.add(savedLog.getId());
         }
 
         return LogResponse.logIdList.builder()
-                .logIdList(logIdList)
+                .logIdList(longList)
                 .build();
     }
 }
