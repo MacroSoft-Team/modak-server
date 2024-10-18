@@ -65,17 +65,15 @@ public class AuthController {
         return BaseResponse.onSuccess(null);
     }
 
-    @PostMapping("/{socialType}/refresh-access-token")
+    @PostMapping("/refresh-access-token")
     @Operation(
             summary = "Access Token 재발급",
             description = "`Access Token` 이 만료됐을 경우 호출해 주세요. "
-                    + "`Refresh Token` 과 `encryptedUserIdentifier` 로 `Access Token` 을 재발급합니다."
+                    + "`Refresh Token` 로 `Access Token` 을 재발급합니다."
     )
     public BaseResponse<MemberResponse.AccessToken> refreshAccessToken(
-            @PathVariable("socialType") SocialType socialType,
             @RequestBody MemberRequest.RefreshTokenRequest request
     ) {
-        return BaseResponse.onSuccess(authService.refreshAccessToken(socialType, request.getEncryptedUserIdentifier(),
-                request.getRefreshToken()));
+        return BaseResponse.onSuccess(authService.refreshAccessToken(request.getRefreshToken()));
     }
 }
