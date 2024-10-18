@@ -85,9 +85,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public MemberResponse.AccessToken refreshAccessToken(
-            SocialType socialType, String encryptedUserIdentifier, String refreshToken
-    ) {
+    public MemberResponse.AccessToken refreshAccessToken(String refreshToken) {
         // Refresh Token 검증
         jwtUtil.validateRefreshToken(refreshToken);
 
@@ -97,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken storedRefreshToken = refreshTokenRepository.findByClientId(clientId)
                 .orElseThrow(() -> new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN));
 
-        if (!storedRefreshToken.getToken().equals(refreshToken) || !clientId.equals(encryptedUserIdentifier)) {
+        if (!storedRefreshToken.getToken().equals(refreshToken)) {
             throw new CustomException(AuthErrorCode.INVALID_TOKEN);
         }
 

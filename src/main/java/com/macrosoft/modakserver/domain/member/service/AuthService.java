@@ -10,11 +10,8 @@ public interface AuthService {
             String identityToken,
             String encryptedUserIdentifier
     );
-    
-    MemberResponse.AccessToken refreshAccessToken(
-            SocialType socialType, String encryptedUserIdentifier,
-            String refreshToken
-    );
+
+    MemberResponse.AccessToken refreshAccessToken(String refreshToken);
 
     void logout(String clientId);
 
