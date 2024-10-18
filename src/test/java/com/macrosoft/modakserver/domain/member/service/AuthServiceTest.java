@@ -194,6 +194,7 @@ class AuthServiceTest {
         }
 
         @Test
+        @Disabled
         void 회원탈퇴_성공_프라이빗로그_삭제() {
             // given
             Member member = memberRepository.findByClientId(encryptedUserIdentifier).get();

@@ -11,7 +11,7 @@ public class LogResponse {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class logIdList {
-        private List<Long> logIdList;
+    public static class logIds {
+        private List<Long> logIds;
     }
 }

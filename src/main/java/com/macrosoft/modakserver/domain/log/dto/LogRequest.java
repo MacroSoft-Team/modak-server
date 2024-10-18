@@ -26,7 +26,7 @@ public class LogRequest {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PrivateLogInfoList {
-        private List<PrivateLogInfo> privateLogInfoList;
+    public static class PrivateLogInfos {
+        private List<PrivateLogInfo> privateLogInfos;
     }
 }
