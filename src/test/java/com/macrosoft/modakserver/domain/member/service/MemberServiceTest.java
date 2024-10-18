@@ -19,16 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberServiceTest {
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private MemberRepository memberRepository;
-
     private Member member;
 
     @BeforeEach
     void setUp() {
         member = memberRepository.save(Member.builder()
-                .id(1L)
                 .clientId("clientId")
                 .socialType(SocialType.APPLE)
                 .nickname("nickname")
