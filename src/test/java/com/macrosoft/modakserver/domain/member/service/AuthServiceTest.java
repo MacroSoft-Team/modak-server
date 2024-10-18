@@ -4,6 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
+import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfo;
+import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfoList;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse;
+import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
+import com.macrosoft.modakserver.domain.log.repository.PrivateLogRepository;
+import com.macrosoft.modakserver.domain.log.service.LogService;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.RefreshToken;
@@ -11,6 +17,8 @@ import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.repository.RefreshTokenRepository;
 import com.macrosoft.modakserver.global.exception.CustomException;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -22,15 +30,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-class AuthServiceImplTest {
+class AuthServiceTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
     @Autowired
+    private PrivateLogRepository privateLogRepository;
+    @Autowired
     private JwtUtil jwtUtil;
     @Autowired
-    private AuthServiceImpl authService;
+    private AuthService authService;
+    @Autowired
+    private LogService logService;
 
     private String encryptedUserIdentifier;
     private String authorizationCode;
@@ -164,7 +176,6 @@ class AuthServiceImplTest {
             memberLogin = authService.login(socialType, authorizationCode, identityToken, encryptedUserIdentifier);
         }
 
-        @Disabled
         @Test
         void 회원탈퇴_성공_멤버정보와_리프레시토큰_삭제() {
             // when
@@ -182,12 +193,27 @@ class AuthServiceImplTest {
             assertThat(refreshTokenRepository.findByClientId(encryptedUserIdentifier)).isEmpty();
         }
 
-        @Disabled
         @Test
         void 회원탈퇴_성공_프라이빗로그_삭제() {
             // given
             Member member = memberRepository.findByClientId(encryptedUserIdentifier).get();
-            //            member.addPrivateLog();
+            LogResponse.logIdList logIdList = logService.uploadPrivateLog(member, PrivateLogInfoList.builder()
+                    .privateLogInfoList(List.of(PrivateLogInfo.builder()
+                            .address("주소")
+                            .minLatitude(1.0)
+                            .maxLatitude(2.0)
+                            .minLongitude(3.0)
+                            .maxLongitude(4.0)
+                            .startAt(LocalDateTime.now())
+                            .endAt(LocalDateTime.now())
+                            .build()
+                    ))
+                    .build());
+
+            PrivateLog privateLog = privateLogRepository.findById(logIdList.getLogIdList().get(0)).get();
+            System.out.println(privateLog.getMember().getPrivateLogs().get(0).getLocation().getAddress());
+
+            assertThat(member.getPrivateLogs()).isNotEmpty();
 
             // when
             authService.deactivate(encryptedUserIdentifier);
