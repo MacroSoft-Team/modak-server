@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-class AuthServiceImplTest {
+class AuthServiceTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -30,7 +30,7 @@ class AuthServiceImplTest {
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
-    private AuthServiceImpl authService;
+    private AuthService authService;
 
     private String encryptedUserIdentifier;
     private String authorizationCode;
