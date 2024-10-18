@@ -1,9 +1,8 @@
 package com.macrosoft.modakserver.domain.log.service;
 
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfo;
-import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfoList;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse.logIdList;
+import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfos;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogIds;
 import com.macrosoft.modakserver.domain.log.entity.Location;
 import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
 import com.macrosoft.modakserver.domain.log.repository.PrivateLogRepository;
@@ -21,10 +20,10 @@ public class LogServiceImpl implements LogService {
     private final PrivateLogRepository privateLogRepository;
 
     @Override
-    public logIdList uploadPrivateLog(Member member, PrivateLogInfoList privateLogInfoList) {
+    public LogIds uploadPrivateLog(Member member, PrivateLogInfos privateLogInfoList) {
         List<Long> longList = new ArrayList<>();
 
-        for (PrivateLogInfo logInfo : privateLogInfoList.getPrivateLogInfoList()) {
+        for (PrivateLogInfo logInfo : privateLogInfoList.getPrivateLogInfos()) {
             // PrivateLog 엔티티 생성
             PrivateLog privateLog = PrivateLog.builder()
                     .member(member)
@@ -44,8 +43,8 @@ public class LogServiceImpl implements LogService {
             longList.add(savedLog.getId());
         }
 
-        return LogResponse.logIdList.builder()
-                .logIdList(longList)
+        return LogIds.builder()
+                .logIds(longList)
                 .build();
     }
 }

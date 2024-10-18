@@ -2,7 +2,7 @@ package com.macrosoft.modakserver.domain.log.controller;
 
 import com.macrosoft.modakserver.config.security.CustomUserDetails;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse.logIdList;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogIds;
 import com.macrosoft.modakserver.domain.log.service.LogService;
 import com.macrosoft.modakserver.global.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,9 +23,9 @@ public class LogController {
 
     @Operation(summary = "개인 장작 정보 업로드", description = "개인 장작 정보들을 업로드합니다.")
     @PostMapping("/private")
-    public BaseResponse<logIdList> uploadPrivateLog(
+    public BaseResponse<LogIds> uploadPrivateLog(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody LogRequest.PrivateLogInfoList privateLogInfoList
+            @RequestBody LogRequest.PrivateLogInfos privateLogInfoList
     ) {
         return BaseResponse.onSuccess(logService.uploadPrivateLog(userDetails.getMember(), privateLogInfoList));
     }
