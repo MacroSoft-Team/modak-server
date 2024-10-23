@@ -4,14 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
+import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfos;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogIds;
 import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
 import com.macrosoft.modakserver.domain.log.repository.PrivateLogRepository;
 import com.macrosoft.modakserver.domain.log.service.LogService;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
 import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
 import com.macrosoft.modakserver.domain.member.entity.RefreshToken;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
@@ -32,6 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class AuthServiceTest {
     @Autowired
+    private AuthService authService;
+    @Autowired
+    private LogService logService;
+    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
@@ -39,15 +44,12 @@ class AuthServiceTest {
     private PrivateLogRepository privateLogRepository;
     @Autowired
     private JwtUtil jwtUtil;
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private LogService logService;
 
     private String encryptedUserIdentifier;
     private String authorizationCode;
     private String identityToken;
     private SocialType socialType;
+    private Member member;
 
     @BeforeEach
     void setUp() {
@@ -55,6 +57,13 @@ class AuthServiceTest {
         authorizationCode = "auth-code";
         identityToken = "identityToken";
         socialType = SocialType.APPLE;
+        member = memberRepository.save(Member.builder()
+                .clientId("clientId0")
+                .socialType(SocialType.APPLE)
+                .nickname("nickname0")
+                .permissionRole(PermissionRole.CLIENT)
+                .build()
+        );
     }
 
     @Nested
@@ -185,6 +194,7 @@ class AuthServiceTest {
             Optional<Member> optionalMember = memberRepository.findById(memberLogin.getMemberId());
             assertThat(optionalMember).isPresent();
             Member member = optionalMember.get();
+
             assertThat(member.getClientId()).isEmpty();
             assertThat(member.getNickname()).isEqualTo("알 수 없음");
             assertThat(member.getDeviceToken()).isNull();
@@ -194,11 +204,13 @@ class AuthServiceTest {
         }
 
         @Test
-        @Disabled
         void 회원탈퇴_성공_프라이빗로그_삭제() {
             // given
-            Member member = memberRepository.findByClientId(encryptedUserIdentifier).get();
-            LogIds LogIds = logService.uploadPrivateLog(member, PrivateLogInfos.builder()
+            Optional<Member> optionalMember = memberRepository.findById(memberLogin.getMemberId());
+            assertThat(optionalMember).isPresent();
+            Member member = optionalMember.get();
+
+            LogRequest.PrivateLogInfos privateLogInfos = PrivateLogInfos.builder()
                     .privateLogInfos(List.of(PrivateLogInfo.builder()
                             .address("주소")
                             .minLatitude(1.0)
@@ -206,21 +218,21 @@ class AuthServiceTest {
                             .minLongitude(3.0)
                             .maxLongitude(4.0)
                             .startAt(LocalDateTime.now())
-                            .endAt(LocalDateTime.now())
-                            .build()
-                    ))
-                    .build());
+                            .endAt(LocalDateTime.now().plusMinutes(10))
+                            .build()))
+                    .build();
 
-            PrivateLog privateLog = privateLogRepository.findById(LogIds.getLogIds().get(0)).get();
-            System.out.println(privateLog.getMember().getPrivateLogs().get(0).getLocation().getAddress());
-
-            assertThat(member.getPrivateLogs()).isNotEmpty();
+            List<Long> logIds = logService.uploadPrivateLog(member, privateLogInfos).getLogIds();
+            Optional<PrivateLog> optionalPrivateLog = privateLogRepository.findById(logIds.get(0));
+            assertThat(optionalPrivateLog).isPresent();
 
             // when
             authService.deactivate(encryptedUserIdentifier);
 
             // then
             assertThat(member.getPrivateLogs()).isEmpty();
+            Optional<PrivateLog> optionalPrivateLog1 = privateLogRepository.findById(logIds.get(0));
+            assertThat(optionalPrivateLog1).isNotPresent();
         }
 
         @Test
