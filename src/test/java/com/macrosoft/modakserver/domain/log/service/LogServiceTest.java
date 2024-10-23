@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfos;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse;
 import com.macrosoft.modakserver.domain.log.entity.Location;
 import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
 import com.macrosoft.modakserver.domain.log.repository.PrivateLogRepository;
@@ -55,7 +54,7 @@ class LogServiceTest {
             Double minLongitude = 3.0;
             Double maxLongitude = 4.0;
             LocalDateTime startAt = LocalDateTime.now();
-            LocalDateTime endAt = LocalDateTime.now().plusMinutes(10);
+            LocalDateTime endAt = startAt.plusMinutes(10);
 
             LogRequest.PrivateLogInfos privateLogInfos = PrivateLogInfos.builder()
                     .privateLogInfos(List.of(PrivateLogInfo.builder()
@@ -70,7 +69,7 @@ class LogServiceTest {
                     .build();
 
             // when
-            LogResponse.LogIds logIds = logService.uploadPrivateLog(member0, privateLogInfos);
+            List<Long> logIds = logService.uploadPrivateLog(member0, privateLogInfos).getLogIds();
 
             // then
             Location expectedLocation = Location.builder()
@@ -81,8 +80,8 @@ class LogServiceTest {
                     .maxLongitude(maxLongitude)
                     .build();
 
-            assertThat(logIds.getLogIds()).isNotEmpty();
-            PrivateLog privateLog = privateLogRepository.findById(logIds.getLogIds().get(0)).orElseThrow();
+            assertThat(logIds).isNotEmpty();
+            PrivateLog privateLog = privateLogRepository.findById(logIds.get(0)).orElseThrow();
             assertThat(privateLog.getLocation()).usingRecursiveComparison()
                     .ignoringFields("id", "createdAt", "updatedAt")
                     .isEqualTo(expectedLocation);
