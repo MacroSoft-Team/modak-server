@@ -91,8 +91,11 @@ public class AuthServiceImpl implements AuthService {
         // Refresh Token 검증
         jwtUtil.validateRefreshToken(refreshToken);
 
-        // Refresh Token 에서 clientId 추출
-        String clientId = jwtUtil.getClientIdFromRefreshToken(refreshToken);
+        // Refresh Token 에서 memberId 추출 하고 clientId 가져오기
+        Long memberId = jwtUtil.getMemberId(refreshToken);
+        String clientId = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND))
+                .getClientId();
 
         RefreshToken storedRefreshToken = refreshTokenRepository.findByClientId(clientId)
                 .orElseThrow(() -> new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN));

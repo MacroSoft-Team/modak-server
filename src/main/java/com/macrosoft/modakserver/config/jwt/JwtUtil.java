@@ -39,8 +39,8 @@ public class JwtUtil {
     /**
      * Access Token 생성
      *
-     * @param member
-     * @return accessToken
+     * @param member 생성할 멤버
+     * @return accessToken 생성한 엑세스 토큰 문자열
      */
     public String createAccessToken(Member member) {
         Long expiredTime = Optional.ofNullable(jwtProperties.getAccess_token_expiration())
@@ -61,8 +61,8 @@ public class JwtUtil {
     /**
      * Refresh Token 생성
      *
-     * @param member
-     * @return refreshToken
+     * @param member 생성할 멤버
+     * @return refreshToken 생성한 리프레시 토큰 문자열
      */
     public String createRefreshToken(Member member) {
         Long expiredTime = Optional.ofNullable(jwtProperties.getRefresh_token_expiration())
@@ -74,7 +74,7 @@ public class JwtUtil {
                 .issuedAt(new Date())
                 .expiration(expiration)
                 .claim("tokenType", "refresh")
-                .claim("clientId", member.getClientId())
+                .claim("memberId", member.getId())
                 .signWith(secretKey)
                 .compact();
     }
@@ -132,15 +132,6 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("memberId", Long.class);
-    }
-
-    public String getClientIdFromRefreshToken(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("clientId", String.class);
     }
 
     public boolean isExpired(String token) {
