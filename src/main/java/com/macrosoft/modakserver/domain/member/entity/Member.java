@@ -1,5 +1,6 @@
 package com.macrosoft.modakserver.domain.member.entity;
 
+import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
 import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.CascadeType;
@@ -54,6 +55,9 @@ public class Member extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PrivateLog> privateLogs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MemberCampfire> memberCampfires;
 
     public void deactivate() {
         this.clientId = "";
