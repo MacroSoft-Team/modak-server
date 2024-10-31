@@ -86,9 +86,10 @@ public class AuthServiceImpl implements AuthService {
         logout(clientId);
         Member member = findMemberByClientId(clientId);
         member.deactivate();
-        int deletedPrivateLogs = privateLogRepository.deleteAllByMemberId(member.getId());
-        log.info("Member deactivated: {} {}, Deleted PrivateLog Count: {}", member.getId(), member.getNickname(),
-                deletedPrivateLogs);
+        // MARK: 개인 장작 업로드 기능 삭제됨
+//        int deletedPrivateLogs = privateLogRepository.deleteAllByMemberId(member.getId());
+//        log.info("Member deactivated: {} {}, Deleted PrivateLog Count: {}", member.getId(), member.getNickname(),
+//                deletedPrivateLogs);
     }
 
     private Member createNewMember(String clientId, SocialType socialType) {
