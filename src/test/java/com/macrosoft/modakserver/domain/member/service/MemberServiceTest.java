@@ -39,11 +39,11 @@ class MemberServiceTest {
         @Test
         void 이름_가져오기_성공_반환값_검사() {
             // when
-            MemberResponse.MemberNickname memberNickname = memberService.getMemberNickname(member);
+            MemberResponse.MemberNickname memberNickname = memberService.getMyNickname(member);
 
             // then
-            assertThat(memberNickname.getMemberId()).isEqualTo(member.getId());
-            assertThat(memberNickname.getNickname()).isEqualTo(member.getNickname());
+            assertThat(memberNickname.memberId()).isEqualTo(member.getId());
+            assertThat(memberNickname.nickname()).isEqualTo(member.getNickname());
         }
     }
 
@@ -58,8 +58,8 @@ class MemberServiceTest {
             MemberResponse.MemberNickname memberNickname = memberService.updateNickname(member, nickname);
 
             // then
-            assertThat(memberNickname.getMemberId()).isEqualTo(member.getId());
-            assertThat(memberNickname.getNickname()).isEqualTo(nickname);
+            assertThat(memberNickname.memberId()).isEqualTo(member.getId());
+            assertThat(memberNickname.nickname()).isEqualTo(nickname);
         }
     }
 }

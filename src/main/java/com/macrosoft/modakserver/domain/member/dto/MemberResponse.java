@@ -1,43 +1,12 @@
 package com.macrosoft.modakserver.domain.member.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 public class MemberResponse {
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MemberLogin {
-        private Long memberId;
-        private String accessToken;
-        private String refreshToken;
+    public record MemberLogin(Long memberId, String accessToken, String refreshToken) {
     }
 
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MemberNickname {
-        private Long memberId;
-        private String nickname;
+    public record MemberNickname(Long memberId, String nickname) {
     }
 
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MemberId {
-        private String memberId;
-    }
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class AccessToken {
-        private String accessToken;
+    public record AccessToken(String accessToken) {
     }
 }

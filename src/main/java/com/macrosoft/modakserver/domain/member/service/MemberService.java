@@ -1,9 +1,13 @@
 package com.macrosoft.modakserver.domain.member.service;
 
-import com.macrosoft.modakserver.domain.member.dto.MemberResponse.MemberNickname;
+import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
 import com.macrosoft.modakserver.domain.member.entity.Member;
+import java.util.List;
 
 public interface MemberService {
-    MemberNickname getMemberNickname(Member member);
-    MemberNickname updateNickname(Member member, String nickname);
+    MemberResponse.MemberNickname getMyNickname(Member member);
+
+    List<MemberResponse.MemberNickname> getNicknames(List<Long> memberIds);
+
+    MemberResponse.MemberNickname updateNickname(Member member, String nickname);
 }

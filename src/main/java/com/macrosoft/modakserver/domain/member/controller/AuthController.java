@@ -38,9 +38,9 @@ public class AuthController {
         return BaseResponse.onSuccess(
                 authService.login(
                         socialType,
-                        request.getAuthorizationCode(),
-                        request.getIdentityToken(),
-                        request.getEncryptedUserIdentifier()
+                        request.authorizationCode(),
+                        request.identityToken(),
+                        request.encryptedUserIdentifier()
                 )
         );
     }
@@ -74,6 +74,6 @@ public class AuthController {
     public BaseResponse<MemberResponse.AccessToken> refreshAccessToken(
             @RequestBody MemberRequest.RefreshTokenRequest request
     ) {
-        return BaseResponse.onSuccess(authService.refreshAccessToken(request.getRefreshToken()));
+        return BaseResponse.onSuccess(authService.refreshAccessToken(request.refreshToken()));
     }
 }

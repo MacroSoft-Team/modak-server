@@ -23,18 +23,18 @@ public class LogServiceImpl implements LogService {
     public LogIds uploadPrivateLog(Member member, PrivateLogInfos privateLogInfoList) {
         List<Long> longList = new ArrayList<>();
 
-        for (PrivateLogInfo logInfo : privateLogInfoList.getPrivateLogInfos()) {
+        for (PrivateLogInfo logInfo : privateLogInfoList.privateLogInfos()) {
             // PrivateLog 엔티티 생성
             PrivateLog privateLog = PrivateLog.builder()
                     .member(member)
-                    .startAt(logInfo.getStartAt())
-                    .endAt(logInfo.getEndAt())
+                    .startAt(logInfo.startAt())
+                    .endAt(logInfo.endAt())
                     .location(Location.builder()
-                            .minLatitude(logInfo.getMinLatitude())
-                            .maxLatitude(logInfo.getMaxLatitude())
-                            .minLongitude(logInfo.getMinLongitude())
-                            .maxLongitude(logInfo.getMaxLongitude())
-                            .address(logInfo.getAddress())
+                            .minLatitude(logInfo.minLatitude())
+                            .maxLatitude(logInfo.maxLatitude())
+                            .minLongitude(logInfo.minLongitude())
+                            .maxLongitude(logInfo.maxLongitude())
+                            .address(logInfo.address())
                             .build()
                     )
                     .build();
@@ -43,8 +43,6 @@ public class LogServiceImpl implements LogService {
             longList.add(savedLog.getId());
         }
 
-        return LogIds.builder()
-                .logIds(longList)
-                .build();
+        return new LogIds(longList);
     }
 }
