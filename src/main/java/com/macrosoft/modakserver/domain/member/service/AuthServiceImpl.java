@@ -43,11 +43,53 @@ public class AuthServiceImpl implements AuthService {
 
         updateOrCreateRefreshToken(encryptedUserIdentifier, refreshToken);
 
-        return MemberResponse.MemberLogin.builder()
-                .memberId(member.getId())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return new MemberResponse.MemberLogin(member.getId(), accessToken, refreshToken);
+    }
+
+    @Override
+    @Transactional
+    public MemberResponse.AccessToken refreshAccessToken(String refreshToken) {
+        // Refresh Token 검증
+        jwtUtil.validateRefreshToken(refreshToken);
+
+        // Refresh Token 에서 memberId 추출 하고 clientId 가져오기
+        Long memberId = jwtUtil.getMemberId(refreshToken);
+        String clientId = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND))
+                .getClientId();
+
+        RefreshToken storedRefreshToken = refreshTokenRepository.findByClientId(clientId)
+                .orElseThrow(() -> new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN));
+
+        if (!storedRefreshToken.getToken().equals(refreshToken)) {
+            throw new CustomException(AuthErrorCode.INVALID_TOKEN);
+        }
+
+        // 새로운 Access Token 발급
+        Member member = findMemberByClientId(clientId);
+        String newAccessToken = jwtUtil.createAccessToken(member);
+
+        return new MemberResponse.AccessToken(newAccessToken);
+    }
+
+    @Override
+    @Transactional
+    public void logout(String clientId) {
+        if (refreshTokenRepository.deleteByClientId(clientId) == 0) {
+            throw new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deactivate(String clientId) {
+        logout(clientId);
+        Member member = findMemberByClientId(clientId);
+        member.deactivate();
+        // MARK: 개인 장작 업로드 기능 삭제됨
+//        int deletedPrivateLogs = privateLogRepository.deleteAllByMemberId(member.getId());
+//        log.info("Member deactivated: {} {}, Deleted PrivateLog Count: {}", member.getId(), member.getNickname(),
+//                deletedPrivateLogs);
     }
 
     private Member createNewMember(String clientId, SocialType socialType) {
@@ -83,53 +125,6 @@ public class AuthServiceImpl implements AuthService {
                 .expirationDate(expirationDate)
                 .build();
         refreshTokenRepository.save(newRefreshToken);
-    }
-
-    @Override
-    @Transactional
-    public MemberResponse.AccessToken refreshAccessToken(String refreshToken) {
-        // Refresh Token 검증
-        jwtUtil.validateRefreshToken(refreshToken);
-
-        // Refresh Token 에서 memberId 추출 하고 clientId 가져오기
-        Long memberId = jwtUtil.getMemberId(refreshToken);
-        String clientId = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND))
-                .getClientId();
-
-        RefreshToken storedRefreshToken = refreshTokenRepository.findByClientId(clientId)
-                .orElseThrow(() -> new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN));
-
-        if (!storedRefreshToken.getToken().equals(refreshToken)) {
-            throw new CustomException(AuthErrorCode.INVALID_TOKEN);
-        }
-
-        // 새로운 Access Token 발급
-        Member member = findMemberByClientId(clientId);
-        String newAccessToken = jwtUtil.createAccessToken(member);
-
-        return MemberResponse.AccessToken.builder()
-                .accessToken(newAccessToken)
-                .build();
-    }
-
-    @Override
-    @Transactional
-    public void logout(String clientId) {
-        if (refreshTokenRepository.deleteByClientId(clientId) == 0) {
-            throw new CustomException(AuthErrorCode.MEMBER_NOT_HAVE_TOKEN);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deactivate(String clientId) {
-        logout(clientId);
-        Member member = findMemberByClientId(clientId);
-        member.deactivate();
-        int deletedPrivateLogs = privateLogRepository.deleteAllByMemberId(member.getId());
-        log.info("Member deactivated: {} {}, Deleted PrivateLog Count: {}", member.getId(), member.getNickname(),
-                deletedPrivateLogs);
     }
 
     private Member findMemberByClientId(String clientId) {

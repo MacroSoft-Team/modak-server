@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfo;
-import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfos;
 import com.macrosoft.modakserver.domain.log.entity.Location;
 import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
 import com.macrosoft.modakserver.domain.log.repository.PrivateLogRepository;
@@ -56,20 +55,13 @@ class LogServiceTest {
             LocalDateTime startAt = LocalDateTime.now();
             LocalDateTime endAt = startAt.plusMinutes(10);
 
-            LogRequest.PrivateLogInfos privateLogInfos = PrivateLogInfos.builder()
-                    .privateLogInfos(List.of(PrivateLogInfo.builder()
-                            .address(address)
-                            .minLatitude(minLatitude)
-                            .maxLatitude(maxLatitude)
-                            .minLongitude(minLongitude)
-                            .maxLongitude(maxLongitude)
-                            .startAt(startAt)
-                            .endAt(endAt)
-                            .build()))
-                    .build();
+            LogRequest.PrivateLogInfos privateLogInfos = new LogRequest.PrivateLogInfos(
+                    List.of(new PrivateLogInfo(address, minLatitude, maxLatitude, minLongitude, maxLongitude, startAt,
+                            endAt))
+            );
 
             // when
-            List<Long> logIds = logService.uploadPrivateLog(member0, privateLogInfos).getLogIds();
+            List<Long> logIds = logService.uploadPrivateLog(member0, privateLogInfos).logIds();
 
             // then
             Location expectedLocation = Location.builder()
