@@ -23,22 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     private final MemberService memberService;
 
-    @Operation(summary = "내 닉네임 가져오기", description = "회원 본인의 닉네임을 가져옵니다.")
-    @GetMapping("/nickname/my")
-    public BaseResponse<MemberResponse.MemberNickname> getMyNickname(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        Member member = userDetails.getMember();
-        return BaseResponse.onSuccess(memberService.getMyNickname(member));
-    }
-
-    @Operation(summary = "다른 회원들의 닉네임 가져오기", description = "다른 회원들의 닉네임을 가져옵니다.")
-    @GetMapping("/nickname")
-    public BaseResponse<List<MemberResponse.MemberNickname>> getMembersNickname(
-            @RequestParam("memberIds") List<Long> memberIds) {
-        return BaseResponse.onSuccess(memberService.getNicknames(memberIds));
-    }
-
     @Operation(summary = "내 닉네임 변경", description = "회원 본인의 닉네임을 변경합니다.")
     @PatchMapping("/nickname")
     public BaseResponse<MemberResponse.MemberNickname> updateNickname(
@@ -47,5 +31,16 @@ public class MemberController {
     ) {
         Member member = userDetails.getMember();
         return BaseResponse.onSuccess(memberService.updateNickname(member, nickname));
+    }
+
+    @Operation(summary = "회원들의 닉네임 가져오기", description = "회원들의 닉네임을 가져옵니다. 쿼리 파라미터를 비워둘 경우 본인의 닉네임을 가져옵니다.")
+    @GetMapping("/nickname")
+    public BaseResponse<List<MemberResponse.MemberNickname>> getMembersNickname(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(value = "memberIds", required = false) List<Long> memberIds) {
+        if (memberIds == null || memberIds.isEmpty()) {
+            memberIds = List.of(userDetails.getMember().getId());
+        }
+        return BaseResponse.onSuccess(memberService.getNicknames(memberIds));
     }
 }

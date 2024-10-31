@@ -17,11 +17,6 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
 
     @Override
-    public MemberNickname getMyNickname(Member member) {
-        return new MemberResponse.MemberNickname(member.getId(), member.getNickname());
-    }
-
-    @Override
     public List<MemberNickname> getNicknames(List<Long> memberIds) {
         List<Member> members = memberRepository.findAllById(memberIds);
         validateMemberNotFound(members, memberIds);
