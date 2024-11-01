@@ -1,6 +1,7 @@
 package com.macrosoft.modakserver.domain.campfire.dto;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class CampfireResponse {
@@ -10,7 +11,8 @@ public class CampfireResponse {
     public record CampfireInfos(List<CampfireInfo> campfireInfos) {
     }
 
-    public record CampfireMain(Long campfireId, String campfireName, TodayImage todayImage, Set<Long> memberIds) {
+    public record CampfireMain(Long campfireId, String campfireName, Optional<TodayImage> todayImage,
+                               Set<Long> memberIds) {
     }
 
     public record CampfireName(Long campfireId, String campfireName) {

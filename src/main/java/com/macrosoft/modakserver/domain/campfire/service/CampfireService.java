@@ -4,9 +4,9 @@ import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 
 public interface CampfireService {
-    CampfireResponse.CampfireId createCampfire(String campfireName);
+    CampfireResponse.CampfireId createCampfire(Member member, String campfireName);
 
-    CampfireResponse.CampfireInfos getMyCampfires();
+    CampfireResponse.CampfireInfos getMyCampfires(Member member);
 
     CampfireResponse.CampfireMain getCampfireMain(int campfireId);
 

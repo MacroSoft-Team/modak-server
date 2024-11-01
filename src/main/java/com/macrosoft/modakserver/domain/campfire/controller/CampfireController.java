@@ -28,25 +28,29 @@ public class CampfireController {
     @Operation(summary = "모닥불 생성", description = "모닥불을 생성합니다.")
     @PostMapping
     public BaseResponse<CampfireResponse.CampfireId> createCampfire(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CampfireRequest.CampfireCreate campfireCreate) {
-        return BaseResponse.onSuccess(campfireService.createCampfire(campfireCreate.campfireName()));
+        return BaseResponse.onSuccess(
+                campfireService.createCampfire(userDetails.getMember(), campfireCreate.campfireName()));
     }
 
-    @Operation(summary = "내가 참여한 모닥불 정보 가져오기", description = "내가 참여한 모든 모닥불의 정보를 가져옵니다.")
+    @Operation(summary = "내가 참여한 모닥불들의 정보 가져오기", description = "내가 참여한 모든 모닥불의 정보를 가져옵니다.")
     @GetMapping("/my")
-    public BaseResponse<CampfireResponse.CampfireInfos> getMyCampfires() {
-        return BaseResponse.onSuccess(campfireService.getMyCampfires());
+    public BaseResponse<CampfireResponse.CampfireInfos> getMyCampfires(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return BaseResponse.onSuccess(campfireService.getMyCampfires(userDetails.getMember()));
     }
 
-    @Operation(summary = "모닥불 메인 화면 정보 가져오기", description = "모닥불 id로 이름, 오늘의 사진 정보, 그룹 멤버 id들을 가져온다")
+    @Operation(summary = "모닥불 메인 화면 정보 가져오기", description = "모닥불 id로 이름, 오늘의 사진 정보, 그룹 멤버 id들을 가져옵니다.")
     @GetMapping("/{campfireId}")
-    public BaseResponse<CampfireResponse.CampfireMain> getCampfireMain(@PathVariable int campfireId) {
+    public BaseResponse<CampfireResponse.CampfireMain> getCampfireMain(@PathVariable("campfireId") int campfireId) {
         return BaseResponse.onSuccess(campfireService.getCampfireMain(campfireId));
     }
 
     @Operation(summary = "모닥불 이름 가져오기", description = "특정 모닥불의 이름을 가져옵니다.")
-    @GetMapping("/{campfireId}/inviteInfo")
-    public BaseResponse<CampfireResponse.CampfireName> getCampfireName(@PathVariable int campfireId) {
+    @GetMapping("/{campfireId}/name")
+    public BaseResponse<CampfireResponse.CampfireName> getCampfireName(@PathVariable("campfireId") int campfireId) {
         return BaseResponse.onSuccess(campfireService.getCampfireInvitations(campfireId));
     }
 
@@ -54,7 +58,7 @@ public class CampfireController {
     @PostMapping("/{campfireId}/join")
     public BaseResponse<CampfireResponse.CampfireId> joinCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable int campfireId,
+            @PathVariable("campfireId") int campfireId,
             @RequestBody CampfireRequest.CampfireJoin campfireJoin) {
         return BaseResponse.onSuccess(
                 campfireService.joinCampfire(userDetails.getMember(), campfireId, campfireJoin.campfireName()));
@@ -63,7 +67,7 @@ public class CampfireController {
     @Operation(summary = "모닥불 이름 변경하기", description = "특정 모닥불의 이름을 변경합니다.")
     @PatchMapping("/{campfireId}/name")
     public BaseResponse<CampfireResponse.CampfireName> updateCampfireName(
-            @PathVariable int campfireId,
+            @PathVariable("campfireId") int campfireId,
             @RequestBody CampfireRequest.CampfireUpdateName campfireUpdateName) {
         return BaseResponse.onSuccess(
                 campfireService.updateCampfireName(campfireId, campfireUpdateName.newCampfireName()));

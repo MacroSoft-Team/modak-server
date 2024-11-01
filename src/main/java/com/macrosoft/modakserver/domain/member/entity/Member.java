@@ -56,8 +56,14 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PrivateLog> privateLogs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "members", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MemberCampfire> memberCampfires;
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<MemberCampfire> memberCampfires = new ArrayList<>();
+
+    public void addMemberCampfire(MemberCampfire memberCampfire) {
+        memberCampfire.setMember(this);
+        this.memberCampfires.add(memberCampfire);
+    }
 
     public void deactivate() {
         this.clientId = "";

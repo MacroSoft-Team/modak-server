@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum CampfireErrorCode implements ErrorCodeInterface {
-    LOG_NOT_FOUND("C001", "존재하지 않는 모닥불 입니다.", HttpStatus.NOT_FOUND),
+    CAMPFIRE_NOT_FOUND("C001", "존재하지 않는 모닥불 입니다.", HttpStatus.NOT_FOUND),
+    CAMPFIRE_NAME_EMPTY("C002", "모닥불 이름이 비어있습니다.", HttpStatus.BAD_REQUEST),
+    CAMPFIRE_NAME_TOO_LONG("C003", "모닥불 이름이 너무 깁니다. 12자 이하로 가능합니디.", HttpStatus.BAD_REQUEST),
     ;
 
     private final String code;
