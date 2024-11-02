@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireId;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfos;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
@@ -15,6 +17,8 @@ import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -150,7 +154,23 @@ class CampfireServiceTest {
     class getMyCampfiresTests {
         @Test
         void getMyCampfires() {
+            String campfireName1 = "campfire1";
+            String campfireName2 = "campfire2";
+            Member member = members.get(0);
+            campfireService.createCampfire(member, campfireName1);
+            campfireService.createCampfire(member, campfireName2);
 
+            // when
+            CampfireInfos campfireInfos = campfireService.getMyCampfires(member);
+
+            // then
+            assertThat(campfireInfos.campfireInfos().size()).isEqualTo(2);
+            assertThat(campfireInfos.campfireInfos().stream()
+                    .map(CampfireInfo::campfireName)
+                    .toList()).containsExactlyInAnyOrder(campfireName1, campfireName2);
+            assertThat(campfireInfos.campfireInfos().stream()
+                    .map(CampfireInfo::membersNames)
+                    .collect(Collectors.toSet())).containsExactlyInAnyOrder(Set.of(member.getNickname()));
         }
     }
 

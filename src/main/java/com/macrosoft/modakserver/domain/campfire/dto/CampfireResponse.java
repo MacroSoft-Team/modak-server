@@ -5,25 +5,40 @@ import java.util.Optional;
 import java.util.Set;
 
 public class CampfireResponse {
-    public record CampfireId(Long campfireId) {
+    public record CampfireId(
+            Long campfireId) {
     }
 
-    public record CampfireInfos(List<CampfireInfo> campfireInfos) {
+    public record CampfireInfos(
+            List<CampfireInfo> campfireInfos) {
     }
 
-    public record CampfireMain(Long campfireId, String campfireName, Optional<TodayImage> todayImage,
-                               Set<Long> memberIds) {
+    public record CampfireMain(
+            Long campfireId,
+            String campfireName,
+            Optional<TodayImage> todayImage,
+            Set<Long> memberIds) {
     }
 
-    public record CampfireName(Long campfireId, String campfireName) {
+    public record CampfireName(
+            Long campfireId,
+            String campfireName) {
     }
 
-    private record CampfireInfo(Long campfireId, String campfireName, Set<String> membersNames, String imageName) {
+    public record CampfireInfo(
+            Long campfireId,
+            String campfireName,
+            Set<String> membersNames,
+            String imageName) {
     }
 
-    private record TodayImage(String imageName, List<ImageEmote> imageEmotes) {
+    private record TodayImage(
+            String imageName,
+            List<ImageEmote> imageEmotes) {
     }
 
-    private record ImageEmote(String memberName, String emote) {
+    private record ImageEmote(
+            String memberName,
+            String emote) {
     }
 }

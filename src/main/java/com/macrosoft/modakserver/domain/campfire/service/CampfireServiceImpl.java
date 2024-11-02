@@ -1,9 +1,10 @@
 package com.macrosoft.modakserver.domain.campfire.service;
 
+import static java.util.stream.Collectors.toSet;
+
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireId;
-import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfos;
-import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireMain;
-import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireName;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.campfire.exception.CampfireErrorCode;
@@ -12,6 +13,8 @@ import com.macrosoft.modakserver.domain.campfire.repository.MemberCampfireReposi
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.global.exception.CustomException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +31,7 @@ public class CampfireServiceImpl implements CampfireService {
 
     @Override
     @Transactional
-    public CampfireId createCampfire(Member member, String campfireName) {
+    public CampfireResponse.CampfireId createCampfire(Member member, String campfireName) {
         validateCampfireName(campfireName);
 
         int pin = generateUniquePin();
@@ -74,32 +77,46 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireInfos getMyCampfires(Member member) {
+    public CampfireResponse.CampfireInfos getMyCampfires(Member member) {
+        List<MemberCampfire> memberCampfires = memberCampfireRepository.findAllByMember(member);
+        List<CampfireResponse.CampfireInfo> campfireInfos = new ArrayList<>();
+        for (MemberCampfire memberCampfire : memberCampfires) {
+            Campfire campfire = memberCampfire.getCampfire();
+            campfireInfos.add(new CampfireInfo(
+                    campfire.getId(),
+                    campfire.getName(),
+                    campfire.getMemberCampfires().stream()
+                            .map(MemberCampfire::getMember)
+                            .map(Member::getNickname)
+                            .collect(toSet()),
+                    "" // TODO: 오늘의 이미지 이름
+            ));
+        }
+        return new CampfireResponse.CampfireInfos(campfireInfos);
+    }
+
+    @Override
+    public CampfireResponse.CampfireMain getCampfireMain(int campfireId) {
         return null;
     }
 
     @Override
-    public CampfireMain getCampfireMain(int campfireId) {
+    public CampfireResponse.CampfireName getCampfireInvitations(int campfireId) {
         return null;
     }
 
     @Override
-    public CampfireName getCampfireInvitations(int campfireId) {
+    public CampfireResponse.CampfireId joinCampfire(Member member, int campfireId, String campfireName) {
         return null;
     }
 
     @Override
-    public CampfireId joinCampfire(Member member, int campfireId, String campfireName) {
+    public CampfireResponse.CampfireName updateCampfireName(int campfireId, String newCampfireName) {
         return null;
     }
 
     @Override
-    public CampfireName updateCampfireName(int campfireId, String newCampfireName) {
-        return null;
-    }
-
-    @Override
-    public CampfireId deleteCampfire(int campfireId) {
+    public CampfireResponse.CampfireId deleteCampfire(int campfireId) {
         return null;
     }
 }
