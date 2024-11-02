@@ -52,7 +52,7 @@ public class CampfireController {
     @Operation(summary = "모닥불 이름 가져오기", description = "특정 모닥불의 이름을 가져옵니다.")
     @GetMapping("/{campfireId}/name")
     public BaseResponse<CampfireResponse.CampfireName> getCampfireName(@PathVariable("campfireId") int campfireId) {
-        return BaseResponse.onSuccess(campfireService.getCampfireInvitations(campfireId));
+        return BaseResponse.onSuccess(campfireService.getCampfireName(campfireId));
     }
 
     @Operation(summary = "모닥불 참여", description = "특정 모닥불에 참여합니다.")

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfos;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireMain;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireName;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
@@ -154,7 +155,7 @@ class CampfireServiceTest {
     @Nested
     class getMyCampfiresTests {
         @Test
-        void getMyCampfires() {
+        void 내가_속한_모닥불_목록_가져오기() {
             String campfireName1 = "campfire1";
             String campfireName2 = "campfire2";
             Member member = members.get(0);
@@ -173,12 +174,23 @@ class CampfireServiceTest {
                     .map(CampfireInfo::membersNames)
                     .collect(Collectors.toSet())).containsExactlyInAnyOrder(Set.of(member.getNickname()));
         }
+
+        @Test
+        void 내가_속한_모닥불이_없을땐_빈배열을_반환한다() {
+            Member member = members.get(0);
+
+            // when
+            List<CampfireInfo> campfireInfos = campfireService.getMyCampfires(member).campfireInfos();
+
+            // then
+            assertThat(campfireInfos).isEmpty();
+        }
     }
 
     @Nested
     class getCampfireMainTests {
         @Test
-        void getCampfireMain() {
+        void 모닥불_메인화면_정보_가져오기() {
             // given
             String campfireName = "campfireName";
             Member member = members.get(0);
@@ -192,13 +204,47 @@ class CampfireServiceTest {
             assertThat(campfireMain.campfireName()).isEqualTo(campfireName);
             assertThat(campfireMain.memberIds()).containsExactlyInAnyOrder(member.getId());
         }
+
+        @Test
+        void 모닥불_핀번호가_잘못되면_예외가_발생한다() {
+            // given
+            String campfireName = "campfireName";
+            Member member = members.get(0);
+            int campfirePin = campfireService.createCampfire(member, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.getCampfireMain(1))
+                    .isInstanceOf(CustomException.class);
+        }
     }
 
     @Nested
-    class getCampfireInvitationsTests {
+    class getCampfireNameTests {
         @Test
-        void getCampfireInvitations() {
+        void 모닥불_이름_핀_가져오기() {
+            // given
+            String expectedCampfireName = "campfireName";
+            Member member = members.get(0);
+            int campfirePin = campfireService.createCampfire(member, expectedCampfireName).campfirePin();
 
+            // when
+            CampfireName campfireName = campfireService.getCampfireName(campfirePin);
+
+            // then
+            assertThat(campfireName.campfirePin()).isEqualTo(campfirePin);
+            assertThat(campfireName.campfireName()).isEqualTo(expectedCampfireName);
+        }
+
+        @Test
+        void 핀번호가_잘못되면_예외가_발생한다() {
+            // given
+            String campfireName = "campfireName";
+            Member member = members.get(0);
+            int campfirePin = campfireService.createCampfire(member, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.getCampfireName(1))
+                    .isInstanceOf(CustomException.class);
         }
     }
 
@@ -206,7 +252,7 @@ class CampfireServiceTest {
     class joinCampfireTests {
         @Test
         void joinCampfire() {
-
+            assertThat(true).isFalse();
         }
     }
 
@@ -214,7 +260,7 @@ class CampfireServiceTest {
     class updateCampfireNameTests {
         @Test
         void updateCampfireName() {
-
+            assertThat(true).isFalse();
         }
     }
 
@@ -222,7 +268,7 @@ class CampfireServiceTest {
     class deleteCampfireTests {
         @Test
         void deleteCampfire() {
-
+            assertThat(true).isFalse();
         }
     }
 }

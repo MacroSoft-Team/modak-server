@@ -11,7 +11,7 @@ public interface CampfireService {
 
     CampfireResponse.CampfireMain getCampfireMain(int campfireId);
 
-    CampfireResponse.CampfireName getCampfireInvitations(int campfireId);
+    CampfireResponse.CampfireName getCampfireName(int campfireId);
 
     CampfirePin joinCampfire(Member member, int campfireId, String campfireName);
 

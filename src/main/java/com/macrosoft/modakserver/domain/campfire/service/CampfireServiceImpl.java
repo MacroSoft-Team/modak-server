@@ -110,8 +110,9 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireResponse.CampfireName getCampfireInvitations(int campfireId) {
-        return null;
+    public CampfireResponse.CampfireName getCampfireName(int campfireId) {
+        Campfire campfire = findCampfireByPin(campfireId);
+        return new CampfireResponse.CampfireName(campfire.getPin(), campfire.getName());
     }
 
     @Override
