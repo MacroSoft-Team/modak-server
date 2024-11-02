@@ -170,11 +170,15 @@ public class CampfireServiceImpl implements CampfireService {
         Campfire campfire = findCampfireByPin(campfirePin);
         validateMemberInCampfire(memberInDB, campfire);
 
-        if (campfire.getMemberCampfires().isEmpty()) {
+        if (isLastMember(campfire)) {
             deleteCampfire(memberInDB, campfirePin);
             return;
         }
         deleteMemberFromCampfire(memberInDB, campfire);
+    }
+
+    private static boolean isLastMember(Campfire campfire) {
+        return campfire.getMemberCampfires().size() == 1;
     }
 
     @Override
@@ -183,6 +187,10 @@ public class CampfireServiceImpl implements CampfireService {
         Member memberInDB = getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
         validateMemberInCampfire(memberInDB, campfire);
+
+        if (!isLastMember(campfire)) {
+            throw new CustomException(CampfireErrorCode.NOT_LAST_MEMBER);
+        }
 
         // 연관 관계 삭제
         Set<Member> members = campfire.getMemberCampfires().stream()

@@ -216,6 +216,19 @@ class CampfireServiceTest {
             assertThatThrownBy(() -> campfireService.getCampfireMain(member, 1))
                     .isInstanceOf(CustomException.class);
         }
+
+        @Test
+        void 모닥불에_속한_멤버가_아니면_예외가_발생한다() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.getCampfireMain(member1, campfirePin))
+                    .isInstanceOf(CustomException.class);
+        }
     }
 
     @Nested
@@ -244,6 +257,19 @@ class CampfireServiceTest {
 
             // when
             assertThatThrownBy(() -> campfireService.getCampfireName(member, 1))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void 모닥불에_속한_멤버가_아니면_예외가_발생한다() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.getCampfireName(member1, campfirePin))
                     .isInstanceOf(CustomException.class);
         }
     }
@@ -293,6 +319,20 @@ class CampfireServiceTest {
 
             // when
             assertThatThrownBy(() -> campfireService.joinCampfire(member1, campfirePin, "invalid"))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void 이미_참여한_모닥불이면_예외_발생() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            campfireService.joinCampfire(member1, campfirePin, campfireName);
+
+            // when
+            assertThatThrownBy(() -> campfireService.joinCampfire(member1, campfirePin, campfireName))
                     .isInstanceOf(CustomException.class);
         }
     }
@@ -368,6 +408,52 @@ class CampfireServiceTest {
                     .map(MemberCampfire::getMember)
                     .toList()).containsExactly(member0);
         }
+
+        @Test
+        void 모닥불의_마지막_멤버가_아니면_모닥불은_남는다() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            campfireService.joinCampfire(member1, campfirePin, campfireName);
+
+            // when
+            campfireService.leaveCampfire(member0, campfirePin);
+
+            // then
+            Campfire campfire = campfireRepository.findByPin(campfirePin).orElseThrow();
+            assertThat(campfire.getMemberCampfires().stream()
+                    .map(MemberCampfire::getMember)
+                    .toList()).containsExactly(member1);
+        }
+
+        @Test
+        void 모닥불의_마지막_멤버이면_모닥불도_삭제된다() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            campfireService.leaveCampfire(member0, campfirePin);
+
+            // then
+            assertThat(campfireRepository.findByPin(campfirePin)).isNotPresent();
+        }
+
+        @Test
+        void 참여중인_모닥불이_아니면_예외발생() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.leaveCampfire(member1, campfirePin))
+                    .isInstanceOf(CustomException.class);
+        }
     }
 
     @Nested
@@ -408,6 +494,20 @@ class CampfireServiceTest {
 
             // when
             assertThatThrownBy(() -> campfireService.deleteCampfire(member1, 1))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void 모닥불의_마지막_멤버가_아니면_예외발생() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            campfireService.joinCampfire(member1, campfirePin, campfireName);
+
+            // when
+            assertThatThrownBy(() -> campfireService.deleteCampfire(member0, campfirePin))
                     .isInstanceOf(CustomException.class);
         }
     }
