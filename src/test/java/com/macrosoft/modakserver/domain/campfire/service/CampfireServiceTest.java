@@ -251,7 +251,7 @@ class CampfireServiceTest {
     @Nested
     class joinCampfireTests {
         @Test
-        void 이름과_핀이_일치하는_모닥불에_합류한다() {
+        void 이름과_핀이_일치하는_모닥불에_참여한다() {
             // given
             String campfireName = "campfireName";
             Member member0 = members.get(0);
@@ -268,6 +268,32 @@ class CampfireServiceTest {
                     .map(MemberCampfire::getMember)
                     .toList()
             ).containsExactlyInAnyOrder(member0, member1);
+        }
+
+        @Test
+        void 모닥불의_핀이_일치하지_않으면_예외_발생() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.joinCampfire(member1, 1, campfireName))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void 모닥불의_이름이_일치하지_않으면_예외_발생() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.joinCampfire(member1, campfirePin, "invalid"))
+                    .isInstanceOf(CustomException.class);
         }
     }
 
