@@ -3,9 +3,10 @@ package com.macrosoft.modakserver.domain.campfire.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireId;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfos;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireMain;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
@@ -72,10 +73,10 @@ class CampfireServiceTest {
             Member member = members.get(0);
 
             // when
-            CampfireId campfireId = campfireService.createCampfire(member, campfireName);
+            CampfirePin campfirePin = campfireService.createCampfire(member, campfireName);
 
             // then
-            Optional<Campfire> campfire = campfireRepository.findById(campfireId.campfireId());
+            Optional<Campfire> campfire = campfireRepository.findByPin(campfirePin.campfirePin());
             assertThat(campfire).isPresent();
         }
 
@@ -92,10 +93,10 @@ class CampfireServiceTest {
             Member member = members.get(0);
 
             // when
-            CampfireId campfireId = campfireService.createCampfire(member, campfireName);
+            CampfirePin campfirePin = campfireService.createCampfire(member, campfireName);
 
             // then
-            Campfire campfire = campfireRepository.findById(campfireId.campfireId()).orElseThrow();
+            Campfire campfire = campfireRepository.findByPin(campfirePin.campfirePin()).orElseThrow();
             assertThat(campfire.getName()).isEqualTo(campfireName);
         }
 
@@ -123,10 +124,10 @@ class CampfireServiceTest {
             Member member = members.get(0);
 
             // when
-            CampfireId campfireId = campfireService.createCampfire(member, campfireName);
+            CampfirePin campfirePin = campfireService.createCampfire(member, campfireName);
 
             // then
-            Campfire campfire = campfireRepository.findById(campfireId.campfireId()).orElseThrow();
+            Campfire campfire = campfireRepository.findByPin(campfirePin.campfirePin()).orElseThrow();
             assertThat(campfire.getPin()).isBetween(100000, 999999);
         }
 
@@ -137,13 +138,13 @@ class CampfireServiceTest {
             Member member = members.get(0);
 
             // when
-            Long campfireId = campfireService.createCampfire(member, campfireName).campfireId();
+            int campfirePin = campfireService.createCampfire(member, campfireName).campfirePin();
 
             // then
             MemberCampfire dbMemberCampfire = memberCampfireRepository.findAllByMember(member).get(0);
             assertThat(dbMemberCampfire.getMember()).isEqualTo(member);
-            assertThat(dbMemberCampfire.getCampfire().getId()).isEqualTo(campfireId);
-            Campfire dbCampfire = campfireRepository.findById(campfireId).orElseThrow();
+            assertThat(dbMemberCampfire.getCampfire().getPin()).isEqualTo(campfirePin);
+            Campfire dbCampfire = campfireRepository.findByPin(campfirePin).orElseThrow();
             assertThat(dbCampfire.getMemberCampfires().stream()
                     .map(MemberCampfire::getMember)
                     .toList()).contains(member);
@@ -178,7 +179,18 @@ class CampfireServiceTest {
     class getCampfireMainTests {
         @Test
         void getCampfireMain() {
+            // given
+            String campfireName = "campfireName";
+            Member member = members.get(0);
+            int campfirePin = campfireService.createCampfire(member, campfireName).campfirePin();
 
+            // when
+            CampfireMain campfireMain = campfireService.getCampfireMain(campfirePin);
+
+            // then
+            assertThat(campfireMain.campfirePin()).isEqualTo(campfirePin);
+            assertThat(campfireMain.campfireName()).isEqualTo(campfireName);
+            assertThat(campfireMain.memberIds()).containsExactlyInAnyOrder(member.getId());
         }
     }
 

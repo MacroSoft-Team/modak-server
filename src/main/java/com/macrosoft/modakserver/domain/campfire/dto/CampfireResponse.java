@@ -5,8 +5,8 @@ import java.util.Optional;
 import java.util.Set;
 
 public class CampfireResponse {
-    public record CampfireId(
-            Long campfireId) {
+    public record CampfirePin(
+            int campfirePin) {
     }
 
     public record CampfireInfos(
@@ -14,19 +14,19 @@ public class CampfireResponse {
     }
 
     public record CampfireMain(
-            Long campfireId,
+            int campfirePin,
             String campfireName,
             Optional<TodayImage> todayImage,
             Set<Long> memberIds) {
     }
 
     public record CampfireName(
-            Long campfireId,
+            int campfirePin,
             String campfireName) {
     }
 
     public record CampfireInfo(
-            Long campfireId,
+            int campfirePin,
             String campfireName,
             Set<String> membersNames,
             String imageName) {

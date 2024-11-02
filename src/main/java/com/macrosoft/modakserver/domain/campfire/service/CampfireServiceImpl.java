@@ -3,8 +3,8 @@ package com.macrosoft.modakserver.domain.campfire.service;
 import static java.util.stream.Collectors.toSet;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
-import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireId;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.campfire.exception.CampfireErrorCode;
@@ -31,7 +31,7 @@ public class CampfireServiceImpl implements CampfireService {
 
     @Override
     @Transactional
-    public CampfireResponse.CampfireId createCampfire(Member member, String campfireName) {
+    public CampfirePin createCampfire(Member member, String campfireName) {
         validateCampfireName(campfireName);
 
         int pin = generateUniquePin();
@@ -48,7 +48,7 @@ public class CampfireServiceImpl implements CampfireService {
 
         memberCampfireRepository.save(memberCampfire);
         log.info("모닥불 생성됨: {}", campfire.getName());
-        return new CampfireId(campfire.getId());
+        return new CampfirePin(campfire.getPin());
     }
 
     private void validateCampfireName(String campfireName) {
@@ -83,7 +83,7 @@ public class CampfireServiceImpl implements CampfireService {
         for (MemberCampfire memberCampfire : memberCampfires) {
             Campfire campfire = memberCampfire.getCampfire();
             campfireInfos.add(new CampfireInfo(
-                    campfire.getId(),
+                    campfire.getPin(),
                     campfire.getName(),
                     campfire.getMemberCampfires().stream()
                             .map(MemberCampfire::getMember)
@@ -97,7 +97,16 @@ public class CampfireServiceImpl implements CampfireService {
 
     @Override
     public CampfireResponse.CampfireMain getCampfireMain(int campfireId) {
-        return null;
+        Campfire campfire = findCampfireByPin(campfireId);
+        return new CampfireResponse.CampfireMain(
+                campfire.getPin(),
+                campfire.getName(),
+                null, // TODO: 오늘의 이미지
+                campfire.getMemberCampfires().stream()
+                        .map(MemberCampfire::getMember)
+                        .map(Member::getId)
+                        .collect(toSet())
+        );
     }
 
     @Override
@@ -106,7 +115,7 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireResponse.CampfireId joinCampfire(Member member, int campfireId, String campfireName) {
+    public CampfirePin joinCampfire(Member member, int campfireId, String campfireName) {
         return null;
     }
 
@@ -116,7 +125,12 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireResponse.CampfireId deleteCampfire(int campfireId) {
+    public CampfirePin deleteCampfire(int campfireId) {
         return null;
+    }
+
+    private Campfire findCampfireByPin(int pin) {
+        return campfireRepository.findByPin(pin)
+                .orElseThrow(() -> new CustomException(CampfireErrorCode.CAMPFIRE_NOT_FOUND_BY_PIN));
     }
 }

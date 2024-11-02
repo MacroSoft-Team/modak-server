@@ -3,6 +3,7 @@ package com.macrosoft.modakserver.domain.campfire.controller;
 import com.macrosoft.modakserver.config.security.CustomUserDetails;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireRequest;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
 import com.macrosoft.modakserver.global.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public class CampfireController {
 
     @Operation(summary = "모닥불 생성", description = "모닥불을 생성합니다.")
     @PostMapping
-    public BaseResponse<CampfireResponse.CampfireId> createCampfire(
+    public BaseResponse<CampfirePin> createCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CampfireRequest.CampfireCreate campfireCreate) {
         return BaseResponse.onSuccess(
@@ -56,7 +57,7 @@ public class CampfireController {
 
     @Operation(summary = "모닥불 참여", description = "특정 모닥불에 참여합니다.")
     @PostMapping("/{campfireId}/join")
-    public BaseResponse<CampfireResponse.CampfireId> joinCampfire(
+    public BaseResponse<CampfirePin> joinCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable("campfireId") int campfireId,
             @RequestBody CampfireRequest.CampfireJoin campfireJoin) {
@@ -75,7 +76,7 @@ public class CampfireController {
 
     @Operation(summary = "모닥불 삭제하기", description = "특정 모닥불을 삭제합니다. 모닥불에 참여한 사용자가 한명일 경우에 가능합니다.")
     @DeleteMapping("/{campfireId}")
-    public BaseResponse<CampfireResponse.CampfireId> deleteCampfire(@PathVariable int campfireId) {
+    public BaseResponse<CampfirePin> deleteCampfire(@PathVariable int campfireId) {
         return BaseResponse.onSuccess(campfireService.deleteCampfire(campfireId));
     }
 }
