@@ -1,5 +1,7 @@
 package com.macrosoft.modakserver.domain.member.entity;
 
+import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
+import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
 import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,9 +52,23 @@ public class Member extends BaseEntity {
 //    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    private List<PrivateLog> privateLogs = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<MemberCampfire> memberCampfires = new ArrayList<>();
+
     public void deactivate() {
         this.clientId = "";
         this.nickname = "알 수 없음";
         this.deviceToken = null;
+    }
+
+    public void addMemberCampfire(MemberCampfire memberCampfire) {
+        memberCampfire.setMember(this);
+        this.memberCampfires.add(memberCampfire);
+    }
+
+    public void removeMemberCampfire(MemberCampfire memberCampfire) {
+        memberCampfire.setMember(null);
+        this.memberCampfires.remove(memberCampfire);
     }
 }

@@ -35,7 +35,8 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", // Swagger docs
                         "/api/test/", // test API
                         "/api/auth/refresh-access-token", "/api/auth/{}/login").permitAll() // 인증 필요없는 API
-                .requestMatchers("/api/**").authenticated() // 나머지는 인증 요구
+                .requestMatchers("/api/**").authenticated() // 인증 요구
+                .requestMatchers("/api/campfires/**").authenticated() // 인증 요구
                 .anyRequest().denyAll() // 나머지는 거부
         );
 
