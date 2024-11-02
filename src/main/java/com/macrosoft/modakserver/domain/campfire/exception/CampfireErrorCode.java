@@ -13,6 +13,8 @@ public enum CampfireErrorCode implements ErrorCodeInterface {
     CAMPFIRE_NAME_EMPTY("C002", "모닥불 이름이 비어있습니다.", HttpStatus.BAD_REQUEST),
     CAMPFIRE_NAME_TOO_LONG("C003", "모닥불 이름이 너무 깁니다. 12자 이하로 가능합니디.", HttpStatus.BAD_REQUEST),
     CAMPFIRE_NAME_NOT_MATCH("C004", "모닥불 이름이 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+    MEMBER_NOT_IN_CAMPFIRE("C005", "모닥불에 참여하지 않은 멤버입니다.", HttpStatus.BAD_REQUEST),
+    REMOVE_FROM_CAMPFIRE_MEMBER_NOT_IN_CAMPFIRE("C006", "모닥불에 참여하지 않은 멤버를 모닥불에서 제거할 수 없습니다.", HttpStatus.BAD_REQUEST),
     ;
 
     private final String code;

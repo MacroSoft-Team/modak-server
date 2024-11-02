@@ -14,7 +14,7 @@ public interface CampfireService {
 
     CampfireResponse.CampfirePin joinCampfire(Member member, int campfirePin, String campfireName);
 
-    CampfireResponse.CampfireName updateCampfireName(int campfirePin, String newCampfireName);
+    CampfireResponse.CampfireName updateCampfireName(Member member, int campfirePin, String newCampfireName);
 
-    CampfireResponse.CampfirePin deleteCampfire(int campfirePin);
+    void deleteCampfire(Member member, int campfirePin);
 }

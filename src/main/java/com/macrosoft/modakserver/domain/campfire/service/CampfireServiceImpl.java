@@ -16,6 +16,7 @@ import com.macrosoft.modakserver.global.exception.CustomException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,15 +47,6 @@ public class CampfireServiceImpl implements CampfireService {
         return new CampfirePin(campfire.getPin());
     }
 
-    private void addMemberToCampfire(Member member, Campfire campfire) {
-        MemberCampfire memberCampfire = new MemberCampfire();
-
-        campfire.addMemberCampfire(memberCampfire);
-        member.addMemberCampfire(memberCampfire);
-
-        memberCampfireRepository.save(memberCampfire);
-    }
-
     private void validateCampfireName(String campfireName) {
         if (campfireName == null || campfireName.isBlank()) {
             throw new CustomException(CampfireErrorCode.CAMPFIRE_NAME_EMPTY);
@@ -80,6 +72,15 @@ public class CampfireServiceImpl implements CampfireService {
         return campfireRepository.existsByPin(randomPin);
     }
 
+    private void addMemberToCampfire(Member member, Campfire campfire) {
+        MemberCampfire memberCampfire = new MemberCampfire();
+
+        campfire.addMemberCampfire(memberCampfire);
+        member.addMemberCampfire(memberCampfire);
+
+        memberCampfireRepository.save(memberCampfire);
+    }
+
     @Override
     public CampfireResponse.CampfireInfos getMyCampfires(Member member) {
         List<MemberCampfire> memberCampfires = memberCampfireRepository.findAllByMember(member);
@@ -100,8 +101,8 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireResponse.CampfireMain getCampfireMain(int campfireId) {
-        Campfire campfire = findCampfireByPin(campfireId);
+    public CampfireResponse.CampfireMain getCampfireMain(int campfirePin) {
+        Campfire campfire = findCampfireByPin(campfirePin);
         return new CampfireResponse.CampfireMain(
                 campfire.getPin(),
                 campfire.getName(),
@@ -114,14 +115,15 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireResponse.CampfireName getCampfireName(int campfireId) {
-        Campfire campfire = findCampfireByPin(campfireId);
+    public CampfireResponse.CampfireName getCampfireName(int campfirePin) {
+        Campfire campfire = findCampfireByPin(campfirePin);
         return new CampfireResponse.CampfireName(campfire.getPin(), campfire.getName());
     }
 
     @Override
-    public CampfirePin joinCampfire(Member member, int campfireId, String campfireName) {
-        Campfire campfire = findCampfireByPin(campfireId);
+    @Transactional
+    public CampfirePin joinCampfire(Member member, int campfirePin, String campfireName) {
+        Campfire campfire = findCampfireByPin(campfirePin);
         if (isNameNotMatch(campfireName, campfire)) {
             throw new CustomException(CampfireErrorCode.CAMPFIRE_NAME_NOT_MATCH);
         }
@@ -135,17 +137,51 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireResponse.CampfireName updateCampfireName(int campfireId, String newCampfireName) {
-        return null;
+    @Transactional
+    public CampfireResponse.CampfireName updateCampfireName(Member member, int campfirePin, String newCampfireName) {
+        validateCampfireName(newCampfireName);
+        Campfire campfire = findCampfireByPin(campfirePin);
+        validateMemberInCampfire(member, campfire);
+        campfire.setName(newCampfireName);
+        return new CampfireResponse.CampfireName(campfire.getPin(), campfire.getName());
     }
 
     @Override
-    public CampfirePin deleteCampfire(int campfireId) {
-        return null;
+    @Transactional
+    public void deleteCampfire(Member member, int campfirePin) {
+        Campfire campfire = findCampfireByPin(campfirePin);
+        validateMemberInCampfire(member, campfire);
+
+        // 연관 관계 삭제
+        Set<Member> members = campfire.getMemberCampfires().stream()
+                .map(MemberCampfire::getMember)
+                .collect(toSet());
+        for (Member m : members) {
+            deleteMemberFromCampfire(m, campfire);
+        }
+
+        campfireRepository.delete(campfire);
+    }
+
+    private void deleteMemberFromCampfire(Member member, Campfire campfire) {
+        MemberCampfire memberCampfire = memberCampfireRepository.findByMemberAndCampfire(member, campfire)
+                .orElseThrow(() -> new CustomException(CampfireErrorCode.REMOVE_FROM_CAMPFIRE_MEMBER_NOT_IN_CAMPFIRE));
+
+        campfire.removeMemberCampfire(memberCampfire);
+        member.removeMemberCampfire(memberCampfire);
+        memberCampfireRepository.delete(memberCampfire);
     }
 
     private Campfire findCampfireByPin(int pin) {
         return campfireRepository.findByPin(pin)
                 .orElseThrow(() -> new CustomException(CampfireErrorCode.CAMPFIRE_NOT_FOUND_BY_PIN));
+    }
+
+    private void validateMemberInCampfire(Member member, Campfire campfire) {
+        if (campfire.getMemberCampfires().stream()
+                .map(MemberCampfire::getMember)
+                .noneMatch(m -> m.equals(member))) {
+            throw new CustomException(CampfireErrorCode.MEMBER_NOT_IN_CAMPFIRE);
+        }
     }
 }

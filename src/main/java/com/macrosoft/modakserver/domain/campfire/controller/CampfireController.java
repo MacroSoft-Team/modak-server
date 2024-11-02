@@ -68,15 +68,20 @@ public class CampfireController {
     @Operation(summary = "모닥불 이름 변경하기", description = "특정 모닥불의 이름을 변경합니다.")
     @PatchMapping("/{campfireId}/name")
     public BaseResponse<CampfireResponse.CampfireName> updateCampfireName(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable("campfireId") int campfireId,
             @RequestBody CampfireRequest.CampfireUpdateName campfireUpdateName) {
         return BaseResponse.onSuccess(
-                campfireService.updateCampfireName(campfireId, campfireUpdateName.newCampfireName()));
+                campfireService.updateCampfireName(userDetails.getMember(), campfireId,
+                        campfireUpdateName.newCampfireName()));
     }
 
     @Operation(summary = "모닥불 삭제하기", description = "특정 모닥불을 삭제합니다. 모닥불에 참여한 사용자가 한명일 경우에 가능합니다.")
     @DeleteMapping("/{campfireId}")
-    public BaseResponse<CampfirePin> deleteCampfire(@PathVariable int campfireId) {
-        return BaseResponse.onSuccess(campfireService.deleteCampfire(campfireId));
+    public BaseResponse<Void> deleteCampfire(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable int campfireId) {
+        campfireService.deleteCampfire(userDetails.getMember(), campfireId);
+        return BaseResponse.onSuccess(null);
     }
 }

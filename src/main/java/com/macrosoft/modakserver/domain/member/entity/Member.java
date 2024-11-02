@@ -60,14 +60,19 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<MemberCampfire> memberCampfires = new ArrayList<>();
 
+    public void deactivate() {
+        this.clientId = "";
+        this.nickname = "알 수 없음";
+        this.deviceToken = null;
+    }
+
     public void addMemberCampfire(MemberCampfire memberCampfire) {
         memberCampfire.setMember(this);
         this.memberCampfires.add(memberCampfire);
     }
 
-    public void deactivate() {
-        this.clientId = "";
-        this.nickname = "알 수 없음";
-        this.deviceToken = null;
+    public void removeMemberCampfire(MemberCampfire memberCampfire) {
+        memberCampfire.setMember(null);
+        this.memberCampfires.remove(memberCampfire);
     }
 }

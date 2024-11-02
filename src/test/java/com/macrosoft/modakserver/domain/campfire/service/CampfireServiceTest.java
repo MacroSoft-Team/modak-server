@@ -300,16 +300,93 @@ class CampfireServiceTest {
     @Nested
     class updateCampfireNameTests {
         @Test
-        void updateCampfireName() {
-            assertThat(true).isFalse();
+        void 모닥불_이름_수정() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            String newCampfireName = "newCamp";
+            campfireService.updateCampfireName(member0, campfirePin, newCampfireName);
+
+            // then
+            Campfire campfire = campfireRepository.findByPin(campfirePin).orElseThrow();
+            assertThat(campfire.getName()).isEqualTo(newCampfireName);
+        }
+
+        @Test
+        void 모닥불에_속한_유저가_아니면_예외발생() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            String newCampfireName = "newCamp";
+            assertThatThrownBy(() -> campfireService.updateCampfireName(member1, campfirePin, newCampfireName))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "",
+                " ",
+                "campfireNameIsThis",
+                "캠프파이어이름은열두자넘음",
+        })
+        void 모닥불_이름_수정할때_잘못된_이름을_받으면_예외가_발생한다(String newCampfireName) {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.updateCampfireName(member0, campfirePin, newCampfireName))
+                    .isInstanceOf(CustomException.class);
         }
     }
 
     @Nested
     class deleteCampfireTests {
         @Test
-        void deleteCampfire() {
-            assertThat(true).isFalse();
+        void 모닥불_삭제() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            campfireService.deleteCampfire(member0, campfirePin);
+
+            // then
+            assertThat(campfireRepository.findByPin(campfirePin)).isNotPresent();
+        }
+
+        @Test
+        void 모닥불_핀이_일치하지_않으면_예외발생() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.deleteCampfire(member0, 1))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void 모닥불_소속한_멤버가_아니면_예외발생() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            assertThatThrownBy(() -> campfireService.deleteCampfire(member1, 1))
+                    .isInstanceOf(CustomException.class);
         }
     }
 }

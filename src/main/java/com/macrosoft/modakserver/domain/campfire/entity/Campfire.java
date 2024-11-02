@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -33,6 +34,7 @@ public class Campfire extends BaseEntity {
     @Column(nullable = false, unique = true)
     private int pin;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
@@ -43,5 +45,10 @@ public class Campfire extends BaseEntity {
     public void addMemberCampfire(MemberCampfire memberCampfire) {
         memberCampfire.setCampfire(this);
         this.memberCampfires.add(memberCampfire);
+    }
+
+    public void removeMemberCampfire(MemberCampfire memberCampfire) {
+        memberCampfire.setCampfire(null);
+        this.memberCampfires.remove(memberCampfire);
     }
 }
