@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogController {
     private final LogService logService;
 
-    @Operation(summary = "개인 장작 정보 업로드", description = "개인 장작 정보들을 업로드합니다.")
+    @Operation(summary = "개인 장작 정보 업로드", description = "개인 장작 정보들을 업로드합니다.", deprecated = true)
     @PostMapping("/private")
     public BaseResponse<LogIds> uploadPrivateLog(
             @AuthenticationPrincipal CustomUserDetails userDetails,
