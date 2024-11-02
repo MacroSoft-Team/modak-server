@@ -80,7 +80,7 @@ public class CampfireController {
                         campfireUpdateName.newCampfireName()));
     }
 
-    @Operation(summary = "모닥불 나가기", description = "특정 모닥불에서 나갑니다.")
+    @Operation(summary = "모닥불 나가기", description = "특정 모닥불에서 나갑니다. 마지막 멤버이면 모닥불이 삭제됩니다.")
     @DeleteMapping("/{campfirePin}/leave")
     public BaseResponse<Void> leaveCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -89,7 +89,7 @@ public class CampfireController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "모닥불 삭제하기", description = "특정 모닥불을 삭제합니다. 모닥불에 참여한 사용자가 한명일 경우에 가능합니다.")
+    @Operation(summary = "모닥불 삭제하기", description = "특정 모닥불을 삭제합니다. 모닥불에 참여한 사용자가 한명일 경우에만 가능합니다.")
     @DeleteMapping("/{campfirePin}")
     public BaseResponse<Void> deleteCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
