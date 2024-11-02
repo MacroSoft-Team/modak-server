@@ -7,6 +7,7 @@ import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class MemberServiceTest {
         @Test
         void 이름_가져오기_성공_반환값_검사() {
             // when
-            MemberResponse.MemberNickname memberNickname = memberService.getMyNickname(member);
+            MemberResponse.MemberNickname memberNickname = memberService.getNicknames(List.of(member.getId())).get(0);
 
             // then
             assertThat(memberNickname.memberId()).isEqualTo(member.getId());
