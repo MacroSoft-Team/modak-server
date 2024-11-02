@@ -8,9 +8,9 @@ public interface CampfireService {
 
     CampfireResponse.CampfireInfos getMyCampfires(Member member);
 
-    CampfireResponse.CampfireMain getCampfireMain(int campfirePin);
+    CampfireResponse.CampfireMain getCampfireMain(Member member, int campfirePin);
 
-    CampfireResponse.CampfireName getCampfireName(int campfirePin);
+    CampfireResponse.CampfireName getCampfireName(Member member, int campfirePin);
 
     CampfireResponse.CampfirePin joinCampfire(Member member, int campfirePin, String campfireName);
 

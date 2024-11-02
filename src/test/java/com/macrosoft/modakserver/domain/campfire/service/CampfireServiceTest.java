@@ -197,7 +197,7 @@ class CampfireServiceTest {
             int campfirePin = campfireService.createCampfire(member, campfireName).campfirePin();
 
             // when
-            CampfireMain campfireMain = campfireService.getCampfireMain(campfirePin);
+            CampfireMain campfireMain = campfireService.getCampfireMain(member, campfirePin);
 
             // then
             assertThat(campfireMain.campfirePin()).isEqualTo(campfirePin);
@@ -213,7 +213,7 @@ class CampfireServiceTest {
             int campfirePin = campfireService.createCampfire(member, campfireName).campfirePin();
 
             // when
-            assertThatThrownBy(() -> campfireService.getCampfireMain(1))
+            assertThatThrownBy(() -> campfireService.getCampfireMain(member, 1))
                     .isInstanceOf(CustomException.class);
         }
     }
@@ -228,7 +228,7 @@ class CampfireServiceTest {
             int campfirePin = campfireService.createCampfire(member, expectedCampfireName).campfirePin();
 
             // when
-            CampfireName campfireName = campfireService.getCampfireName(campfirePin);
+            CampfireName campfireName = campfireService.getCampfireName(member, campfirePin);
 
             // then
             assertThat(campfireName.campfirePin()).isEqualTo(campfirePin);
@@ -243,7 +243,7 @@ class CampfireServiceTest {
             int campfirePin = campfireService.createCampfire(member, campfireName).campfirePin();
 
             // when
-            assertThatThrownBy(() -> campfireService.getCampfireName(1))
+            assertThatThrownBy(() -> campfireService.getCampfireName(member, 1))
                     .isInstanceOf(CustomException.class);
         }
     }

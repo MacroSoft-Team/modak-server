@@ -108,8 +108,11 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireResponse.CampfireMain getCampfireMain(int campfirePin) {
+    public CampfireResponse.CampfireMain getCampfireMain(Member member, int campfirePin) {
+        Member memberInDB = getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
+        validateMemberInCampfire(memberInDB, campfire);
+
         return new CampfireResponse.CampfireMain(
                 campfire.getPin(),
                 campfire.getName(),
@@ -122,8 +125,10 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireResponse.CampfireName getCampfireName(int campfirePin) {
+    public CampfireResponse.CampfireName getCampfireName(Member member, int campfirePin) {
         Campfire campfire = findCampfireByPin(campfirePin);
+        Member memberInDB = getMemberInDB(member);
+        validateMemberInCampfire(memberInDB, campfire);
         return new CampfireResponse.CampfireName(campfire.getPin(), campfire.getName());
     }
 
@@ -131,8 +136,10 @@ public class CampfireServiceImpl implements CampfireService {
     @Transactional
     public CampfirePin joinCampfire(Member member, int campfirePin, String campfireName) {
         Member memberInDB = getMemberInDB(member);
-
         Campfire campfire = findCampfireByPin(campfirePin);
+        if (isMemberInCampfire(memberInDB, campfire)) {
+            throw new CustomException(CampfireErrorCode.MEMBER_ALREADY_IN_CAMPFIRE);
+        }
         if (isNameNotMatch(campfireName, campfire)) {
             throw new CustomException(CampfireErrorCode.CAMPFIRE_NAME_NOT_MATCH);
         }
@@ -203,10 +210,14 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     private void validateMemberInCampfire(Member member, Campfire campfire) {
-        if (campfire.getMemberCampfires().stream()
-                .map(MemberCampfire::getMember)
-                .noneMatch(m -> m.equals(member))) {
+        if (!isMemberInCampfire(member, campfire)) {
             throw new CustomException(CampfireErrorCode.MEMBER_NOT_IN_CAMPFIRE);
         }
+    }
+
+    private boolean isMemberInCampfire(Member member, Campfire campfire) {
+        return campfire.getMemberCampfires().stream()
+                .map(MemberCampfire::getMember)
+                .anyMatch(m -> m.equals(member));
     }
 }

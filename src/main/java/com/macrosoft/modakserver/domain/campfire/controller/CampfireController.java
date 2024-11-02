@@ -45,14 +45,18 @@ public class CampfireController {
 
     @Operation(summary = "모닥불 메인 화면 정보 가져오기", description = "모닥불 id로 이름, 오늘의 사진 정보, 그룹 멤버 id들을 가져옵니다.")
     @GetMapping("/{campfirePin}")
-    public BaseResponse<CampfireResponse.CampfireMain> getCampfireMain(@PathVariable("campfirePin") int campfirePin) {
-        return BaseResponse.onSuccess(campfireService.getCampfireMain(campfirePin));
+    public BaseResponse<CampfireResponse.CampfireMain> getCampfireMain(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("campfirePin") int campfirePin) {
+        return BaseResponse.onSuccess(campfireService.getCampfireMain(userDetails.getMember(), campfirePin));
     }
 
     @Operation(summary = "모닥불 이름 가져오기", description = "특정 모닥불의 이름을 가져옵니다.")
     @GetMapping("/{campfirePin}/name")
-    public BaseResponse<CampfireResponse.CampfireName> getCampfireName(@PathVariable("campfirePin") int campfirePin) {
-        return BaseResponse.onSuccess(campfireService.getCampfireName(campfirePin));
+    public BaseResponse<CampfireResponse.CampfireName> getCampfireName(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("campfirePin") int campfirePin) {
+        return BaseResponse.onSuccess(campfireService.getCampfireName(userDetails.getMember(), campfirePin));
     }
 
     @Operation(summary = "모닥불 참여", description = "특정 모닥불에 참여합니다.")
