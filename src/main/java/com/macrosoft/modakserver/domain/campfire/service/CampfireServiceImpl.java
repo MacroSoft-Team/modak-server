@@ -41,14 +41,18 @@ public class CampfireServiceImpl implements CampfireService {
                 .build();
         campfire = campfireRepository.save(campfire);
 
+        addMemberToCampfire(member, campfire);
+        log.info("모닥불 생성됨: {}", campfire.getName());
+        return new CampfirePin(campfire.getPin());
+    }
+
+    private void addMemberToCampfire(Member member, Campfire campfire) {
         MemberCampfire memberCampfire = new MemberCampfire();
 
         campfire.addMemberCampfire(memberCampfire);
         member.addMemberCampfire(memberCampfire);
 
         memberCampfireRepository.save(memberCampfire);
-        log.info("모닥불 생성됨: {}", campfire.getName());
-        return new CampfirePin(campfire.getPin());
     }
 
     private void validateCampfireName(String campfireName) {
@@ -117,7 +121,17 @@ public class CampfireServiceImpl implements CampfireService {
 
     @Override
     public CampfirePin joinCampfire(Member member, int campfireId, String campfireName) {
-        return null;
+        Campfire campfire = findCampfireByPin(campfireId);
+        if (isNameNotMatch(campfireName, campfire)) {
+            throw new CustomException(CampfireErrorCode.CAMPFIRE_NAME_NOT_MATCH);
+        }
+
+        addMemberToCampfire(member, campfire);
+        return new CampfirePin(campfire.getPin());
+    }
+
+    private boolean isNameNotMatch(String campfireName, Campfire campfire) {
+        return !campfire.getName().equals(campfireName);
     }
 
     @Override

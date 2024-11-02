@@ -12,6 +12,7 @@ public enum CampfireErrorCode implements ErrorCodeInterface {
     CAMPFIRE_NOT_FOUND_BY_PIN("C001", "핀 번호가 일치하는 모닥불이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     CAMPFIRE_NAME_EMPTY("C002", "모닥불 이름이 비어있습니다.", HttpStatus.BAD_REQUEST),
     CAMPFIRE_NAME_TOO_LONG("C003", "모닥불 이름이 너무 깁니다. 12자 이하로 가능합니디.", HttpStatus.BAD_REQUEST),
+    CAMPFIRE_NAME_NOT_MATCH("C004", "모닥불 이름이 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     ;
 
     private final String code;

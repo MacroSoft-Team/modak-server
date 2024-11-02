@@ -251,8 +251,23 @@ class CampfireServiceTest {
     @Nested
     class joinCampfireTests {
         @Test
-        void joinCampfire() {
-            assertThat(true).isFalse();
+        void 이름과_핀이_일치하는_모닥불에_합류한다() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            campfireService.joinCampfire(member1, campfirePin, campfireName);
+
+            // then
+            List<MemberCampfire> memberCampfires = campfireRepository.findByPin(campfirePin).orElseThrow()
+                    .getMemberCampfires();
+            assertThat(memberCampfires.stream()
+                    .map(MemberCampfire::getMember)
+                    .toList()
+            ).containsExactlyInAnyOrder(member0, member1);
         }
     }
 

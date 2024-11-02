@@ -1,21 +1,20 @@
 package com.macrosoft.modakserver.domain.campfire.service;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
-import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 
 public interface CampfireService {
-    CampfirePin createCampfire(Member member, String campfireName);
+    CampfireResponse.CampfirePin createCampfire(Member member, String campfireName);
 
     CampfireResponse.CampfireInfos getMyCampfires(Member member);
 
-    CampfireResponse.CampfireMain getCampfireMain(int campfireId);
+    CampfireResponse.CampfireMain getCampfireMain(int campfirePin);
 
-    CampfireResponse.CampfireName getCampfireName(int campfireId);
+    CampfireResponse.CampfireName getCampfireName(int campfirePin);
 
-    CampfirePin joinCampfire(Member member, int campfireId, String campfireName);
+    CampfireResponse.CampfirePin joinCampfire(Member member, int campfirePin, String campfireName);
 
-    CampfireResponse.CampfireName updateCampfireName(int campfireId, String newCampfireName);
+    CampfireResponse.CampfireName updateCampfireName(int campfirePin, String newCampfireName);
 
-    CampfirePin deleteCampfire(int campfireId);
+    CampfireResponse.CampfirePin deleteCampfire(int campfirePin);
 }
