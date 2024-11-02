@@ -11,6 +11,7 @@ import com.macrosoft.modakserver.domain.campfire.exception.CampfireErrorCode;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.repository.MemberCampfireRepository;
 import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class CampfireServiceImpl implements CampfireService {
     @Override
     @Transactional
     public CampfirePin createCampfire(Member member, String campfireName) {
+        Member memberInDB = getMemberInDB(member);
         validateCampfireName(campfireName);
 
         int pin = generateUniquePin();
@@ -42,9 +44,14 @@ public class CampfireServiceImpl implements CampfireService {
                 .build();
         campfire = campfireRepository.save(campfire);
 
-        addMemberToCampfire(member, campfire);
+        addMemberToCampfire(memberInDB, campfire);
         log.info("모닥불 생성됨: {}", campfire.getName());
         return new CampfirePin(campfire.getPin());
+    }
+
+    private Member getMemberInDB(Member member) {
+        return memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     private void validateCampfireName(String campfireName) {
@@ -123,12 +130,14 @@ public class CampfireServiceImpl implements CampfireService {
     @Override
     @Transactional
     public CampfirePin joinCampfire(Member member, int campfirePin, String campfireName) {
+        Member memberInDB = getMemberInDB(member);
+
         Campfire campfire = findCampfireByPin(campfirePin);
         if (isNameNotMatch(campfireName, campfire)) {
             throw new CustomException(CampfireErrorCode.CAMPFIRE_NAME_NOT_MATCH);
         }
 
-        addMemberToCampfire(member, campfire);
+        addMemberToCampfire(memberInDB, campfire);
         return new CampfirePin(campfire.getPin());
     }
 
@@ -139,18 +148,34 @@ public class CampfireServiceImpl implements CampfireService {
     @Override
     @Transactional
     public CampfireResponse.CampfireName updateCampfireName(Member member, int campfirePin, String newCampfireName) {
+        Member memberInDB = getMemberInDB(member);
         validateCampfireName(newCampfireName);
         Campfire campfire = findCampfireByPin(campfirePin);
-        validateMemberInCampfire(member, campfire);
+        validateMemberInCampfire(memberInDB, campfire);
         campfire.setName(newCampfireName);
         return new CampfireResponse.CampfireName(campfire.getPin(), campfire.getName());
     }
 
     @Override
     @Transactional
-    public void deleteCampfire(Member member, int campfirePin) {
+    public void leaveCampfire(Member member, int campfirePin) {
+        Member memberInDB = getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
-        validateMemberInCampfire(member, campfire);
+        validateMemberInCampfire(memberInDB, campfire);
+
+        if (campfire.getMemberCampfires().isEmpty()) {
+            deleteCampfire(memberInDB, campfirePin);
+            return;
+        }
+        deleteMemberFromCampfire(memberInDB, campfire);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCampfire(Member member, int campfirePin) {
+        Member memberInDB = getMemberInDB(member);
+        Campfire campfire = findCampfireByPin(campfirePin);
+        validateMemberInCampfire(memberInDB, campfire);
 
         // 연관 관계 삭제
         Set<Member> members = campfire.getMemberCampfires().stream()

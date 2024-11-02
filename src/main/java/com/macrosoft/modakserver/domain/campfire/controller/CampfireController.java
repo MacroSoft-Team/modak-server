@@ -44,44 +44,53 @@ public class CampfireController {
     }
 
     @Operation(summary = "모닥불 메인 화면 정보 가져오기", description = "모닥불 id로 이름, 오늘의 사진 정보, 그룹 멤버 id들을 가져옵니다.")
-    @GetMapping("/{campfireId}")
-    public BaseResponse<CampfireResponse.CampfireMain> getCampfireMain(@PathVariable("campfireId") int campfireId) {
-        return BaseResponse.onSuccess(campfireService.getCampfireMain(campfireId));
+    @GetMapping("/{campfirePin}")
+    public BaseResponse<CampfireResponse.CampfireMain> getCampfireMain(@PathVariable("campfirePin") int campfirePin) {
+        return BaseResponse.onSuccess(campfireService.getCampfireMain(campfirePin));
     }
 
     @Operation(summary = "모닥불 이름 가져오기", description = "특정 모닥불의 이름을 가져옵니다.")
-    @GetMapping("/{campfireId}/name")
-    public BaseResponse<CampfireResponse.CampfireName> getCampfireName(@PathVariable("campfireId") int campfireId) {
-        return BaseResponse.onSuccess(campfireService.getCampfireName(campfireId));
+    @GetMapping("/{campfirePin}/name")
+    public BaseResponse<CampfireResponse.CampfireName> getCampfireName(@PathVariable("campfirePin") int campfirePin) {
+        return BaseResponse.onSuccess(campfireService.getCampfireName(campfirePin));
     }
 
     @Operation(summary = "모닥불 참여", description = "특정 모닥불에 참여합니다.")
-    @PostMapping("/{campfireId}/join")
+    @PostMapping("/{campfirePin}/join")
     public BaseResponse<CampfirePin> joinCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable("campfireId") int campfireId,
+            @PathVariable("campfirePin") int campfirePin,
             @RequestBody CampfireRequest.CampfireJoin campfireJoin) {
         return BaseResponse.onSuccess(
-                campfireService.joinCampfire(userDetails.getMember(), campfireId, campfireJoin.campfireName()));
+                campfireService.joinCampfire(userDetails.getMember(), campfirePin, campfireJoin.campfireName()));
     }
 
     @Operation(summary = "모닥불 이름 변경하기", description = "특정 모닥불의 이름을 변경합니다.")
-    @PatchMapping("/{campfireId}/name")
+    @PatchMapping("/{campfirePin}/name")
     public BaseResponse<CampfireResponse.CampfireName> updateCampfireName(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable("campfireId") int campfireId,
+            @PathVariable("campfirePin") int campfirePin,
             @RequestBody CampfireRequest.CampfireUpdateName campfireUpdateName) {
         return BaseResponse.onSuccess(
-                campfireService.updateCampfireName(userDetails.getMember(), campfireId,
+                campfireService.updateCampfireName(userDetails.getMember(), campfirePin,
                         campfireUpdateName.newCampfireName()));
     }
 
+    @Operation(summary = "모닥불 나가기", description = "특정 모닥불에서 나갑니다.")
+    @DeleteMapping("/{campfirePin}/leave")
+    public BaseResponse<Void> leaveCampfire(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("campfirePin") int campfirePin) {
+        campfireService.leaveCampfire(userDetails.getMember(), campfirePin);
+        return BaseResponse.onSuccess(null);
+    }
+
     @Operation(summary = "모닥불 삭제하기", description = "특정 모닥불을 삭제합니다. 모닥불에 참여한 사용자가 한명일 경우에 가능합니다.")
-    @DeleteMapping("/{campfireId}")
+    @DeleteMapping("/{campfirePin}")
     public BaseResponse<Void> deleteCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable int campfireId) {
-        campfireService.deleteCampfire(userDetails.getMember(), campfireId);
+            @PathVariable("campfirePin") int campfirePin) {
+        campfireService.deleteCampfire(userDetails.getMember(), campfirePin);
         return BaseResponse.onSuccess(null);
     }
 }

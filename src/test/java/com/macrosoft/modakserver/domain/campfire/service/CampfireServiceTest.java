@@ -349,6 +349,28 @@ class CampfireServiceTest {
     }
 
     @Nested
+    class leaveCampfireTests {
+        @Test
+        void 모닥불_나가기() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            Member member1 = members.get(1);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            campfireService.joinCampfire(member1, campfirePin, campfireName);
+
+            // when
+            campfireService.leaveCampfire(member1, campfirePin);
+
+            // then
+            Campfire campfire = campfireRepository.findByPin(campfirePin).orElseThrow();
+            assertThat(campfire.getMemberCampfires().stream()
+                    .map(MemberCampfire::getMember)
+                    .toList()).containsExactly(member0);
+        }
+    }
+
+    @Nested
     class deleteCampfireTests {
         @Test
         void 모닥불_삭제() {
