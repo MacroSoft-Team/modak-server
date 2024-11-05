@@ -52,7 +52,7 @@ public class TestServiceImpl implements TestService {
         CampfirePin campfirePin = campfireService.createCampfire(member, newCampfireName);
         int pin = campfirePin.campfirePin();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
             String authorizationCode = String.valueOf(UUID.randomUUID());
             String identityToken = String.valueOf(UUID.randomUUID());
             String encryptedUserIdentifier = String.valueOf(UUID.randomUUID());
