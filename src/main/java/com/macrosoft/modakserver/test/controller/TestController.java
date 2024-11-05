@@ -1,5 +1,7 @@
 package com.macrosoft.modakserver.test.controller;
 
+import com.macrosoft.modakserver.config.security.CustomUserDetails;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.global.BaseResponse;
 import com.macrosoft.modakserver.test.service.TestService;
@@ -7,7 +9,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,5 +27,13 @@ public class TestController {
     public BaseResponse<List<Member>> get() {
         List<Member> memberList = testService.get();
         return BaseResponse.onSuccess(memberList);
+    }
+
+    @Operation(summary = "테스트용 임시 데이터 생성하기", description = "현재 로그인한 사용자가 모닥불을 생성하고 테스트용 유저 5명을 들어오게 합니다. 장작과 이미지도 랜덤으로 생성되고, 모닥불에 참여한 임의의 유저들도 생성합니다.")
+    @PostMapping("add-mock-data")
+    public BaseResponse<CampfireResponse.CampfireMain> addMockData(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return BaseResponse.onSuccess(testService.addMockData(userDetails.getMember()));
     }
 }
