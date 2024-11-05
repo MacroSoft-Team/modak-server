@@ -34,6 +34,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public MemberNickname updateNickname(Member member, String nickname) {
+        nickname = nickname.trim();
         validateNickname(member, nickname);
         member.setNickname(nickname);
         memberRepository.save(member);

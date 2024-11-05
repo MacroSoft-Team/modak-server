@@ -78,7 +78,7 @@ class MemberServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "애", "a", "열다섯글자의이름입니다이이이이이", "aaaaaaaaa aaaaaa"})
+        @ValueSource(strings = {"", " ", "  ", "악 ", "애", "a", "열다섯글자의이름입니다이이이이이", "aaaaaaaaa aaaaaa"})
         void 닉네임은_2자에서_15자_벗어나면_예외발생(String newNickname) {
             // when then
             assertThatThrownBy(() -> memberService.updateNickname(member, newNickname))
