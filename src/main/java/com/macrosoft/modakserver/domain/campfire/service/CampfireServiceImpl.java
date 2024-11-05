@@ -137,15 +137,22 @@ public class CampfireServiceImpl implements CampfireService {
     public CampfirePin joinCampfire(Member member, int campfirePin, String campfireName) {
         Member memberInDB = getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
-        if (isMemberInCampfire(memberInDB, campfire)) {
-            throw new CustomException(CampfireErrorCode.MEMBER_ALREADY_IN_CAMPFIRE);
-        }
         if (isNameNotMatch(campfireName, campfire)) {
             throw new CustomException(CampfireErrorCode.CAMPFIRE_NAME_NOT_MATCH);
+        }
+        if (isCampfireMemberFull(campfire)) {
+            throw new CustomException(CampfireErrorCode.CAMPFIRE_MEMBER_FULL);
+        }
+        if (isMemberInCampfire(memberInDB, campfire)) {
+            throw new CustomException(CampfireErrorCode.MEMBER_ALREADY_IN_CAMPFIRE);
         }
 
         addMemberToCampfire(memberInDB, campfire);
         return new CampfirePin(campfire.getPin());
+    }
+
+    private boolean isCampfireMemberFull(Campfire campfire) {
+        return campfire.getMemberCampfires().size() >= 6;
     }
 
     private boolean isNameNotMatch(String campfireName, Campfire campfire) {
