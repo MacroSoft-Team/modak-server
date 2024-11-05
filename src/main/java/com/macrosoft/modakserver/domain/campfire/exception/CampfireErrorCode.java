@@ -17,6 +17,7 @@ public enum CampfireErrorCode implements ErrorCodeInterface {
     REMOVE_FROM_CAMPFIRE_MEMBER_NOT_IN_CAMPFIRE("C006", "모닥불에 참여하지 않은 멤버를 모닥불에서 제거할 수 없습니다.", HttpStatus.BAD_REQUEST),
     MEMBER_ALREADY_IN_CAMPFIRE("C007", "이미 모닥불에 참여한 멤버입니다.", HttpStatus.BAD_REQUEST),
     NOT_LAST_MEMBER("C008", "모닥불의 마지막 멤버만 삭제할 수 있습니다.", HttpStatus.BAD_REQUEST),
+    CAMPFIRE_MEMBER_FULL("C009", "모닥불의 인원이 가득 찼습니다.", HttpStatus.BAD_REQUEST),
     ;
 
     private final String code;

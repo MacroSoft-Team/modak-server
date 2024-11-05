@@ -335,6 +335,64 @@ class CampfireServiceTest {
             assertThatThrownBy(() -> campfireService.joinCampfire(member1, campfirePin, campfireName))
                     .isInstanceOf(CustomException.class);
         }
+
+        @Test
+        void 인원_가득찼으면_예외_발생() {
+            // given
+            String campfireName = "campfireName";
+            List<Member> memberlist = List.of(
+                    memberRepository.save(Member.builder()
+                            .clientId("clientId0")
+                            .socialType(SocialType.APPLE)
+                            .nickname("nickname0")
+                            .permissionRole(PermissionRole.CLIENT)
+                            .build()),
+                    memberRepository.save(Member.builder()
+                            .clientId("clientId1")
+                            .socialType(SocialType.APPLE)
+                            .nickname("nickname1")
+                            .permissionRole(PermissionRole.CLIENT)
+                            .build()),
+                    memberRepository.save(Member.builder()
+                            .clientId("clientId2")
+                            .socialType(SocialType.APPLE)
+                            .nickname("nickname2")
+                            .permissionRole(PermissionRole.CLIENT)
+                            .build()),
+                    memberRepository.save(Member.builder()
+                            .clientId("clientId3")
+                            .socialType(SocialType.APPLE)
+                            .nickname("nickname3")
+                            .permissionRole(PermissionRole.CLIENT)
+                            .build())
+                    , memberRepository.save(Member.builder()
+                            .clientId("clientId4")
+                            .socialType(SocialType.APPLE)
+                            .nickname("nickname4")
+                            .permissionRole(PermissionRole.CLIENT)
+                            .build()),
+                    memberRepository.save(Member.builder()
+                            .clientId("clientId5")
+                            .socialType(SocialType.APPLE)
+                            .nickname("nickname5")
+                            .permissionRole(PermissionRole.CLIENT)
+                            .build()),
+                    memberRepository.save(Member.builder()
+                            .clientId("clientId6")
+                            .socialType(SocialType.APPLE)
+                            .nickname("nickname6")
+                            .permissionRole(PermissionRole.CLIENT)
+                            .build())
+            );
+            int campfirePin = campfireService.createCampfire(memberlist.get(0), campfireName).campfirePin();
+            for (int i = 1; i < 6; i++) {
+                campfireService.joinCampfire(memberlist.get(i), campfirePin, campfireName);
+            }
+
+            // when
+            assertThatThrownBy(() -> campfireService.joinCampfire(memberlist.get(6), campfirePin, campfireName))
+                    .isInstanceOf(CustomException.class);
+        }
     }
 
     @Nested
