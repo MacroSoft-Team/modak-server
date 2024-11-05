@@ -34,8 +34,25 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public MemberNickname updateNickname(Member member, String nickname) {
+        nickname = nickname.trim();
+        validateNickname(member, nickname);
         member.setNickname(nickname);
         memberRepository.save(member);
         return new MemberNickname(member.getId(), member.getNickname());
+    }
+
+    private void validateNickname(Member member, String newNickname) {
+        if (newNickname == null || newNickname.isBlank()) {
+            throw new CustomException(MemberErrorCode.MEMBER_NICKNAME_EMPTY);
+        }
+        if (newNickname.length() < 2) {
+            throw new CustomException(MemberErrorCode.MEMBER_NICKNAME_TOO_SHORT);
+        }
+        if (newNickname.length() > 15) {
+            throw new CustomException(MemberErrorCode.MEMBER_NICKNAME_TOO_LONG);
+        }
+        if (member.getNickname().equals(newNickname)) {
+            throw new CustomException(MemberErrorCode.MEMBER_NICKNAME_SAME);
+        }
     }
 }
