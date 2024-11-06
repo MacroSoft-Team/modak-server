@@ -31,7 +31,8 @@ public class CampfireController {
     @PostMapping
     public BaseResponse<CampfirePin> createCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody CampfireRequest.CampfireCreate campfireCreate) {
+            @RequestBody CampfireRequest.CampfireCreate campfireCreate
+    ) {
         return BaseResponse.onSuccess(
                 campfireService.createCampfire(userDetails.getMember(), campfireCreate.campfireName()));
     }
@@ -49,16 +50,18 @@ public class CampfireController {
     public BaseResponse<CampfireResponse.CampfireMain> getCampfireMain(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin) {
+            @PathVariable("campfirePin") int campfirePin
+    ) {
         return BaseResponse.onSuccess(campfireService.getCampfireMain(userDetails.getMember(), campfirePin));
     }
 
-    @Operation(summary = "모닥불 이름 가져오기", description = "특정 모닥불의 이름을 가져옵니다.")
+    @Operation(summary = "모닥불 이름 가져오기", description = "특정 모닥불의 이름과 핀을 가져옵니다.")
     @GetMapping("/{campfirePin}/name")
     public BaseResponse<CampfireResponse.CampfireName> getCampfireName(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin) {
+            @PathVariable("campfirePin") int campfirePin
+    ) {
         return BaseResponse.onSuccess(campfireService.getCampfireName(userDetails.getMember(), campfirePin));
     }
 
@@ -68,7 +71,8 @@ public class CampfireController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "000000")
             @PathVariable("campfirePin") int campfirePin,
-            @RequestBody CampfireRequest.CampfireJoin campfireJoin) {
+            @RequestBody CampfireRequest.CampfireJoin campfireJoin
+    ) {
         return BaseResponse.onSuccess(
                 campfireService.joinCampfire(userDetails.getMember(), campfirePin, campfireJoin.campfireName()));
     }
@@ -79,7 +83,8 @@ public class CampfireController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "000000")
             @PathVariable("campfirePin") int campfirePin,
-            @RequestBody CampfireRequest.CampfireUpdateName campfireUpdateName) {
+            @RequestBody CampfireRequest.CampfireUpdateName campfireUpdateName
+    ) {
         return BaseResponse.onSuccess(
                 campfireService.updateCampfireName(userDetails.getMember(), campfirePin,
                         campfireUpdateName.newCampfireName()));
@@ -90,7 +95,8 @@ public class CampfireController {
     public BaseResponse<Void> leaveCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin) {
+            @PathVariable("campfirePin") int campfirePin
+    ) {
         campfireService.leaveCampfire(userDetails.getMember(), campfirePin);
         return BaseResponse.onSuccess(null);
     }
@@ -100,7 +106,8 @@ public class CampfireController {
     public BaseResponse<Void> deleteCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin) {
+            @PathVariable("campfirePin") int campfirePin
+    ) {
         campfireService.deleteCampfire(userDetails.getMember(), campfirePin);
         return BaseResponse.onSuccess(null);
     }
