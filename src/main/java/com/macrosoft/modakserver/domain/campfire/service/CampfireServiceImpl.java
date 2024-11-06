@@ -172,16 +172,16 @@ public class CampfireServiceImpl implements CampfireService {
 
     @Override
     @Transactional
-    public void leaveCampfire(Member member, int campfirePin) {
+    public CampfireResponse.CampfirePin leaveCampfire(Member member, int campfirePin) {
         Member memberInDB = getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
         validateMemberInCampfire(memberInDB, campfire);
 
         if (isLastMember(campfire)) {
-            deleteCampfire(memberInDB, campfirePin);
-            return;
+            return deleteCampfire(memberInDB, campfirePin);
         }
         deleteMemberFromCampfire(memberInDB, campfire);
+        return new CampfirePin(campfirePin);
     }
 
     private static boolean isLastMember(Campfire campfire) {
@@ -190,7 +190,7 @@ public class CampfireServiceImpl implements CampfireService {
 
     @Override
     @Transactional
-    public void deleteCampfire(Member member, int campfirePin) {
+    public CampfireResponse.CampfirePin deleteCampfire(Member member, int campfirePin) {
         Member memberInDB = getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
         validateMemberInCampfire(memberInDB, campfire);
@@ -208,6 +208,7 @@ public class CampfireServiceImpl implements CampfireService {
         }
 
         campfireRepository.delete(campfire);
+        return new CampfirePin(campfirePin);
     }
 
     private void deleteMemberFromCampfire(Member member, Campfire campfire) {

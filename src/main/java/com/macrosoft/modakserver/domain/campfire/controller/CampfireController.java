@@ -3,7 +3,6 @@ package com.macrosoft.modakserver.domain.campfire.controller;
 import com.macrosoft.modakserver.config.security.CustomUserDetails;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireRequest;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
-import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
 import com.macrosoft.modakserver.global.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,11 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/campfires")
 @Tag(name = "Campfire API", description = "모닥불 관련 API 입니다.")
 public class CampfireController {
+    public static final String CAMPFIRE_PIN_DESCRIPTION = "모닥불 핀 번호 (6자리)";
+    public static final String CAMPFIRE_PIN_EXAMPLE = "111111";
+    public static final String CAMPFIRE_PIN = "campfirePin";
+    public static final String CAMPFIRE_PIN_URI = "/{" + CAMPFIRE_PIN + "}";
     private final CampfireService campfireService;
 
     @Operation(summary = "모닥불 생성", description = "모닥불을 생성합니다.")
     @PostMapping
-    public BaseResponse<CampfirePin> createCampfire(
+    public BaseResponse<CampfireResponse.CampfirePin> createCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CampfireRequest.CampfireCreate campfireCreate
     ) {
@@ -46,31 +49,31 @@ public class CampfireController {
     }
 
     @Operation(summary = "모닥불 메인 화면 정보 가져오기", description = "모닥불 id로 이름, 오늘의 사진 정보, 그룹 멤버 id들을 가져옵니다.")
-    @GetMapping("/{campfirePin}")
+    @GetMapping(CAMPFIRE_PIN_URI)
     public BaseResponse<CampfireResponse.CampfireMain> getCampfireMain(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin
+            @Parameter(description = CAMPFIRE_PIN_DESCRIPTION, example = CAMPFIRE_PIN_EXAMPLE)
+            @PathVariable(CAMPFIRE_PIN) int campfirePin
     ) {
         return BaseResponse.onSuccess(campfireService.getCampfireMain(userDetails.getMember(), campfirePin));
     }
 
     @Operation(summary = "모닥불 이름 가져오기", description = "특정 모닥불의 이름과 핀을 가져옵니다.")
-    @GetMapping("/{campfirePin}/name")
+    @GetMapping(CAMPFIRE_PIN_URI + "/name")
     public BaseResponse<CampfireResponse.CampfireName> getCampfireName(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin
+            @Parameter(description = CAMPFIRE_PIN_DESCRIPTION, example = CAMPFIRE_PIN_EXAMPLE)
+            @PathVariable(CAMPFIRE_PIN) int campfirePin
     ) {
         return BaseResponse.onSuccess(campfireService.getCampfireName(userDetails.getMember(), campfirePin));
     }
 
     @Operation(summary = "모닥불 참여", description = "특정 모닥불에 참여합니다.")
-    @PostMapping("/{campfirePin}/join")
-    public BaseResponse<CampfirePin> joinCampfire(
+    @PostMapping(CAMPFIRE_PIN_URI + "/join")
+    public BaseResponse<CampfireResponse.CampfirePin> joinCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin,
+            @Parameter(description = CAMPFIRE_PIN_DESCRIPTION, example = CAMPFIRE_PIN_EXAMPLE)
+            @PathVariable(CAMPFIRE_PIN) int campfirePin,
             @RequestBody CampfireRequest.CampfireJoin campfireJoin
     ) {
         return BaseResponse.onSuccess(
@@ -78,11 +81,11 @@ public class CampfireController {
     }
 
     @Operation(summary = "모닥불 이름 변경하기", description = "특정 모닥불의 이름을 변경합니다.")
-    @PatchMapping("/{campfirePin}/name")
+    @PatchMapping(CAMPFIRE_PIN_URI + "/name")
     public BaseResponse<CampfireResponse.CampfireName> updateCampfireName(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin,
+            @Parameter(description = CAMPFIRE_PIN_DESCRIPTION, example = CAMPFIRE_PIN_EXAMPLE)
+            @PathVariable(CAMPFIRE_PIN) int campfirePin,
             @RequestBody CampfireRequest.CampfireUpdateName campfireUpdateName
     ) {
         return BaseResponse.onSuccess(
@@ -91,24 +94,22 @@ public class CampfireController {
     }
 
     @Operation(summary = "모닥불 나가기", description = "특정 모닥불에서 나갑니다. 마지막 멤버이면 모닥불이 삭제됩니다.")
-    @DeleteMapping("/{campfirePin}/leave")
-    public BaseResponse<Void> leaveCampfire(
+    @DeleteMapping(CAMPFIRE_PIN_URI + "/leave")
+    public BaseResponse<CampfireResponse.CampfirePin> leaveCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin
+            @Parameter(description = CAMPFIRE_PIN_DESCRIPTION, example = CAMPFIRE_PIN_EXAMPLE)
+            @PathVariable(CAMPFIRE_PIN) int campfirePin
     ) {
-        campfireService.leaveCampfire(userDetails.getMember(), campfirePin);
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess(campfireService.leaveCampfire(userDetails.getMember(), campfirePin));
     }
 
     @Operation(summary = "모닥불 삭제하기", description = "특정 모닥불을 삭제합니다. 모닥불에 참여한 사용자가 한명일 경우에만 가능합니다.")
-    @DeleteMapping("/{campfirePin}")
-    public BaseResponse<Void> deleteCampfire(
+    @DeleteMapping(CAMPFIRE_PIN_URI)
+    public BaseResponse<CampfireResponse.CampfirePin> deleteCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
-            @PathVariable("campfirePin") int campfirePin
+            @Parameter(description = CAMPFIRE_PIN_DESCRIPTION, example = CAMPFIRE_PIN_EXAMPLE)
+            @PathVariable(CAMPFIRE_PIN) int campfirePin
     ) {
-        campfireService.deleteCampfire(userDetails.getMember(), campfirePin);
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess(campfireService.deleteCampfire(userDetails.getMember(), campfirePin));
     }
 }

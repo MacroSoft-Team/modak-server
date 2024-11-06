@@ -16,7 +16,7 @@ public interface CampfireService {
 
     CampfireResponse.CampfireName updateCampfireName(Member member, int campfirePin, String newCampfireName);
 
-    void leaveCampfire(Member member, int campfirePin);
+    CampfireResponse.CampfirePin leaveCampfire(Member member, int campfirePin);
 
-    void deleteCampfire(Member member, int campfirePin);
+    CampfireResponse.CampfirePin deleteCampfire(Member member, int campfirePin);
 }
