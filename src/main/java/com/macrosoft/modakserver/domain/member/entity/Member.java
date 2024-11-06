@@ -50,12 +50,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PermissionRole permissionRole;
-
-    // MARK: 개인 장작 업로드 기능 삭제됨
-//    @Builder.Default
-//    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private List<PrivateLog> privateLogs = new ArrayList<>();
-
+    
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<MemberCampfire> memberCampfires = new ArrayList<>();

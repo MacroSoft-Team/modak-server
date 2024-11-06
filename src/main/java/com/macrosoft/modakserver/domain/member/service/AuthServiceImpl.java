@@ -2,7 +2,6 @@ package com.macrosoft.modakserver.domain.member.service;
 
 import com.macrosoft.modakserver.config.jwt.JwtProperties;
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
-import com.macrosoft.modakserver.domain.log.repository.PrivateLogRepository;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final PrivateLogRepository privateLogRepository;
     private final JwtUtil jwtUtil;
     private final JwtProperties jwtProperties;
 
