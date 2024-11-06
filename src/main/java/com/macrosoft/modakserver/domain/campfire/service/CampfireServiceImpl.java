@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toSet;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireJoinInfo;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
@@ -149,6 +150,23 @@ public class CampfireServiceImpl implements CampfireService {
 
         addMemberToCampfire(memberInDB, campfire);
         return new CampfirePin(campfire.getPin());
+    }
+
+    @Override
+    public CampfireJoinInfo joinCampfireInfo(int campfirePin, String campfireName) {
+        Campfire campfire = findCampfireByPin(campfirePin);
+        if (isNameNotMatch(campfireName, campfire)) {
+            throw new CustomException(CampfireErrorCode.CAMPFIRE_NAME_NOT_MATCH);
+        }
+
+        return new CampfireJoinInfo(
+                campfire.getName(),
+                campfire.getCreatedAt(),
+                campfire.getMemberCampfires().stream()
+                        .map(MemberCampfire::getMember)
+                        .map(Member::getNickname)
+                        .collect(toSet())
+        );
     }
 
     private boolean isCampfireMemberFull(Campfire campfire) {

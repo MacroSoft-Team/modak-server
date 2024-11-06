@@ -1,5 +1,6 @@
 package com.macrosoft.modakserver.domain.campfire.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,6 +31,12 @@ public class CampfireResponse {
             String campfireName,
             Set<String> membersNames,
             String imageName) {
+    }
+
+    public record CampfireJoinInfo(
+            String campfireName,
+            LocalDateTime createdAt,
+            Set<String> membersNames) {
     }
 
     private record TodayImage(
