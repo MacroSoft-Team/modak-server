@@ -62,6 +62,16 @@ public class CampfireController {
         return BaseResponse.onSuccess(campfireService.getCampfireName(userDetails.getMember(), campfirePin));
     }
 
+    @Operation(summary = "모닥불 참여 정보 가져오기", description = "특정 모닥불에 참여기 전 확인하기 위한 정보를 가져옵니다.")
+    @PostMapping("/{campfirePin}/join/info")
+    public BaseResponse<CampfireResponse.CampfireJoinInfo> joinCampfireInfo(
+            @Parameter(description = "모닥불 핀 번호", example = "000000")
+            @PathVariable("campfirePin") int campfirePin,
+            @RequestBody CampfireRequest.CampfireJoin campfireJoin) {
+        return BaseResponse.onSuccess(
+                campfireService.joinCampfireInfo(campfirePin, campfireJoin.campfireName()));
+    }
+
     @Operation(summary = "모닥불 참여", description = "특정 모닥불에 참여합니다.")
     @PostMapping("/{campfirePin}/join")
     public BaseResponse<CampfirePin> joinCampfire(

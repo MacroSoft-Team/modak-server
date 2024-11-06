@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfos;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireJoinInfo;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireMain;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireName;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
@@ -392,6 +393,26 @@ class CampfireServiceTest {
             // when
             assertThatThrownBy(() -> campfireService.joinCampfire(memberlist.get(6), campfirePin, campfireName))
                     .isInstanceOf(CustomException.class);
+        }
+    }
+
+    @Nested
+    class joinCampfireInfoTests {
+        @Test
+        void 모닥불_참여_정보_가져오기() {
+            // given
+            String campfireName = "campfireName";
+            Member member0 = members.get(0);
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            Campfire campfire = campfireRepository.findByPin(campfirePin).orElseThrow();
+
+            // when
+            CampfireJoinInfo campfireJoinInfo = campfireService.joinCampfireInfo(campfirePin, campfireName);
+
+            // then
+            assertThat(campfireJoinInfo.campfireName()).isEqualTo(campfireName);
+            assertThat(campfireJoinInfo.createdAt()).isEqualTo(campfire.getCreatedAt());
+            assertThat(campfireJoinInfo.membersNames()).containsExactly(member0.getNickname());
         }
     }
 
