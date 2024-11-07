@@ -55,6 +55,11 @@ public class LogServiceImpl implements LogService {
 
         // 겹치는 장작 없는 경우 새로운 장작 생성
         if (sameEventLogs.isEmpty()) {
+            // 처음 올라가는 장작일 경우 오늘의 사진 등록
+            if (existLogs.isEmpty()) {
+                // 올라가는 장작에서 랜덤으로 하나 골라서 오늘의 사진 등록
+                List<LogImage> logImages = newLog.getLogImages();
+            }
             return LogDTO.of(logRepository.save(newLog));
         }
 
