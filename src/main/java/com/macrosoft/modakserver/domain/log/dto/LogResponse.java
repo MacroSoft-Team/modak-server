@@ -33,15 +33,6 @@ public class LogResponse {
             @Schema(description = "장작 최대 위도", example = "127.654321")
             Double maxLongitude
     ) {
-        public Location toLocation() {
-            return Location.builder()
-                    .minLatitude(this.minLatitude)
-                    .maxLatitude(this.maxLatitude)
-                    .minLongitude(this.minLongitude)
-                    .maxLongitude(this.maxLongitude)
-                    .address(this.address)
-                    .build();
-        }
     }
 
     public record Logs(List<LogDTO> logs) {

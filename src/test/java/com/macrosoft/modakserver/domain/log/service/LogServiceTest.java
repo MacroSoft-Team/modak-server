@@ -3,6 +3,7 @@ package com.macrosoft.modakserver.domain.log.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
 import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
@@ -15,6 +16,7 @@ import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 class LogServiceTest {
+    @Autowired
+    private EntityManager entityManager;
+
     @Autowired
     private LogService logService;
 
@@ -293,12 +298,53 @@ class LogServiceTest {
             assertThat(logInDB.getLocation().getMaxLongitude()).isEqualTo(uploadLog0.logMetadata().maxLongitude());
             assertThat(logInDB.getCampfire().getPin()).isEqualTo(campfirePin);
             assertThat(logInDB.getCampfire().getName()).isEqualTo(campfireName);
-//            assertThat(logInDB.getLogImages().size()).isEqualTo(8);
+            assertThat(logInDB.getLogImages().size()).isEqualTo(8);
             assertThat(logInDB.getLogImages().stream().map(LogImage::getName)).containsExactlyInAnyOrderElementsOf(
                     uploadLogList.stream()
                             .flatMap(uploadLog -> uploadLog.imageInfos().stream().map(ImageInfo::imageName))
                             .toList()
             );
+        }
+    }
+
+    @Nested
+    class GetLogsMetadataTest {
+        @Test
+        void 멤버가_모닥불에_없을_때_메타데이터를_가져오려고_하면_예외_발생() {
+            // given
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            campfireService.leaveCampfire(member0, campfirePin);
+
+            // when then
+            assertThatThrownBy(
+                    () -> logService.getLogsMetadata(member0, campfirePin));
+        }
+
+        @Test
+        void 장작의_메타데이터_가져온다() {
+            // given
+            UploadLog uploadLog = uploadLogList.get(0);
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            logService.addLogs(member0, campfirePin, uploadLog);
+
+            Campfire campfire = campfireService.findCampfireByPin(campfirePin);
+            entityManager.refresh(campfire); // campfire 엔티티를 최신 상태로 업데이트해 연관된 엔티티들이 최신 상태로 유지
+
+            // when
+            LogResponse.LogMetadataList logsMetadata = logService.getLogsMetadata(member0, campfirePin);
+
+            // then
+            assertThat(logsMetadata.logMetadataList().size()).isEqualTo(1);
+            LogResponse.LogMetadata logMetadata = logsMetadata.logMetadataList().get(0);
+            assertThat(logMetadata.endAt()).isEqualTo(uploadLog.logMetadata().endAt());
+            assertThat(logMetadata.startAt()).isEqualTo(uploadLog.logMetadata().startAt());
+            assertThat(logMetadata.address()).isEqualTo(uploadLog.logMetadata().address());
+            assertThat(logMetadata.minLatitude()).isEqualTo(uploadLog.logMetadata().minLatitude());
+            assertThat(logMetadata.maxLatitude()).isEqualTo(uploadLog.logMetadata().maxLatitude());
+            assertThat(logMetadata.minLongitude()).isEqualTo(uploadLog.logMetadata().minLongitude());
+            assertThat(logMetadata.maxLongitude()).isEqualTo(uploadLog.logMetadata().maxLongitude());
         }
     }
 }
