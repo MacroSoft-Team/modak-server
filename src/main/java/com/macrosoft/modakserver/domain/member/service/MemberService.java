@@ -8,4 +8,6 @@ public interface MemberService {
     List<MemberResponse.MemberNickname> getNicknames(List<Long> memberIds);
 
     MemberResponse.MemberNickname updateNickname(Member member, String nickname);
+
+    Member getMemberInDB(Member member);
 }

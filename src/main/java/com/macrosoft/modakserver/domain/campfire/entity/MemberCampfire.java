@@ -1,6 +1,7 @@
 package com.macrosoft.modakserver.domain.campfire.entity;
 
 import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +18,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "member_campfire")
 @NoArgsConstructor
-public class MemberCampfire {
+public class MemberCampfire extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

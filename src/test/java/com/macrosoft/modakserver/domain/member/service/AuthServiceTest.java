@@ -4,10 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
-import com.macrosoft.modakserver.domain.log.dto.LogRequest;
-import com.macrosoft.modakserver.domain.log.dto.LogRequest.PrivateLogInfo;
-import com.macrosoft.modakserver.domain.log.entity.PrivateLog;
-import com.macrosoft.modakserver.domain.log.repository.PrivateLogRepository;
 import com.macrosoft.modakserver.domain.log.service.LogService;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
 import com.macrosoft.modakserver.domain.member.entity.Member;
@@ -17,8 +13,6 @@ import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.repository.RefreshTokenRepository;
 import com.macrosoft.modakserver.global.exception.CustomException;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -39,8 +33,6 @@ class AuthServiceTest {
     private MemberRepository memberRepository;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
-    @Autowired
-    private PrivateLogRepository privateLogRepository;
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -200,33 +192,6 @@ class AuthServiceTest {
 
             assertThat(memberRepository.findByClientId(encryptedUserIdentifier)).isEmpty();
             assertThat(refreshTokenRepository.findByClientId(encryptedUserIdentifier)).isEmpty();
-        }
-
-        @Test
-        @Disabled
-        void 회원탈퇴_성공_프라이빗로그_삭제() {
-            // given
-            Optional<Member> optionalMember = memberRepository.findById(memberLogin.memberId());
-            assertThat(optionalMember).isPresent();
-            Member member = optionalMember.get();
-
-            LogRequest.PrivateLogInfos privateLogInfos = new LogRequest.PrivateLogInfos(
-                    List.of(new PrivateLogInfo("주소", 1.0, 2.0, 3.0, 4.0, LocalDateTime.now(),
-                            LocalDateTime.now().plusMinutes(10))
-                    )
-            );
-
-            List<Long> logIds = logService.uploadPrivateLog(member, privateLogInfos).logIds();
-            Optional<PrivateLog> optionalPrivateLog = privateLogRepository.findById(logIds.get(0));
-            assertThat(optionalPrivateLog).isPresent();
-
-            // when
-            authService.deactivate(encryptedUserIdentifier);
-
-            // then
-//            assertThat(member.getPrivateLogs()).isEmpty();
-            Optional<PrivateLog> optionalPrivateLog1 = privateLogRepository.findById(logIds.get(0));
-            assertThat(optionalPrivateLog1).isNotPresent();
         }
 
         @Test

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfos;
-import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireJoinInfo;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireMain;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireName;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
@@ -397,26 +396,6 @@ class CampfireServiceTest {
     }
 
     @Nested
-    class joinCampfireInfoTests {
-        @Test
-        void 모닥불_참여_정보_가져오기() {
-            // given
-            String campfireName = "campfireName";
-            Member member0 = members.get(0);
-            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
-            Campfire campfire = campfireRepository.findByPin(campfirePin).orElseThrow();
-
-            // when
-            CampfireJoinInfo campfireJoinInfo = campfireService.joinCampfireInfo(campfirePin, campfireName);
-
-            // then
-            assertThat(campfireJoinInfo.campfireName()).isEqualTo(campfireName);
-            assertThat(campfireJoinInfo.createdAt()).isEqualTo(campfire.getCreatedAt());
-            assertThat(campfireJoinInfo.membersNames()).containsExactly(member0.getNickname());
-        }
-    }
-
-    @Nested
     class updateCampfireNameTests {
         @Test
         void 모닥불_이름_수정() {
@@ -479,9 +458,10 @@ class CampfireServiceTest {
             campfireService.joinCampfire(member1, campfirePin, campfireName);
 
             // when
-            campfireService.leaveCampfire(member1, campfirePin);
+            int leaveCampfirePin = campfireService.leaveCampfire(member1, campfirePin).campfirePin();
 
             // then
+            assertThat(leaveCampfirePin).isEqualTo(campfirePin);
             Campfire campfire = campfireRepository.findByPin(campfirePin).orElseThrow();
             assertThat(campfire.getMemberCampfires().stream()
                     .map(MemberCampfire::getMember)
@@ -498,9 +478,10 @@ class CampfireServiceTest {
             campfireService.joinCampfire(member1, campfirePin, campfireName);
 
             // when
-            campfireService.leaveCampfire(member0, campfirePin);
+            int leaveCampfirePin = campfireService.leaveCampfire(member0, campfirePin).campfirePin();
 
             // then
+            assertThat(leaveCampfirePin).isEqualTo(campfirePin);
             Campfire campfire = campfireRepository.findByPin(campfirePin).orElseThrow();
             assertThat(campfire.getMemberCampfires().stream()
                     .map(MemberCampfire::getMember)
@@ -515,9 +496,10 @@ class CampfireServiceTest {
             int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
 
             // when
-            campfireService.leaveCampfire(member0, campfirePin);
+            int deletedCampfirePin = campfireService.leaveCampfire(member0, campfirePin).campfirePin();
 
             // then
+            assertThat(deletedCampfirePin).isEqualTo(campfirePin);
             assertThat(campfireRepository.findByPin(campfirePin)).isNotPresent();
         }
 
@@ -545,9 +527,10 @@ class CampfireServiceTest {
             int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
 
             // when
-            campfireService.deleteCampfire(member0, campfirePin);
+            int deletedCampfirePin = campfireService.deleteCampfire(member0, campfirePin).campfirePin();
 
             // then
+            assertThat(deletedCampfirePin).isEqualTo(campfirePin);
             assertThat(campfireRepository.findByPin(campfirePin)).isNotPresent();
         }
 

@@ -55,4 +55,10 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(MemberErrorCode.MEMBER_NICKNAME_SAME);
         }
     }
+
+    @Override
+    public Member getMemberInDB(Member member) {
+        return memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
 }
