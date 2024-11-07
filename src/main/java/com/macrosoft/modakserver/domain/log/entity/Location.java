@@ -4,11 +4,13 @@ import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Location extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -32,6 +34,32 @@ public class Location extends BaseEntity {
     @Column(nullable = false)
     private Double maxLongitude;
 
+    @Setter
     @Column(nullable = false)
     private String address;
+
+    public boolean isOverlap(Location other) {
+        return this.minLatitude < other.maxLatitude &&
+                this.maxLatitude > other.minLatitude &&
+                this.minLongitude < other.maxLongitude &&
+                this.maxLongitude > other.minLongitude;
+    }
+
+    public Location merge(Location other) {
+        return Location.builder()
+                .minLatitude(Math.min(this.minLatitude, other.minLatitude))
+                .maxLatitude(Math.max(this.maxLatitude, other.maxLatitude))
+                .minLongitude(Math.min(this.minLongitude, other.minLongitude))
+                .maxLongitude(Math.max(this.maxLongitude, other.maxLongitude))
+                .address(this.address)
+                .build();
+    }
+
+    public void update(Location other) {
+        this.minLatitude = other.minLatitude;
+        this.maxLatitude = other.maxLatitude;
+        this.minLongitude = other.minLongitude;
+        this.maxLongitude = other.maxLongitude;
+        this.address = other.address;
+    }
 }

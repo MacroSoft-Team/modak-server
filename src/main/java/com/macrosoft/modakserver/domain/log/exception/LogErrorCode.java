@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum LogErrorCode implements ErrorCodeInterface {
     LOG_NOT_FOUND("L001", "존재하지 않는 장작입니다.", HttpStatus.NOT_FOUND),
+    LOGS_EMPTY("L002", "장작 계산중에 장작이 없는 오류가 발생했습니다.", HttpStatus.NOT_FOUND),
     ;
 
     private final String code;

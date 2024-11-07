@@ -1,5 +1,8 @@
-package com.macrosoft.modakserver.domain.log.entity;
+package com.macrosoft.modakserver.domain.image.entity;
 
+import com.macrosoft.modakserver.domain.log.entity.Log;
+import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -25,7 +29,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "log_image")
-public class LogImage {
+public class LogImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,14 +37,16 @@ public class LogImage {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
     private Double latitude;
 
-    @Column(nullable = false)
     private Double longitude;
 
     @Column(nullable = false)
     private LocalDateTime takenAt;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,15 +55,15 @@ public class LogImage {
 
     @OneToMany(mappedBy = "logImage", fetch = FetchType.LAZY)
     @Builder.Default
-    private Set<Emote> emotes = new HashSet<>();
+    private Set<Emotion> emotions = new HashSet<>();
 
-    public void addEmote(Emote emote) {
-        emote.setLogImage(this);
-        this.emotes.add(emote);
+    public void addEmote(Emotion emotion) {
+        emotion.setLogImage(this);
+        this.emotions.add(emotion);
     }
 
-    public void removeEmote(Emote emote) {
-        emote.setLogImage(null);
-        this.emotes.remove(emote);
+    public void removeEmote(Emotion emotion) {
+        emotion.setLogImage(null);
+        this.emotions.remove(emotion);
     }
 }

@@ -14,9 +14,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public ImageUrl uploadImage(MultipartFile image) {
         String folderName = "dev/"; // TODO: 추후 프로필 이미지, 게시글 이미지 등 다양한 이미지 업로드를 위한 폴더명 설정
-        return ImageUrl.builder()
-                .imageUrl(s3ImageComponent.upload(image, folderName))
-                .build();
+        return new ImageUrl(s3ImageComponent.upload(image, folderName));
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.macrosoft.modakserver.domain.campfire.entity;
 
+import com.macrosoft.modakserver.domain.image.entity.LogImage;
+import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -9,7 +11,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +42,28 @@ public class Campfire extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "today_image_id")
+    private LogImage todayImage;
+
+    @OneToMany(mappedBy = "campfire", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Log> logs = new ArrayList<>();
+
     @OneToMany(mappedBy = "campfire", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<MemberCampfire> memberCampfires = new ArrayList<>();
+
+    public void addLog(Log log) {
+        log.setCampfire(this);
+        this.logs.add(log);
+    }
+
+    public void removeLog(Log log) {
+        log.setCampfire(null);
+        this.logs.remove(log);
+    }
 
     public void addMemberCampfire(MemberCampfire memberCampfire) {
         memberCampfire.setCampfire(this);

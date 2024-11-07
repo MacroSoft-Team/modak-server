@@ -38,4 +38,10 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
         return new MemberNickname(member.getId(), member.getNickname());
     }
+
+    @Override
+    public Member getMemberInDB(Member member) {
+        return memberRepository.findById(member.getId())
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
 }

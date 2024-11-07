@@ -1,6 +1,7 @@
-package com.macrosoft.modakserver.domain.log.entity;
+package com.macrosoft.modakserver.domain.image.entity;
 
 import com.macrosoft.modakserver.domain.member.entity.Member;
+import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,7 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "emote")
-public class Emote {
+public class Emotion extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
