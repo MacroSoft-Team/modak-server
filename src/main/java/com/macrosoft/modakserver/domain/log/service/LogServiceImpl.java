@@ -8,6 +8,7 @@ import com.macrosoft.modakserver.domain.image.repository.LogImageRepository;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogDTO;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.Logs;
 import com.macrosoft.modakserver.domain.log.entity.Location;
 import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.log.repository.LocationRepository;
@@ -19,6 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +47,7 @@ public class LogServiceImpl implements LogService {
         campfireService.validateMemberInCampfire(memberInDB, campfire);
 
         // DTO -> Entity
-        Log newLog = Log.of(campfire, uploadLog);
+        Log newLog = Log.of(campfire, memberInDB, uploadLog);
         List<Log> existLogs = logRepository.findAllByCampfirePin(campfirePin);
         List<Log> sameEventLogs = existLogs.stream()
                 .filter(existLog -> existLog.isSameEvent(newLog))
@@ -158,6 +163,10 @@ public class LogServiceImpl implements LogService {
         Campfire campfire = campfireService.findCampfireByPin(campfirePin);
         campfireService.validateMemberInCampfire(memberInDB, campfire);
 
-        return null;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("startAt").descending());
+        Page<Log> logs = logRepository.findAllByCampfirePin(campfirePin, pageable);
+
+        List<LogDTO> logDTOs = logs.stream().map(LogDTO::of).toList();
+        return new Logs(logDTOs, logs.hasNext());
     }
 }

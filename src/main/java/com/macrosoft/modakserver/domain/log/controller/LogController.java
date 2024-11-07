@@ -31,7 +31,7 @@ public class LogController {
     @GetMapping(API_CAMPFIRES_LOG + "/metadata")
     public BaseResponse<LogMetadataList> getLogsMetadata(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
+            @Parameter(description = "모닥불 핀 번호", example = "111111")
             @PathVariable("campfirePin") int campfirePin
     ) {
         return BaseResponse.onSuccess(logService.getLogsMetadata(userDetails.getMember(), campfirePin));
@@ -41,7 +41,7 @@ public class LogController {
     @PostMapping(API_CAMPFIRES_LOG)
     public BaseResponse<LogResponse.LogDTO> addLogs(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
+            @Parameter(description = "모닥불 핀 번호", example = "111111")
             @PathVariable("campfirePin") int campfirePin,
             @RequestBody LogRequest.UploadLog log
     ) {
@@ -52,10 +52,10 @@ public class LogController {
     @GetMapping(API_CAMPFIRES_LOG)
     public BaseResponse<LogResponse.Logs> getLogs(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Parameter(description = "모닥불 핀 번호", example = "000000")
+            @Parameter(description = "모닥불 핀 번호", example = "111111")
             @PathVariable("campfirePin") int campfirePin,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         return BaseResponse.onSuccess(logService.getLogs(userDetails.getMember(), campfirePin, page, size));
     }

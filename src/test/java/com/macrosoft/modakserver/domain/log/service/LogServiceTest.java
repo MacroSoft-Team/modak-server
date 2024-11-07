@@ -347,4 +347,72 @@ class LogServiceTest {
             assertThat(logMetadata.maxLongitude()).isEqualTo(uploadLog.logMetadata().maxLongitude());
         }
     }
+
+    @Nested
+    class GetLogsTests {
+        @Test
+        void 멤버가_모닥불에_없을_때_장작을_가져오려고_하면_예외_발생() {
+            // given
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            campfireService.leaveCampfire(member0, campfirePin);
+
+            // when then
+            assertThatThrownBy(
+                    () -> logService.getLogs(member0, campfirePin, 0, 10));
+        }
+
+        @Test
+        void 최신순의_날짜로_장작을_가져온다() {
+            // given
+            UploadLog uploadLog0 = uploadLogList.get(0);
+            UploadLog uploadLog2 = uploadLogList.get(2);
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            logService.addLogs(member0, campfirePin, uploadLog0);
+            logService.addLogs(member0, campfirePin, uploadLog2);
+
+            // when
+            LogResponse.Logs logs = logService.getLogs(member0, campfirePin, 0, 10);
+
+            // then
+            assertThat(logs.logs().size()).isEqualTo(2);
+
+            LogResponse.LogDTO log0 = logs.logs().get(0);
+            assertThat(log0.logMetadata().endAt()).isEqualTo(uploadLog2.logMetadata().endAt());
+            assertThat(log0.logMetadata().startAt()).isEqualTo(uploadLog2.logMetadata().startAt());
+            assertThat(log0.logMetadata().address()).isEqualTo(uploadLog2.logMetadata().address());
+            assertThat(log0.Images().get(0).name()).isEqualTo(uploadLog2.imageInfos().get(0).imageName());
+
+            LogResponse.LogDTO log1 = logs.logs().get(1);
+            assertThat(log1.logMetadata().endAt()).isEqualTo(uploadLog0.logMetadata().endAt());
+            assertThat(log1.logMetadata().startAt()).isEqualTo(uploadLog0.logMetadata().startAt());
+            assertThat(log1.logMetadata().address()).isEqualTo(uploadLog0.logMetadata().address());
+            assertThat(log1.Images().get(0).name()).isEqualTo(uploadLog0.imageInfos().get(0).imageName());
+        }
+
+        @Test
+        void 페이지네이션() {
+            // given
+            UploadLog uploadLog0 = uploadLogList.get(0);
+            UploadLog uploadLog2 = uploadLogList.get(2);
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            logService.addLogs(member0, campfirePin, uploadLog0);
+            logService.addLogs(member0, campfirePin, uploadLog2);
+
+            // when
+            LogResponse.Logs logs1 = logService.getLogs(member0, campfirePin, 0, 1);
+            LogResponse.Logs logs2 = logService.getLogs(member0, campfirePin, 1, 1);
+            LogResponse.Logs logs3 = logService.getLogs(member0, campfirePin, 2, 1);
+
+            // then
+            assertThat(logs1.logs().size()).isEqualTo(1);
+            assertThat(logs1.hasNext()).isTrue();
+            assertThat(logs2.logs().size()).isEqualTo(1);
+            assertThat(logs2.hasNext()).isFalse();
+            assertThat(logs3.logs().size()).isEqualTo(0);
+            assertThat(logs3.hasNext()).isFalse();
+        }
+    }
 }

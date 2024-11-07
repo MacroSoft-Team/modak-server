@@ -35,7 +35,7 @@ public class LogResponse {
     ) {
     }
 
-    public record Logs(List<LogDTO> logs) {
+    public record Logs(List<LogDTO> logs, boolean hasNext) {
     }
 
     public record LogDTO(

@@ -5,6 +5,7 @@ import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogMetadata;
+import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -16,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,8 +57,9 @@ public class Log extends BaseEntity {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @OneToMany(mappedBy = "log", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.MERGE})
+    @OneToMany(mappedBy = "log", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Builder.Default
+    @OrderBy("takenAt ASC")
     private List<LogImage> logImages = new ArrayList<>();
 
     public void addLogImage(LogImage logImage) {
@@ -69,7 +72,7 @@ public class Log extends BaseEntity {
         this.logImages.remove(logImage);
     }
 
-    public static Log of(Campfire campfire, UploadLog uploadLog) {
+    public static Log of(Campfire campfire, Member member, UploadLog uploadLog) {
         LogMetadata logMetadata = uploadLog.logMetadata();
         Location location = Location.builder()
                 .minLatitude(logMetadata.minLatitude())
@@ -92,6 +95,7 @@ public class Log extends BaseEntity {
                     .latitude(imageInfo.latitude())
                     .longitude(imageInfo.longitude())
                     .takenAt(imageInfo.takenAt())
+                    .member(member)
                     .log(log)
                     .build();
             log.addLogImage(logImage);
