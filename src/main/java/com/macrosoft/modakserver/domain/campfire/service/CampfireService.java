@@ -2,6 +2,7 @@ package com.macrosoft.modakserver.domain.campfire.service;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
+import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 
 public interface CampfireService {
@@ -24,4 +25,6 @@ public interface CampfireService {
     Campfire findCampfireByPin(int campfirePin);
 
     void validateMemberInCampfire(Member member, Campfire campfire);
+
+    ImageDTO getTodayImage(Campfire campfire);
 }

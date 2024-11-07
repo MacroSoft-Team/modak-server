@@ -3,7 +3,6 @@ package com.macrosoft.modakserver.domain.campfire.dto;
 import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class CampfireResponse {
@@ -21,7 +20,7 @@ public class CampfireResponse {
             int campfirePin,
             @Schema(description = "모닥불 이름", defaultValue = "매크로")
             String campfireName,
-            Optional<ImageDTO> todayImage,
+            ImageDTO todayImage,
             Set<Long> memberIds) {
     }
 

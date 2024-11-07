@@ -1,6 +1,7 @@
 package com.macrosoft.modakserver.domain.log.service;
 
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
+import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
 import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.image.repository.EmotionRepository;
@@ -36,6 +37,7 @@ public class LogServiceImpl implements LogService {
     private final EmotionRepository emotionRepository;
     private final LocationRepository locationRepository;
     private final LogImageRepository logImageRepository;
+    private final CampfireRepository campfireRepository;
     private final LogRepository logRepository;
 
     @Override
@@ -49,18 +51,16 @@ public class LogServiceImpl implements LogService {
         // DTO -> Entity
         Log newLog = Log.of(campfire, memberInDB, uploadLog);
         List<Log> existLogs = logRepository.findAllByCampfirePin(campfirePin);
+
         List<Log> sameEventLogs = existLogs.stream()
                 .filter(existLog -> existLog.isSameEvent(newLog))
                 .toList();
 
         // 겹치는 장작 없는 경우 새로운 장작 생성
         if (sameEventLogs.isEmpty()) {
-            // 처음 올라가는 장작일 경우 오늘의 사진 등록
-            if (existLogs.isEmpty()) {
-                // 올라가는 장작에서 랜덤으로 하나 골라서 오늘의 사진 등록
-                List<LogImage> logImages = newLog.getLogImages();
-            }
-            return LogDTO.of(logRepository.save(newLog));
+            Log savedLog = logRepository.save(newLog);
+            registerTodayImage(campfire, newLog);
+            return LogDTO.of(savedLog);
         }
 
         // 겹치는 장작 있는 경우 겹치는 장작중에 하나 골라서 다 합치기
@@ -75,7 +75,19 @@ public class LogServiceImpl implements LogService {
             logRepository.delete(log);
         }
 
-        return LogDTO.of(logRepository.save(primaryLog));
+        Log savedLog = logRepository.save(primaryLog);
+        registerTodayImage(campfire, primaryLog);
+        return LogDTO.of(savedLog);
+    }
+
+    // 올라가는 장작에서 랜덤으로 하나 골라서 오늘의 사진 등록
+    private void registerTodayImage(Campfire campfire, Log newlog) {
+        if (campfire.getTodayImage() == null) {
+            List<LogImage> logImages = newlog.getLogImages();
+            LogImage todayImage = logImages.get((int) (Math.random() * logImages.size()));
+            campfire.setTodayImage(todayImage);
+            campfireRepository.save(campfire);
+        }
     }
 
     private void mergeLogs(List<Log> allLogs, Log primaryLog) {
@@ -168,7 +180,7 @@ public class LogServiceImpl implements LogService {
         Campfire campfire = campfireService.findCampfireByPin(campfirePin);
         campfireService.validateMemberInCampfire(memberInDB, campfire);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("startAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("startAt").ascending());
         Page<Log> logs = logRepository.findAllByCampfirePin(campfirePin, pageable);
 
         List<LogDTO> logDTOs = logs.stream().map(LogDTO::of).toList();

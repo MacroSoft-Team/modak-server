@@ -21,13 +21,16 @@ import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.service.AuthService;
 import com.macrosoft.modakserver.global.exception.CustomException;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
@@ -36,6 +39,7 @@ public class TestServiceImpl implements TestService {
     private final CampfireService campfireService;
     private final AuthService authService;
     private final LogService logService;
+    private final EntityManager entityManager;
 
     @Override
     public List<Member> get() {
@@ -45,18 +49,9 @@ public class TestServiceImpl implements TestService {
     @Transactional
     @Override
     public CampfireResponse.CampfireMain addMockData(Member member) {
-        String[] memberNicknameAry = member.getNickname().split(" ");
-        String memberNickname;
-        if (memberNicknameAry.length > 1) {
-            memberNickname = memberNicknameAry[1];
-        } else {
-            memberNickname = memberNicknameAry[0];
-        }
-//        String newCampfireName = memberNickname + "의 모닥불";
         String newCampfireName = "매크로";
         int count = (int) campfireService.getMyCampfires(member).campfireInfos().stream()
                 .map(CampfireInfo::campfireName)
-//                .filter(name -> name.contains(memberNickname))
                 .filter(name -> name.contains("매크로"))
                 .count();
         if (count > 0) {
@@ -71,26 +66,37 @@ public class TestServiceImpl implements TestService {
         int pin = campfirePin.campfirePin();
         if (count == 0) {
             campfireRepository.updateCampfirePinById(111111, campfire.getId());
+            campfireRepository.flush();
+            entityManager.clear();
+            campfire = campfireRepository.findById(campfire.getId())
+                    .orElseThrow(() -> new CustomException(CampfireErrorCode.CAMPFIRE_NOT_FOUND_BY_PIN));
+            log.info("updateCampfirePinById: {}", campfire.getId());
+            log.info("실제 PIN: {}", campfire.getPin());
             pin = 111111;
         }
 
         for (int i = 0; i < 4; i++) {
+            log.info("addMockData: {}", i);
             String authorizationCode = String.valueOf(UUID.randomUUID());
             String identityToken = String.valueOf(UUID.randomUUID());
             String encryptedUserIdentifier = String.valueOf(UUID.randomUUID());
             Long newMemberId = authService.login(SocialType.APPLE, authorizationCode, identityToken,
                     encryptedUserIdentifier).memberId();
-            Member newMember = memberRepository.findById(newMemberId).orElseThrow(() -> new CustomException(
-                    MemberErrorCode.MEMBER_NOT_FOUND));
+            log.info("newMemberId: {}", newMemberId);
+            Member newMember = memberRepository.findById(newMemberId)
+                    .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
+            log.info("newMember: {}", newMember);
+            log.info("pin: {}, 실제 pin: {}", pin, campfire.getPin());
             campfireService.joinCampfire(newMember, pin, newCampfireName);
-
+            log.info("joinCampfire: {}", i);
             logService.addLogs(newMember, pin, testUploadLogs.get(i));
+            log.info("addLogs: {}", i);
         }
 
         return new CampfireResponse.CampfireMain(
                 pin,
                 newCampfireName,
-                null,
+                campfireService.getTodayImage(campfire),
                 campfire.getMemberCampfires().stream()
                         .map(MemberCampfire::getMember)
                         .map(Member::getId)

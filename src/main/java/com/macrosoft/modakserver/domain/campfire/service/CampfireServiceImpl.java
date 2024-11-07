@@ -10,6 +10,8 @@ import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.campfire.exception.CampfireErrorCode;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.repository.MemberCampfireRepository;
+import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
+import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.service.MemberService;
@@ -97,10 +99,22 @@ public class CampfireServiceImpl implements CampfireService {
                             .map(MemberCampfire::getMember)
                             .map(Member::getNickname)
                             .collect(toSet()),
-                    "" // TODO: 오늘의 이미지 이름
+                    getTodayImage(campfire).name()
             ));
         }
         return new CampfireResponse.CampfireInfos(campfireInfos);
+    }
+
+    public ImageDTO getTodayImage(Campfire campfire) {
+        LogImage todayImage = campfire.getTodayImage();
+        ImageDTO todayImageDTO;
+        if (todayImage == null) {
+            todayImageDTO = new ImageDTO("", new ArrayList<>());
+        } else {
+            // TODO: 감정 표현
+            todayImageDTO = new ImageDTO(todayImage.getName(), new ArrayList<>());
+        }
+        return todayImageDTO;
     }
 
     @Override
@@ -112,7 +126,7 @@ public class CampfireServiceImpl implements CampfireService {
         return new CampfireResponse.CampfireMain(
                 campfire.getPin(),
                 campfire.getName(),
-                null, // TODO: 오늘의 이미지
+                getTodayImage(campfire),
                 campfire.getMemberCampfires().stream()
                         .map(MemberCampfire::getMember)
                         .map(Member::getId)

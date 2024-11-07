@@ -305,6 +305,42 @@ class LogServiceTest {
                             .toList()
             );
         }
+
+        @Test
+        void 장작을_처음_넣으면_오늘의_이미지가_생긴다() {
+            // given
+            UploadLog uploadLog = uploadLogList.get(0);
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+
+            // when
+            logService.addLogs(member0, campfirePin, uploadLog);
+
+            // then
+            Campfire campfire = campfireService.findCampfireByPin(campfirePin);
+            assertThat(campfire.getTodayImage()).isNotNull();
+        }
+
+        @Test
+        void 장작을_처음_넣는게_아니면_오늘의_이미지가_바뀌지_않는다() {
+            // given
+            UploadLog uploadLog0 = uploadLogList.get(0);
+            UploadLog uploadLog1 = uploadLogList.get(1);
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            logService.addLogs(member0, campfirePin, uploadLog0);
+            Campfire campfire = campfireService.findCampfireByPin(campfirePin);
+            entityManager.refresh(campfire);
+            LogImage todayImage = campfire.getTodayImage();
+            assertThat(todayImage).isNotNull();
+
+            // when
+            logService.addLogs(member0, campfirePin, uploadLog1);
+            entityManager.refresh(campfire);
+
+            // then
+            assertThat(campfire.getTodayImage()).isEqualTo(todayImage);
+        }
     }
 
     @Nested
@@ -379,14 +415,14 @@ class LogServiceTest {
             assertThat(logs.logs().size()).isEqualTo(2);
 
             LogResponse.LogDTO log0 = logs.logs().get(0);
-            assertThat(log0.logMetadata().endAt()).isEqualTo(uploadLog2.logMetadata().endAt());
             assertThat(log0.logMetadata().startAt()).isEqualTo(uploadLog2.logMetadata().startAt());
+            assertThat(log0.logMetadata().endAt()).isEqualTo(uploadLog2.logMetadata().endAt());
             assertThat(log0.logMetadata().address()).isEqualTo(uploadLog2.logMetadata().address());
             assertThat(log0.Images().get(0).name()).isEqualTo(uploadLog2.imageInfos().get(0).imageName());
 
             LogResponse.LogDTO log1 = logs.logs().get(1);
-            assertThat(log1.logMetadata().endAt()).isEqualTo(uploadLog0.logMetadata().endAt());
             assertThat(log1.logMetadata().startAt()).isEqualTo(uploadLog0.logMetadata().startAt());
+            assertThat(log1.logMetadata().endAt()).isEqualTo(uploadLog0.logMetadata().endAt());
             assertThat(log1.logMetadata().address()).isEqualTo(uploadLog0.logMetadata().address());
             assertThat(log1.Images().get(0).name()).isEqualTo(uploadLog0.imageInfos().get(0).imageName());
         }
