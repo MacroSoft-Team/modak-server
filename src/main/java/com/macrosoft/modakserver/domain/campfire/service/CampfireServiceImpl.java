@@ -160,6 +160,7 @@ public class CampfireServiceImpl implements CampfireService {
         addMemberToCampfire(memberInDB, campfire);
         return new CampfirePin(campfire.getPin());
     }
+    
 
     private boolean isCampfireMemberFull(Campfire campfire) {
         return campfire.getMemberCampfires().size() >= 6;
