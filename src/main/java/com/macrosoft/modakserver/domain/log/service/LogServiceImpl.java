@@ -6,10 +6,8 @@ import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.image.repository.EmotionRepository;
 import com.macrosoft.modakserver.domain.image.repository.LogImageRepository;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
-import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogDTO;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse.Logs;
 import com.macrosoft.modakserver.domain.log.entity.Location;
 import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.log.repository.LocationRepository;
@@ -37,51 +35,48 @@ public class LogServiceImpl implements LogService {
 
     @Override
     @Transactional
-    public LogResponse.Logs addLogs(Member member, int campfirePin, LogRequest.UploadLogs uploadLogs) {
+    public LogResponse.LogDTO addLogs(Member member, int campfirePin, LogRequest.UploadLog uploadLog) {
         // 장작 추가할 수 있는지 권한 검증
         Member memberInDB = memberService.getMemberInDB(member);
         Campfire campfire = campfireService.findCampfireByPin(campfirePin);
         campfireService.validateMemberInCampfire(memberInDB, campfire);
-        List<LogDTO> responseLogDTOs = new ArrayList<>();
 
-        for (UploadLog uploadLog : uploadLogs.logs()) {
-            Log newLog = Log.of(campfire, uploadLog);
+        // DTO -> Entity
+        Log newLog = Log.of(campfire, uploadLog);
+        List<Log> existLogs = logRepository.findAllByCampfirePin(campfirePin);
+        List<Log> sameEventLogs = existLogs.stream()
+                .filter(existLog -> existLog.isSameEvent(newLog))
+                .toList();
 
-            List<Log> existLogs = logRepository.findAllByCampfirePin(campfirePin);
-
-            List<Log> sameEventLogs = existLogs.stream()
-                    .filter(existLog -> existLog.isSameEvent(newLog))
-                    .toList();
-
-            if (sameEventLogs.isEmpty()) {
-                responseLogDTOs.add(LogDTO.of(logRepository.save(newLog)));
-                continue;
-            }
-
-            // 겹치는 장작의 정보를 다 합친 uploadLog 를 만들기
-            // 또는 이미 존재하는 장작중에 하나 골라서 거기에 다 업데이트 하기
-            List<Log> allLogs = new ArrayList<>(sameEventLogs);
-            allLogs.add(newLog);
-
-            Log primaryLog = sameEventLogs.get(0);
-            Location mergedLocation = calcMergedLocation(allLogs);
-            String mergedAddress = calcMergedAddress(allLogs);
-            List<LogImage> mergedLogImages = calcMergeLogImages(allLogs);
-            LocalDateTime mergedStartAt = calcMergeStartAt(allLogs);
-            LocalDateTime mergedEndAt = calcMergeEndAt(allLogs);
-
-            mergedLocation.setAddress(mergedAddress);
-
-            primaryLog.update(mergedLocation, mergedStartAt, mergedEndAt, mergedLogImages);
-            responseLogDTOs.add(LogDTO.of(logRepository.save(primaryLog)));
-
-            // 나머지 장작들은 삭제하기
-            for (int i = 1; i < sameEventLogs.size(); i++) {
-                Log log = sameEventLogs.get(i);
-                logRepository.delete(log);
-            }
+        // 겹치는 장작 없는 경우 새로운 장작 생성
+        if (sameEventLogs.isEmpty()) {
+            return LogDTO.of(logRepository.save(newLog));
         }
-        return new Logs(responseLogDTOs);
+
+        // 겹치는 장작 있는 경우 겹치는 장작중에 하나 골라서 다 합치기
+        List<Log> allLogs = new ArrayList<>(sameEventLogs);
+        allLogs.add(newLog);
+        Log primaryLog = sameEventLogs.get(0);
+        mergeLogs(allLogs, primaryLog);
+
+        // 이미 존재하는데 합치는데 사용한 나머지 장작들은 삭제하기
+        for (int i = 1; i < sameEventLogs.size(); i++) {
+            Log log = sameEventLogs.get(i);
+            logRepository.delete(log);
+        }
+
+        return LogDTO.of(logRepository.save(primaryLog));
+    }
+
+    private void mergeLogs(List<Log> allLogs, Log primaryLog) {
+        Location mergedLocation = calcMergedLocation(allLogs);
+        String mergedAddress = calcMergedAddress(allLogs);
+        List<LogImage> mergedLogImages = calcMergeLogImages(allLogs);
+        LocalDateTime mergedStartAt = calcMergeStartAt(allLogs);
+        LocalDateTime mergedEndAt = calcMergeEndAt(allLogs);
+        mergedLocation.setAddress(mergedAddress);
+
+        primaryLog.update(mergedLocation, mergedStartAt, mergedEndAt, mergedLogImages);
     }
 
     private Location calcMergedLocation(List<Log> logs) {

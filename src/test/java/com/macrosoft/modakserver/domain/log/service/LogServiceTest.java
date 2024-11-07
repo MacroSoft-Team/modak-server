@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
 import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
+import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
 import com.macrosoft.modakserver.domain.log.entity.Log;
@@ -78,7 +79,11 @@ class LogServiceTest {
                                 130.0,
                                 150.0
                         ),
-                        List.of("image0.jpg", "image1.jpg")
+                        List.of(
+                                new ImageInfo("image0.jpg",
+                                        10.0, 20.0, LocalDateTime.of(2023, 3, 3, 3, 3, 3)),
+                                new ImageInfo("image1.jpg", 20.0, 30.0, LocalDateTime.of(2025, 5, 5, 5, 5, 5))
+                        )
                 ),
                 new LogRequest.UploadLog(
                         new LogResponse.LogMetadata(
@@ -90,7 +95,10 @@ class LogServiceTest {
                                 120.0,
                                 140.0
                         ),
-                        List.of("image2.jpg", "image3.jpg")
+                        List.of(
+                                new ImageInfo("image2.jpg", 15.0, 25.0, LocalDateTime.of(2022, 2, 2, 2, 2, 2)),
+                                new ImageInfo("image3.jpg", 25.0, 35.0, LocalDateTime.of(2024, 4, 4, 4, 4, 4))
+                        )
                 ),
                 new LogRequest.UploadLog( // 위 두개와 시간과 날짜 모두 겹치지 않는다.
                         new LogResponse.LogMetadata(
@@ -102,7 +110,10 @@ class LogServiceTest {
                                 100.0,
                                 110.0
                         ),
-                        List.of("image4.jpg", "image5.jpg")
+                        List.of(
+                                new ImageInfo("image4.jpg", 5.0, 15.0, LocalDateTime.of(2021, 1, 1, 1, 1, 1)),
+                                new ImageInfo("image5.jpg", 10.0, 20.0, LocalDateTime.of(2022, 2, 2, 2, 2, 2))
+                        )
                 ),
                 new LogRequest.UploadLog( // 모든 데이터가 겹친다.
                         new LogResponse.LogMetadata(
@@ -114,7 +125,10 @@ class LogServiceTest {
                                 105.0,
                                 135.0
                         ),
-                        List.of("image6.jpg", "image7.jpg")
+                        List.of(
+                                new ImageInfo("image6.jpg", 10.0, 20.0, LocalDateTime.of(2020, 1, 1, 1, 1, 1)),
+                                new ImageInfo("image7.jpg", 20.0, 30.0, LocalDateTime.of(2026, 2, 2, 2, 2, 2))
+                        )
                 )
         );
     }
@@ -129,13 +143,13 @@ class LogServiceTest {
             int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
 
             // when
-            LogResponse.Logs logs = logService.addLogs(member0, campfirePin,
-                    new LogRequest.UploadLogs(List.of(uploadLog)));
+            LogResponse.LogDTO logs = logService.addLogs(member0, campfirePin, uploadLog);
 
             // then
-            Log logsInDB = logRepository.findById(logs.logs().get(0).id()).orElseThrow();
+            Log logsInDB = logRepository.findById(logs.id()).orElseThrow();
             List<String> imageNames = logsInDB.getLogImages().stream().map(LogImage::getName).toList();
-            assertThat(imageNames).containsExactly(uploadLog.imageNames().toArray(new String[0]));
+            assertThat(imageNames).isEqualTo(
+                    uploadLog.imageInfos().stream().map(ImageInfo::imageName).toList());
             assertThat(logsInDB.getEndAt()).isEqualTo(uploadLog.logMetadata().endAt());
             assertThat(logsInDB.getStartAt()).isEqualTo(uploadLog.logMetadata().startAt());
             assertThat(logsInDB.getLocation().getAddress()).isEqualTo(uploadLog.logMetadata().address());
@@ -155,11 +169,9 @@ class LogServiceTest {
             int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
 
             // when
-            LogResponse.Logs logs = logService.addLogs(member0, campfirePin,
-                    new LogRequest.UploadLogs(List.of(uploadLog)));
+            LogResponse.LogDTO logDTO = logService.addLogs(member0, campfirePin, uploadLog);
 
             // then
-            LogResponse.LogDTO logDTO = logs.logs().get(0);
             assertThat(logDTO.logMetadata().endAt()).isEqualTo(uploadLog.logMetadata().endAt());
             assertThat(logDTO.logMetadata().startAt()).isEqualTo(uploadLog.logMetadata().startAt());
             assertThat(logDTO.logMetadata().address()).isEqualTo(uploadLog.logMetadata().address());
@@ -167,9 +179,9 @@ class LogServiceTest {
             assertThat(logDTO.logMetadata().maxLatitude()).isEqualTo(uploadLog.logMetadata().maxLatitude());
             assertThat(logDTO.logMetadata().minLongitude()).isEqualTo(uploadLog.logMetadata().minLongitude());
             assertThat(logDTO.logMetadata().maxLongitude()).isEqualTo(uploadLog.logMetadata().maxLongitude());
-            assertThat(logDTO.Images().size()).isEqualTo(uploadLog.imageNames().size());
-            assertThat(logDTO.Images().get(0).name()).isEqualTo(uploadLog.imageNames().get(0));
-            assertThat(logDTO.Images().get(1).name()).isEqualTo(uploadLog.imageNames().get(1));
+            assertThat(logDTO.Images().size()).isEqualTo(uploadLog.imageInfos().size());
+            assertThat(logDTO.Images().get(0).name()).isEqualTo(uploadLog.imageInfos().get(0).imageName());
+            assertThat(logDTO.Images().get(1).name()).isEqualTo(uploadLog.imageInfos().get(1).imageName());
         }
 
         @Test
@@ -182,7 +194,7 @@ class LogServiceTest {
 
             // when then
             assertThatThrownBy(
-                    () -> logService.addLogs(member0, campfirePin, new LogRequest.UploadLogs(List.of(uploadLog))));
+                    () -> logService.addLogs(member0, campfirePin, uploadLog));
         }
 
         @Test
@@ -195,7 +207,7 @@ class LogServiceTest {
 
             // when then
             assertThatThrownBy(
-                    () -> logService.addLogs(member0, campfirePin, new LogRequest.UploadLogs(List.of(uploadLog))));
+                    () -> logService.addLogs(member0, campfirePin, uploadLog));
         }
 
         @Test
@@ -205,12 +217,11 @@ class LogServiceTest {
             UploadLog uploadLog1 = uploadLogList.get(1);
             String campfireName = "모닥불";
             int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
-            logService.addLogs(member0, campfirePin, new LogRequest.UploadLogs(List.of(uploadLog0)));
+            logService.addLogs(member0, campfirePin, uploadLog0);
             campfireService.joinCampfire(member1, campfirePin, campfireName);
 
             // when
-            LogResponse.Logs logs = logService.addLogs(member1, campfirePin,
-                    new LogRequest.UploadLogs(List.of(uploadLog1)));
+            LogResponse.LogDTO log = logService.addLogs(member1, campfirePin, uploadLog1);
 
             // then
             List<Log> logsInDB = logRepository.findAllByCampfirePin(campfirePin);
@@ -229,7 +240,7 @@ class LogServiceTest {
             assertThat(logInDB.getLogImages().stream().map(LogImage::getName))
                     .containsExactlyInAnyOrderElementsOf(
                             uploadLogList.subList(0, 2).stream() // uploadLog0, uploadLog1만 사용
-                                    .flatMap(uploadLog -> uploadLog.imageNames().stream())
+                                    .flatMap(uploadLog -> uploadLog.imageInfos().stream().map(ImageInfo::imageName))
                                     .toList()
                     );
         }
@@ -241,12 +252,11 @@ class LogServiceTest {
             UploadLog uploadLog1 = uploadLogList.get(2);
             String campfireName = "모닥불";
             int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
-            logService.addLogs(member0, campfirePin, new LogRequest.UploadLogs(List.of(uploadLog0)));
+            logService.addLogs(member0, campfirePin, uploadLog0);
             campfireService.joinCampfire(member1, campfirePin, campfireName);
 
             // when
-            LogResponse.Logs logs = logService.addLogs(member1, campfirePin,
-                    new LogRequest.UploadLogs(List.of(uploadLog1)));
+            LogResponse.LogDTO log = logService.addLogs(member1, campfirePin, uploadLog1);
 
             // then
             List<Log> logsInDB = logRepository.findAllByCampfirePin(campfirePin);
@@ -262,13 +272,13 @@ class LogServiceTest {
             UploadLog uploadLog3 = uploadLogList.get(3);
             String campfireName = "모닥불";
             int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
-            logService.addLogs(member0, campfirePin, new LogRequest.UploadLogs(List.of(uploadLog0)));
-            logService.addLogs(member0, campfirePin, new LogRequest.UploadLogs(List.of(uploadLog1)));
-            logService.addLogs(member0, campfirePin, new LogRequest.UploadLogs(List.of(uploadLog2)));
+            logService.addLogs(member0, campfirePin, uploadLog0);
+            logService.addLogs(member0, campfirePin, uploadLog1);
+            logService.addLogs(member0, campfirePin, uploadLog2);
             campfireService.joinCampfire(member1, campfirePin, campfireName);
 
             // when
-            logService.addLogs(member1, campfirePin, new LogRequest.UploadLogs(List.of(uploadLog3)));
+            logService.addLogs(member1, campfirePin, uploadLog3);
 
             // then
             List<Log> logsInDB = logRepository.findAllByCampfirePin(campfirePin);
@@ -286,7 +296,7 @@ class LogServiceTest {
 //            assertThat(logInDB.getLogImages().size()).isEqualTo(8);
             assertThat(logInDB.getLogImages().stream().map(LogImage::getName)).containsExactlyInAnyOrderElementsOf(
                     uploadLogList.stream()
-                            .flatMap(uploadLog -> uploadLog.imageNames().stream())
+                            .flatMap(uploadLog -> uploadLog.imageInfos().stream().map(ImageInfo::imageName))
                             .toList()
             );
         }

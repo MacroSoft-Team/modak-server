@@ -39,13 +39,13 @@ public class LogController {
 
     @Operation(summary = "모닥불에 장작 넣기", description = "모닥불에 장작들을 추가합니다.")
     @PostMapping(API_CAMPFIRES_LOG)
-    public BaseResponse<LogResponse.Logs> addLogs(
+    public BaseResponse<LogResponse.LogDTO> addLogs(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "000000")
             @PathVariable("campfirePin") int campfirePin,
-            @RequestBody LogRequest.UploadLogs logs
+            @RequestBody LogRequest.UploadLog log
     ) {
-        return BaseResponse.onSuccess(logService.addLogs(userDetails.getMember(), campfirePin, logs));
+        return BaseResponse.onSuccess(logService.addLogs(userDetails.getMember(), campfirePin, log));
     }
 
     @Operation(summary = "모닥불의 장작들 가져오기", description = "모닥불에 업로드 되어 있는 장작들의 정보를 모두 가져옵니다. 페이지네이션을 지원합니다.")

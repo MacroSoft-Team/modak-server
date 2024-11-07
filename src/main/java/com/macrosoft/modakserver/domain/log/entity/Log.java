@@ -2,6 +2,7 @@ package com.macrosoft.modakserver.domain.log.entity;
 
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.image.entity.LogImage;
+import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogMetadata;
 import com.macrosoft.modakserver.global.BaseEntity;
@@ -54,7 +55,7 @@ public class Log extends BaseEntity {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @OneToMany(mappedBy = "log", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "log", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.MERGE})
     @Builder.Default
     private List<LogImage> logImages = new ArrayList<>();
 
@@ -85,9 +86,12 @@ public class Log extends BaseEntity {
                 .location(location)
                 .build();
 
-        for (String imageName : uploadLog.imageNames()) {
+        for (ImageInfo imageInfo : uploadLog.imageInfos()) {
             LogImage logImage = LogImage.builder()
-                    .name(imageName)
+                    .name(imageInfo.imageName())
+                    .latitude(imageInfo.latitude())
+                    .longitude(imageInfo.longitude())
+                    .takenAt(imageInfo.takenAt())
                     .log(log)
                     .build();
             log.addLogImage(logImage);
@@ -116,7 +120,7 @@ public class Log extends BaseEntity {
         this.startAt = newStartAt;
         this.endAt = newEndAt;
         this.location.update(newLocation);
-        
+
         Set<String> existingImageNames = this.logImages.stream()
                 .map(LogImage::getName)
                 .collect(Collectors.toSet());
