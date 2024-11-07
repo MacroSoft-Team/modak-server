@@ -116,8 +116,11 @@ public class TestServiceImpl implements TestService {
                             130.5
                     ),
                     List.of(
-                            new ImageInfo("image0.jpg", 35.98, 129.34, LocalDateTime.of(2023, 3, 3, 3, 3, 3)),
-                            new ImageInfo("image1.jpg", 36.0, 129.36, LocalDateTime.of(2023, 3, 3, 8, 3, 3))
+                            new ImageInfo(
+                                    "dev/c90830f0-7e69-41ba-92b5-713ed5253221.jpeg",
+                                    35.98, 129.34, LocalDateTime.of(2023, 3, 3, 3, 3, 3)),
+                            new ImageInfo("dev/7e622a14-9cbe-49d8-be87-5ff51e549cc8.jpeg", 36.0, 129.36,
+                                    LocalDateTime.of(2023, 3, 3, 8, 3, 3))
                     )
             ),
             new LogRequest.UploadLog(
@@ -131,8 +134,10 @@ public class TestServiceImpl implements TestService {
                             130.5
                     ),
                     List.of(
-                            new ImageInfo("image2.jpg", 36.01, 129.38, LocalDateTime.of(2023, 3, 3, 6, 3, 3)),
-                            new ImageInfo("image3.jpg", 36.02, 129.39, LocalDateTime.of(2023, 3, 3, 11, 3, 3))
+                            new ImageInfo("dev/af1105bf-85bb-4f79-9c9e-4d3062336150.jpeg", 36.01, 129.38,
+                                    LocalDateTime.of(2023, 3, 3, 6, 3, 3)),
+                            new ImageInfo("dev/9e3bb690-cf83-4258-8ced-f941a648098a.jpg", 36.02, 129.39,
+                                    LocalDateTime.of(2023, 3, 3, 11, 3, 3))
                     )
             ),
             new LogRequest.UploadLog(
@@ -146,8 +151,10 @@ public class TestServiceImpl implements TestService {
                             127.1
                     ),
                     List.of(
-                            new ImageInfo("image4.jpg", 37.53, 127.05, LocalDateTime.of(2021, 1, 1, 1, 1, 1)),
-                            new ImageInfo("image5.jpg", 37.54, 127.06, LocalDateTime.of(2021, 1, 1, 6, 1, 1))
+                            new ImageInfo("dev/636e5833-6c5b-4b17-a22f-07c98d7b0935.jpg", 37.53, 127.05,
+                                    LocalDateTime.of(2021, 1, 1, 1, 1, 1)),
+                            new ImageInfo("dev/30f32344-9c59-4507-a52d-9f9e399c5dfd.jpg", 37.54, 127.06,
+                                    LocalDateTime.of(2021, 1, 1, 6, 1, 1))
                     )
             ),
             new LogRequest.UploadLog(
@@ -161,8 +168,10 @@ public class TestServiceImpl implements TestService {
                             127.5
                     ),
                     List.of(
-                            new ImageInfo("image6.jpg", 36.65, 127.46, LocalDateTime.of(2021, 5, 5, 10, 10, 10)),
-                            new ImageInfo("image7.jpg", 36.66, 127.47, LocalDateTime.of(2021, 5, 5, 15, 10, 10))
+                            new ImageInfo("dev/9347176d-b98f-4e9c-af0d-4e46e075c363.jpg", 36.65, 127.46,
+                                    LocalDateTime.of(2021, 5, 5, 10, 10, 10)),
+                            new ImageInfo("dev/fa4b41a7-8324-4aad-83a6-3f7703f4ed0f.jpg", 36.66, 127.47,
+                                    LocalDateTime.of(2021, 5, 5, 15, 10, 10))
                     )
             )
     );
