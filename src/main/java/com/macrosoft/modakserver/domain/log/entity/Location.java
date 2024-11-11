@@ -22,16 +22,12 @@ public class Location extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private Double minLatitude;
 
-    @Column(nullable = false)
     private Double maxLatitude;
 
-    @Column(nullable = false)
     private Double minLongitude;
 
-    @Column(nullable = false)
     private Double maxLongitude;
 
     @Setter
