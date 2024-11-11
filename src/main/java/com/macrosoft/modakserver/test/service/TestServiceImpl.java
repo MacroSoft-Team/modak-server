@@ -41,6 +41,15 @@ public class TestServiceImpl implements TestService {
     private final LogService logService;
     private final EntityManager entityManager;
 
+    private static final String IMAGE_PATH_1 = "dev/c90830f0-7e69-41ba-92b5-713ed5253221.jpeg";
+    private static final String IMAGE_PATH_2 = "dev/7e622a14-9cbe-49d8-be87-5ff51e549cc8.jpeg";
+    private static final String IMAGE_PATH_3 = "dev/af1105bf-85bb-4f79-9c9e-4d3062336150.jpeg";
+    private static final String IMAGE_PATH_4 = "dev/9e3bb690-cf83-4258-8ced-f941a648098a.jpg";
+    private static final String IMAGE_PATH_5 = "dev/636e5833-6c5b-4b17-a22f-07c98d7b0935.jpg";
+    private static final String IMAGE_PATH_6 = "dev/30f32344-9c59-4507-a52d-9f9e399c5dfd.jpg";
+    private static final String IMAGE_PATH_7 = "dev/9347176d-b98f-4e9c-af0d-4e46e075c363.jpg";
+    private static final String IMAGE_PATH_8 = "dev/fa4b41a7-8324-4aad-83a6-3f7703f4ed0f.jpg";
+    
     @Override
     public List<Member> get() {
         return memberRepository.findAll();
@@ -70,27 +79,19 @@ public class TestServiceImpl implements TestService {
             entityManager.clear();
             campfire = campfireRepository.findById(campfire.getId())
                     .orElseThrow(() -> new CustomException(CampfireErrorCode.CAMPFIRE_NOT_FOUND_BY_PIN));
-            log.info("updateCampfirePinById: {}", campfire.getId());
-            log.info("실제 PIN: {}", campfire.getPin());
             pin = 111111;
         }
 
         for (int i = 0; i < 4; i++) {
-            log.info("addMockData: {}", i);
             String authorizationCode = String.valueOf(UUID.randomUUID());
             String identityToken = String.valueOf(UUID.randomUUID());
             String encryptedUserIdentifier = String.valueOf(UUID.randomUUID());
             Long newMemberId = authService.login(SocialType.APPLE, authorizationCode, identityToken,
                     encryptedUserIdentifier).memberId();
-            log.info("newMemberId: {}", newMemberId);
             Member newMember = memberRepository.findById(newMemberId)
                     .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
-            log.info("newMember: {}", newMember);
-            log.info("pin: {}, 실제 pin: {}", pin, campfire.getPin());
             campfireService.joinCampfire(newMember, pin, newCampfireName);
-            log.info("joinCampfire: {}", i);
             logService.addLogs(newMember, pin, testUploadLogs.get(i));
-            log.info("addLogs: {}", i);
         }
 
         return new CampfireResponse.CampfireMain(
@@ -116,11 +117,8 @@ public class TestServiceImpl implements TestService {
                             130.5
                     ),
                     List.of(
-                            new ImageInfo(
-                                    "dev/c90830f0-7e69-41ba-92b5-713ed5253221.jpeg",
-                                    35.98, 129.34, LocalDateTime.of(2023, 3, 3, 3, 3, 3)),
-                            new ImageInfo("dev/7e622a14-9cbe-49d8-be87-5ff51e549cc8.jpeg", 36.0, 129.36,
-                                    LocalDateTime.of(2023, 3, 3, 8, 3, 3))
+                            new ImageInfo(IMAGE_PATH_1, 35.98, 129.34, LocalDateTime.of(2023, 3, 3, 3, 3, 3)),
+                            new ImageInfo(IMAGE_PATH_2, 36.0, 129.36, LocalDateTime.of(2023, 3, 3, 8, 3, 3))
                     )
             ),
             new LogRequest.UploadLog(
@@ -134,10 +132,8 @@ public class TestServiceImpl implements TestService {
                             130.5
                     ),
                     List.of(
-                            new ImageInfo("dev/af1105bf-85bb-4f79-9c9e-4d3062336150.jpeg", 36.01, 129.38,
-                                    LocalDateTime.of(2023, 3, 3, 6, 3, 3)),
-                            new ImageInfo("dev/9e3bb690-cf83-4258-8ced-f941a648098a.jpg", 36.02, 129.39,
-                                    LocalDateTime.of(2023, 3, 3, 11, 3, 3))
+                            new ImageInfo(IMAGE_PATH_3, 36.01, 129.38, LocalDateTime.of(2023, 3, 3, 6, 3, 3)),
+                            new ImageInfo(IMAGE_PATH_4, 36.02, 129.39, LocalDateTime.of(2023, 3, 3, 11, 3, 3))
                     )
             ),
             new LogRequest.UploadLog(
@@ -151,10 +147,8 @@ public class TestServiceImpl implements TestService {
                             127.1
                     ),
                     List.of(
-                            new ImageInfo("dev/636e5833-6c5b-4b17-a22f-07c98d7b0935.jpg", 37.53, 127.05,
-                                    LocalDateTime.of(2021, 1, 1, 1, 1, 1)),
-                            new ImageInfo("dev/30f32344-9c59-4507-a52d-9f9e399c5dfd.jpg", 37.54, 127.06,
-                                    LocalDateTime.of(2021, 1, 1, 6, 1, 1))
+                            new ImageInfo(IMAGE_PATH_5, 37.53, 127.05, LocalDateTime.of(2021, 1, 1, 1, 1, 1)),
+                            new ImageInfo(IMAGE_PATH_6, 37.54, 127.06, LocalDateTime.of(2021, 1, 1, 6, 1, 1))
                     )
             ),
             new LogRequest.UploadLog(
@@ -168,10 +162,8 @@ public class TestServiceImpl implements TestService {
                             127.5
                     ),
                     List.of(
-                            new ImageInfo("dev/9347176d-b98f-4e9c-af0d-4e46e075c363.jpg", 36.65, 127.46,
-                                    LocalDateTime.of(2021, 5, 5, 10, 10, 10)),
-                            new ImageInfo("dev/fa4b41a7-8324-4aad-83a6-3f7703f4ed0f.jpg", 36.66, 127.47,
-                                    LocalDateTime.of(2021, 5, 5, 15, 10, 10))
+                            new ImageInfo(IMAGE_PATH_7, 36.65, 127.46, LocalDateTime.of(2021, 5, 5, 10, 10, 10)),
+                            new ImageInfo(IMAGE_PATH_8, 36.66, 127.47, LocalDateTime.of(2021, 5, 5, 15, 10, 10))
                     )
             )
     );
