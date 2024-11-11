@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Service;
 public class TodayImageService {
     private final CampfireRepository campfireRepository;
 
-    @Scheduled(cron = "0 0 4 * * ?") // 하루 한번씩 서비스 전체 모닥불의 오늘의 사진 업데이트
+    @Transactional
+    @Scheduled(cron = "0 0 4 * * ?", zone = "Asia/Seoul") // 하루 한번씩 서비스 전체 모닥불의 오늘의 사진 업데이트
     public void registerTodayImage() {
         log.info("오늘의 사진 등록 서비스 시작");
         int successCount = 0;
