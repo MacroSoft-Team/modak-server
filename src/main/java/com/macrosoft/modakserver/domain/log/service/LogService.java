@@ -10,5 +10,5 @@ public interface LogService {
 
     LogResponse.LogId addLogs(Member member, int campfirePin, LogRequest.UploadLog uploadLog);
 
-    LogResponse.LogOverviews getLogs(Member member, int campfirePin, int page, int size);
+    LogResponse.LogOverviews getLogOverviews(Member member, int campfirePin, int page, int size);
 }

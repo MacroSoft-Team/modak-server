@@ -39,7 +39,7 @@ public class LogResponse {
     }
 
     public record LogOverviews(
-            List<LogOverview> logs,
+            List<LogOverview> logOverviews,
             boolean hasNext) {
     }
 

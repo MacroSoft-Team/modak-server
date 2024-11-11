@@ -176,7 +176,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public LogResponse.LogOverviews getLogs(Member member, int campfirePin, int page, int size) {
+    public LogResponse.LogOverviews getLogOverviews(Member member, int campfirePin, int page, int size) {
         Member memberInDB = memberService.getMemberInDB(member);
         Campfire campfire = campfireService.findCampfireByPin(campfirePin);
         campfireService.validateMemberInCampfire(memberInDB, campfire);

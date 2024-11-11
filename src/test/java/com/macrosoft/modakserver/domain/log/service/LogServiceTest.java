@@ -10,7 +10,7 @@ import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogDetail;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogOverview;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogOverviews;
 import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.log.repository.LogRepository;
@@ -374,7 +374,7 @@ class LogServiceTest {
 
             // when then
             assertThatThrownBy(
-                    () -> logService.getLogs(member0, campfirePin, 0, 10));
+                    () -> logService.getLogOverviews(member0, campfirePin, 0, 10));
         }
 
         @Test
@@ -388,22 +388,12 @@ class LogServiceTest {
             logService.addLogs(member0, campfirePin, uploadLog2);
 
             // when
-            LogOverviews logOverviews = logService.getLogs(member0, campfirePin, 0, 10);
+            LogOverviews logOverviews = logService.getLogOverviews(member0, campfirePin, 0, 10);
 
             // then
-            assertThat(logOverviews.logs().size()).isEqualTo(2);
-
-            LogDetail log0 = logOverviews.logs().get(0);
-            assertThat(log0.logMetadata().startAt()).isEqualTo(uploadLog2.logMetadata().startAt());
-            assertThat(log0.logMetadata().endAt()).isEqualTo(uploadLog2.logMetadata().endAt());
-            assertThat(log0.logMetadata().address()).isEqualTo(uploadLog2.logMetadata().address());
-            assertThat(log0.Images().get(0).name()).isEqualTo(uploadLog2.imageInfos().get(0).imageName());
-
-            LogDetail log1 = logOverviews.logs().get(1);
-            assertThat(log1.logMetadata().startAt()).isEqualTo(uploadLog0.logMetadata().startAt());
-            assertThat(log1.logMetadata().endAt()).isEqualTo(uploadLog0.logMetadata().endAt());
-            assertThat(log1.logMetadata().address()).isEqualTo(uploadLog0.logMetadata().address());
-            assertThat(log1.Images().get(0).name()).isEqualTo(uploadLog0.imageInfos().get(0).imageName());
+            LogOverview log0 = logOverviews.logOverviews().get(0);
+            LogOverview log1 = logOverviews.logOverviews().get(1);
+            assertThat(log0.startAt()).isAfter(log1.startAt());
         }
 
         @Test
@@ -417,16 +407,16 @@ class LogServiceTest {
             logService.addLogs(member0, campfirePin, uploadLog2);
 
             // when
-            LogOverviews logOverviews1 = logService.getLogs(member0, campfirePin, 0, 1);
-            LogOverviews logOverviews2 = logService.getLogs(member0, campfirePin, 1, 1);
-            LogOverviews logOverviews3 = logService.getLogs(member0, campfirePin, 2, 1);
+            LogOverviews logOverviews1 = logService.getLogOverviews(member0, campfirePin, 0, 1);
+            LogOverviews logOverviews2 = logService.getLogOverviews(member0, campfirePin, 1, 1);
+            LogOverviews logOverviews3 = logService.getLogOverviews(member0, campfirePin, 2, 1);
 
             // then
-            assertThat(logOverviews1.logs().size()).isEqualTo(1);
+            assertThat(logOverviews1.logOverviews().size()).isEqualTo(1);
             assertThat(logOverviews1.hasNext()).isTrue();
-            assertThat(logOverviews2.logs().size()).isEqualTo(1);
+            assertThat(logOverviews2.logOverviews().size()).isEqualTo(1);
             assertThat(logOverviews2.hasNext()).isFalse();
-            assertThat(logOverviews3.logs().size()).isEqualTo(0);
+            assertThat(logOverviews3.logOverviews().size()).isEqualTo(0);
             assertThat(logOverviews3.hasNext()).isFalse();
         }
     }
