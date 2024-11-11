@@ -3,13 +3,14 @@ package com.macrosoft.modakserver.domain.log.service;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
+import com.macrosoft.modakserver.domain.image.dto.ImageResponse;
 import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.image.repository.EmotionRepository;
 import com.macrosoft.modakserver.domain.image.repository.LogImageRepository;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogDTO;
-import com.macrosoft.modakserver.domain.log.dto.LogResponse.Logs;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogId;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogOverview;
 import com.macrosoft.modakserver.domain.log.entity.Location;
 import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.log.repository.LocationRepository;
@@ -42,7 +43,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     @Transactional
-    public LogResponse.LogDTO addLogs(Member member, int campfirePin, LogRequest.UploadLog uploadLog) {
+    public LogResponse.LogId addLogs(Member member, int campfirePin, LogRequest.UploadLog uploadLog) {
         // 장작 추가할 수 있는지 권한 검증
         Member memberInDB = memberService.getMemberInDB(member);
         Campfire campfire = campfireService.findCampfireByPin(campfirePin);
@@ -60,7 +61,7 @@ public class LogServiceImpl implements LogService {
         if (sameEventLogs.isEmpty()) {
             Log savedLog = logRepository.save(newLog);
             registerTodayImage(campfire, newLog);
-            return LogDTO.of(savedLog);
+            return new LogId(savedLog.getId());
         }
 
         // 겹치는 장작 있는 경우 겹치는 장작중에 하나 골라서 다 합치기
@@ -77,7 +78,7 @@ public class LogServiceImpl implements LogService {
 
         Log savedLog = logRepository.save(primaryLog);
         registerTodayImage(campfire, primaryLog);
-        return LogDTO.of(savedLog);
+        return new LogId(savedLog.getId());
     }
 
     // 올라가는 장작에서 랜덤으로 하나 골라서 오늘의 사진 등록
@@ -175,15 +176,30 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public LogResponse.Logs getLogs(Member member, int campfirePin, int page, int size) {
+    public LogResponse.LogOverviews getLogs(Member member, int campfirePin, int page, int size) {
         Member memberInDB = memberService.getMemberInDB(member);
         Campfire campfire = campfireService.findCampfireByPin(campfirePin);
         campfireService.validateMemberInCampfire(memberInDB, campfire);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("startAt").ascending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("startAt").descending());
         Page<Log> logs = logRepository.findAllByCampfirePin(campfirePin, pageable);
 
-        List<LogDTO> logDTOs = logs.stream().map(LogDTO::of).toList();
-        return new Logs(logDTOs, logs.hasNext());
+        List<LogOverview> overviews = new ArrayList<>();
+        for (Log log : logs) {
+            Pageable pageable1 = PageRequest.of(0, 8, Sort.by("takenAt").ascending());
+            Page<LogImage> logImages = logImageRepository.findAllByLog(log, pageable1);
+            List<ImageResponse.ImageName> imageNames = logImages.stream()
+                    .map(logImage -> new ImageResponse.ImageName(logImage.getName()))
+                    .toList();
+
+            LogOverview overview = new LogOverview(
+                    log.getId(),
+                    log.getStartAt(),
+                    log.getLocation().getAddress(),
+                    imageNames
+            );
+            overviews.add(overview);
+        }
+        return new LogResponse.LogOverviews(overviews, logs.hasNext());
     }
 }

@@ -10,6 +10,8 @@ import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogDetail;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogOverviews;
 import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.log.repository.LogRepository;
 import com.macrosoft.modakserver.domain.member.entity.Member;
@@ -139,7 +141,7 @@ class LogServiceTest {
     }
 
     @Nested
-    class AddLogsTests {
+    class AddLogOverviewsTests {
         @Test
         void 장작을_업로드한다_Log_엔티티_검사() {
             // given
@@ -148,10 +150,10 @@ class LogServiceTest {
             int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
 
             // when
-            LogResponse.LogDTO logs = logService.addLogs(member0, campfirePin, uploadLog);
+            LogResponse.LogId logId = logService.addLogs(member0, campfirePin, uploadLog);
 
             // then
-            Log logsInDB = logRepository.findById(logs.id()).orElseThrow();
+            Log logsInDB = logRepository.findById(logId.logId()).orElseThrow();
             List<String> imageNames = logsInDB.getLogImages().stream().map(LogImage::getName).toList();
             assertThat(imageNames).isEqualTo(
                     uploadLog.imageInfos().stream().map(ImageInfo::imageName).toList());
@@ -164,29 +166,6 @@ class LogServiceTest {
             assertThat(logsInDB.getLocation().getMaxLongitude()).isEqualTo(uploadLog.logMetadata().maxLongitude());
             assertThat(logsInDB.getCampfire().getPin()).isEqualTo(campfirePin);
             assertThat(logsInDB.getCampfire().getName()).isEqualTo(campfireName);
-        }
-
-        @Test
-        void 장작을_업로드_한다_LogDTO_검사() {
-            // given
-            UploadLog uploadLog = uploadLogList.get(0);
-            String campfireName = "모닥불";
-            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
-
-            // when
-            LogResponse.LogDTO logDTO = logService.addLogs(member0, campfirePin, uploadLog);
-
-            // then
-            assertThat(logDTO.logMetadata().endAt()).isEqualTo(uploadLog.logMetadata().endAt());
-            assertThat(logDTO.logMetadata().startAt()).isEqualTo(uploadLog.logMetadata().startAt());
-            assertThat(logDTO.logMetadata().address()).isEqualTo(uploadLog.logMetadata().address());
-            assertThat(logDTO.logMetadata().minLatitude()).isEqualTo(uploadLog.logMetadata().minLatitude());
-            assertThat(logDTO.logMetadata().maxLatitude()).isEqualTo(uploadLog.logMetadata().maxLatitude());
-            assertThat(logDTO.logMetadata().minLongitude()).isEqualTo(uploadLog.logMetadata().minLongitude());
-            assertThat(logDTO.logMetadata().maxLongitude()).isEqualTo(uploadLog.logMetadata().maxLongitude());
-            assertThat(logDTO.Images().size()).isEqualTo(uploadLog.imageInfos().size());
-            assertThat(logDTO.Images().get(0).name()).isEqualTo(uploadLog.imageInfos().get(0).imageName());
-            assertThat(logDTO.Images().get(1).name()).isEqualTo(uploadLog.imageInfos().get(1).imageName());
         }
 
         @Test
@@ -226,7 +205,7 @@ class LogServiceTest {
             campfireService.joinCampfire(member1, campfirePin, campfireName);
 
             // when
-            LogResponse.LogDTO log = logService.addLogs(member1, campfirePin, uploadLog1);
+            logService.addLogs(member1, campfirePin, uploadLog1);
 
             // then
             List<Log> logsInDB = logRepository.findAllByCampfirePin(campfirePin);
@@ -261,7 +240,7 @@ class LogServiceTest {
             campfireService.joinCampfire(member1, campfirePin, campfireName);
 
             // when
-            LogResponse.LogDTO log = logService.addLogs(member1, campfirePin, uploadLog1);
+            logService.addLogs(member1, campfirePin, uploadLog1);
 
             // then
             List<Log> logsInDB = logRepository.findAllByCampfirePin(campfirePin);
@@ -344,7 +323,7 @@ class LogServiceTest {
     }
 
     @Nested
-    class GetLogsMetadataTest {
+    class GetLogOverviewsMetadataTest {
         @Test
         void 멤버가_모닥불에_없을_때_메타데이터를_가져오려고_하면_예외_발생() {
             // given
@@ -385,7 +364,7 @@ class LogServiceTest {
     }
 
     @Nested
-    class GetLogsTests {
+    class GetLogOverviewsTests {
         @Test
         void 멤버가_모닥불에_없을_때_장작을_가져오려고_하면_예외_발생() {
             // given
@@ -409,18 +388,18 @@ class LogServiceTest {
             logService.addLogs(member0, campfirePin, uploadLog2);
 
             // when
-            LogResponse.Logs logs = logService.getLogs(member0, campfirePin, 0, 10);
+            LogOverviews logOverviews = logService.getLogs(member0, campfirePin, 0, 10);
 
             // then
-            assertThat(logs.logs().size()).isEqualTo(2);
+            assertThat(logOverviews.logs().size()).isEqualTo(2);
 
-            LogResponse.LogDTO log0 = logs.logs().get(0);
+            LogDetail log0 = logOverviews.logs().get(0);
             assertThat(log0.logMetadata().startAt()).isEqualTo(uploadLog2.logMetadata().startAt());
             assertThat(log0.logMetadata().endAt()).isEqualTo(uploadLog2.logMetadata().endAt());
             assertThat(log0.logMetadata().address()).isEqualTo(uploadLog2.logMetadata().address());
             assertThat(log0.Images().get(0).name()).isEqualTo(uploadLog2.imageInfos().get(0).imageName());
 
-            LogResponse.LogDTO log1 = logs.logs().get(1);
+            LogDetail log1 = logOverviews.logs().get(1);
             assertThat(log1.logMetadata().startAt()).isEqualTo(uploadLog0.logMetadata().startAt());
             assertThat(log1.logMetadata().endAt()).isEqualTo(uploadLog0.logMetadata().endAt());
             assertThat(log1.logMetadata().address()).isEqualTo(uploadLog0.logMetadata().address());
@@ -438,17 +417,17 @@ class LogServiceTest {
             logService.addLogs(member0, campfirePin, uploadLog2);
 
             // when
-            LogResponse.Logs logs1 = logService.getLogs(member0, campfirePin, 0, 1);
-            LogResponse.Logs logs2 = logService.getLogs(member0, campfirePin, 1, 1);
-            LogResponse.Logs logs3 = logService.getLogs(member0, campfirePin, 2, 1);
+            LogOverviews logOverviews1 = logService.getLogs(member0, campfirePin, 0, 1);
+            LogOverviews logOverviews2 = logService.getLogs(member0, campfirePin, 1, 1);
+            LogOverviews logOverviews3 = logService.getLogs(member0, campfirePin, 2, 1);
 
             // then
-            assertThat(logs1.logs().size()).isEqualTo(1);
-            assertThat(logs1.hasNext()).isTrue();
-            assertThat(logs2.logs().size()).isEqualTo(1);
-            assertThat(logs2.hasNext()).isFalse();
-            assertThat(logs3.logs().size()).isEqualTo(0);
-            assertThat(logs3.hasNext()).isFalse();
+            assertThat(logOverviews1.logs().size()).isEqualTo(1);
+            assertThat(logOverviews1.hasNext()).isTrue();
+            assertThat(logOverviews2.logs().size()).isEqualTo(1);
+            assertThat(logOverviews2.hasNext()).isFalse();
+            assertThat(logOverviews3.logs().size()).isEqualTo(0);
+            assertThat(logOverviews3.hasNext()).isFalse();
         }
     }
 }

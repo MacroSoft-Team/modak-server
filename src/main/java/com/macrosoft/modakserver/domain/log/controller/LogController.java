@@ -39,7 +39,7 @@ public class LogController {
 
     @Operation(summary = "모닥불에 장작 넣기", description = "모닥불에 장작들을 추가합니다.")
     @PostMapping(API_CAMPFIRES_LOG)
-    public BaseResponse<LogResponse.LogDTO> addLogs(
+    public BaseResponse<LogResponse.LogId> addLogs(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "111111")
             @PathVariable("campfirePin") int campfirePin,
@@ -48,9 +48,9 @@ public class LogController {
         return BaseResponse.onSuccess(logService.addLogs(userDetails.getMember(), campfirePin, log));
     }
 
-    @Operation(summary = "모닥불의 장작들 가져오기", description = "모닥불에 업로드 되어 있는 장작들의 정보를 모두 가져옵니다. 페이지네이션을 지원합니다.")
+    @Operation(summary = "모닥불 장작 미리보기 가져오기", description = "모닥불에 업로드 되어 있는 장작들의 미리보기 정보를 가져옵니다. 페이지네이션을 지원합니다. `CampfireLogPile` 화면 에서 사용됩니다.")
     @GetMapping(API_CAMPFIRES_LOG)
-    public BaseResponse<LogResponse.Logs> getLogs(
+    public BaseResponse<LogResponse.LogOverviews> getLogs(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "111111")
             @PathVariable("campfirePin") int campfirePin,
@@ -59,6 +59,18 @@ public class LogController {
     ) {
         return BaseResponse.onSuccess(logService.getLogs(userDetails.getMember(), campfirePin, page, size));
     }
+
+//    @Operation(summary = "장작의 이미지들 가져오기", description = "장작에 업로드 되어 있는 사진들의 정보를 모두 가져옵니다. 페이지네이션을 지원합니다 (기본 사이즈: 21). `LogDetail` 화면에서 사용됩니다.")
+//    @GetMapping(API_CAMPFIRES_LOG + "/{logId}/images")
+//    public BaseResponse<LogResponse.LogDTO> getImages(
+//            @AuthenticationPrincipal CustomUserDetails userDetails,
+//            @Parameter(description = "장작 번호", example = "222222")
+//            @PathVariable("logId") long logId,
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(value = "size", defaultValue = "21") int size
+//    ) {
+//        return BaseResponse.onSuccess(logService.getImages(userDetails.getMember(), campfirePin, logId, page, size));
+//    }
 
 //    @Operation(summary = "모닥불에 장작 빼기", description = "모닥불에 장작들을 제거합니다.")
 //    @DeleteMapping(API_CAMPFIRES_LOG)

@@ -8,7 +8,7 @@ import com.macrosoft.modakserver.domain.member.entity.Member;
 public interface LogService {
     LogMetadataList getLogsMetadata(Member member, int campfirePin);
 
-    LogResponse.LogDTO addLogs(Member member, int campfirePin, LogRequest.UploadLog uploadLog);
+    LogResponse.LogId addLogs(Member member, int campfirePin, LogRequest.UploadLog uploadLog);
 
-    LogResponse.Logs getLogs(Member member, int campfirePin, int page, int size);
+    LogResponse.LogOverviews getLogs(Member member, int campfirePin, int page, int size);
 }

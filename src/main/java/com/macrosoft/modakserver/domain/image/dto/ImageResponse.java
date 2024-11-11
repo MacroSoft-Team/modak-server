@@ -15,6 +15,11 @@ public class ImageResponse {
             List<ImageEmotionDTO> emotions) {
     }
 
+    public record ImageName(
+            @Schema(description = "이미지 이름", example = "/dev/772b94e6-2081-4d1d-b331-20015cc287e0.jpeg")
+            String imageName) {
+    }
+
     public record ImageEmotionDTO(
             @Schema(description = "멤버 이름", example = "음침한 윤겸핑")
             String memberNickname,
