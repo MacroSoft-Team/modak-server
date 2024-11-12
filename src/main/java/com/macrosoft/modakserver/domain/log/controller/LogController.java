@@ -60,7 +60,7 @@ public class LogController {
         return BaseResponse.onSuccess(logService.getLogOverviews(userDetails.getMember(), campfirePin, page, size));
     }
 
-    @Operation(summary = "장작 상세보기", description = "업로드된 장작에 있는 사진들의 정보를 모두 가져옵니다. 페이지네이션을 지원합니다 (기본 사이즈: 21). `LogDetail` 화면에서 사용됩니다.")
+    @Operation(summary = "장작의 사진들 가져오기", description = "업로드된 장작에 있는 사진들의 아이디와 이름을 가져옵니다. 페이지네이션을 지원합니다 (기본 사이즈: 21). `LogDetail` 화면에서 사용됩니다.")
     @GetMapping(API_CAMPFIRES_LOG + "/{logId}/images")
     public BaseResponse<LogResponse.LogDetails> getLogDetails(
             @AuthenticationPrincipal CustomUserDetails userDetails,
