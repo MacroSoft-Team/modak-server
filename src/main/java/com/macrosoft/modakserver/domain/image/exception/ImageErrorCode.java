@@ -17,7 +17,10 @@ public enum ImageErrorCode implements ErrorCodeInterface {
     PUT_OBJECT_EXCEPTION("I005", "이미지를 S3에 저장하는 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     IO_EXCEPTION_ON_IMAGE_DELETE("I006", "S3에서 이미지를 삭제하는 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     MALFORMED_URL_EXCEPTION("I007", "이미지 주소 형식이 잘못되었습니다.", HttpStatus.BAD_REQUEST),
-    UNSUPPORTED_ENCODING_EXCEPTION("I008", "이미지 주소의 인코딩 방식이 지원되지 않습니다.", HttpStatus.BAD_REQUEST);
+    UNSUPPORTED_ENCODING_EXCEPTION("I008", "이미지 주소의 인코딩 방식이 지원되지 않습니다.", HttpStatus.BAD_REQUEST),
+    LOG_IMAGE_NOT_FOUND("I009", "해당 이미지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    LOG_IMAGE_NOT_IN_CAMPFIRE("I010", "해당 이미지는 해당 모닥불에 속해 있지 않습니다.", HttpStatus.BAD_REQUEST),
+    ;
 
     private final String code;
     private final String message;

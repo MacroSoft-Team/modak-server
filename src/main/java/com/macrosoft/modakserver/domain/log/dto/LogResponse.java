@@ -1,17 +1,9 @@
 package com.macrosoft.modakserver.domain.log.dto;
 
-import com.macrosoft.modakserver.domain.image.dto.ImageResponse;
-import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
-import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageEmotionDTO;
-import com.macrosoft.modakserver.domain.image.entity.Emotion;
-import com.macrosoft.modakserver.domain.image.entity.LogImage;
-import com.macrosoft.modakserver.domain.log.entity.Location;
-import com.macrosoft.modakserver.domain.log.entity.Log;
+import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class LogResponse {
     public record LogMetadataList(List<LogMetadata> logMetadataList) {
@@ -35,41 +27,32 @@ public class LogResponse {
     ) {
     }
 
-    public record Logs(List<LogDTO> logs, boolean hasNext) {
+    public record LogId(Long logId) {
     }
 
-    public record LogDTO(
-            Long id,
-            List<ImageResponse.ImageDTO> Images,
-            LogMetadata logMetadata
-    ) {
-        public static LogDTO of(Log log) {
-            Location location = log.getLocation();
-            LogMetadata logMetadata = new LogMetadata(
-                    log.getStartAt(),
-                    log.getEndAt(),
-                    location.getAddress(),
-                    location.getMinLatitude(),
-                    location.getMaxLatitude(),
-                    location.getMinLongitude(),
-                    location.getMaxLongitude()
-            );
-            List<ImageDTO> imageDTOList = makeImageDTOList(log.getLogImages());
-            return new LogDTO(log.getId(), imageDTOList, logMetadata);
-        }
+    public record LogOverviews(
+            List<LogOverview> logOverviews,
+            boolean hasNext) {
+    }
 
-        private static List<ImageDTO> makeImageDTOList(List<LogImage> images) {
-            List<ImageDTO> imageDTOList = new ArrayList<>();
-            for (LogImage image : images) {
-                String imageName = image.getName();
-                List<ImageEmotionDTO> emotionDTOS = new ArrayList<>();
-                Set<Emotion> emotions = image.getEmotions();
-                for (Emotion emotion : emotions) {
-                    emotionDTOS.add(new ImageEmotionDTO(emotion.getMember().getNickname(), emotion.getEmotion()));
-                }
-                imageDTOList.add(new ImageDTO(imageName, emotionDTOS));
-            }
-            return imageDTOList;
-        }
+    public record LogOverview(
+            @Schema(description = "장작 아이디", example = "1")
+            Long logId,
+            @Schema(description = "장작 사건 시작 시간", example = "2024-11-06T01:41:01.83819")
+            LocalDateTime startAt,
+            @Schema(description = "장작 주소", example = "포항시 남구")
+            String address,
+            @Schema(description = "장작 미리보기 사진들, 최대 8장")
+            List<String> imageNames
+    ) {
+    }
+
+    public record LogDetails(
+            @Schema(description = "장작 아이디", example = "1")
+            Long logId,
+            @Schema(description = "장작 사진 이름과 아이디들")
+            List<ImageName> images,
+            boolean hasNext
+    ) {
     }
 }

@@ -100,20 +100,20 @@ public class CampfireServiceImpl implements CampfireService {
                             .map(MemberCampfire::getMember)
                             .map(Member::getNickname)
                             .collect(toSet()),
-                    getTodayImage(campfire).name()
+                    getTodayImageDTO(campfire).name()
             ));
         }
         return new CampfireResponse.CampfireInfos(campfireInfos);
     }
 
-    public ImageDTO getTodayImage(Campfire campfire) {
+    public ImageDTO getTodayImageDTO(Campfire campfire) {
         LogImage todayImage = campfire.getTodayImage();
         ImageDTO todayImageDTO;
         if (todayImage == null) {
-            todayImageDTO = new ImageDTO("", new ArrayList<>());
+            todayImageDTO = new ImageDTO(0L, "", new ArrayList<>());
         } else {
             // TODO: 감정 표현
-            todayImageDTO = new ImageDTO(todayImage.getName(), new ArrayList<>());
+            todayImageDTO = new ImageDTO(todayImage.getId(), todayImage.getName(), new ArrayList<>());
         }
         return todayImageDTO;
     }
@@ -140,7 +140,7 @@ public class CampfireServiceImpl implements CampfireService {
         return new CampfireResponse.CampfireMain(
                 campfire.getPin(),
                 campfire.getName(),
-                getTodayImage(campfire),
+                getTodayImageDTO(campfire),
                 campfire.getMemberCampfires().stream()
                         .map(MemberCampfire::getMember)
                         .map(Member::getId)
@@ -178,6 +178,7 @@ public class CampfireServiceImpl implements CampfireService {
             throw new CustomException(CampfireErrorCode.CAMPFIRE_MEMBER_FULL);
         }
     }
+
 
     private boolean isCampfireMemberFull(Campfire campfire) {
         return campfire.getMemberCampfires().size() >= 6;

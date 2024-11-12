@@ -18,12 +18,14 @@ import java.util.Date;
 import java.util.Optional;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
@@ -101,6 +103,9 @@ public class JwtUtil {
         } catch (SecurityException | MalformedJwtException e) {
             throw new CustomException(AuthErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
+            Claims payload = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+            log.error("만료된 토큰입니다.\n 토큰타입: {}, 멤버아이디: {}, 주제 (멤버아이디): {}, 발행날짜: {}, 만료날짜: {}", payload.get("tokenType"),
+                    payload.get("memberId"), payload.getSubject(), payload.getIssuedAt(), payload.getExpiration());
             throw new CustomException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             throw new CustomException(AuthErrorCode.UNSUPPORTED_TOKEN);

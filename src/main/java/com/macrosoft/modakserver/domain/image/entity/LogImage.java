@@ -36,9 +36,9 @@ public class LogImage extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    private Double latitude;
+    private double latitude;
 
-    private Double longitude;
+    private double longitude;
 
     @Column(nullable = false)
     private LocalDateTime takenAt;

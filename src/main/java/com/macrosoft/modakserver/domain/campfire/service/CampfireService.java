@@ -26,7 +26,7 @@ public interface CampfireService {
 
     void validateMemberInCampfire(Member member, Campfire campfire);
 
-    ImageDTO getTodayImage(Campfire campfire);
+    ImageDTO getTodayImageDTO(Campfire campfire);
 
     CampfireResponse.CampfireJoinInfo getCampfireJoin(int campfirePin);
 }
