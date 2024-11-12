@@ -28,5 +28,5 @@ public interface CampfireService {
 
     ImageDTO getTodayImage(Campfire campfire);
 
-    CampfireResponse.CampfireJoinInfo getCampfireJoinInfo(int campfirePin);
+    CampfireResponse.CampfireJoinInfo getCampfireJoin(int campfirePin);
 }

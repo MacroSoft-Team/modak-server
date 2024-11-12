@@ -81,13 +81,13 @@ public class CampfireController {
     }
 
     @Operation(summary = "모닥불 참여 확인 정보 가져오기", description = "특정 모닥불에 참여하기 전 모닥불을 확인하기 위해 사용합니다.")
-    @GetMapping(CAMPFIRE_PIN_URI + "/join/info")
-    public BaseResponse<CampfireResponse.CampfireJoinInfo> getCampfireJoinInfo(
+    @GetMapping(CAMPFIRE_PIN_URI + "/join")
+    public BaseResponse<CampfireResponse.CampfireJoinInfo> getCampfireJoin(
             @Parameter(description = CAMPFIRE_PIN_DESCRIPTION, example = CAMPFIRE_PIN_EXAMPLE)
             @PathVariable(CAMPFIRE_PIN) int campfirePin
     ) {
         return BaseResponse.onSuccess(
-                campfireService.getCampfireJoinInfo(campfirePin));
+                campfireService.getCampfireJoin(campfirePin));
     }
 
     @Operation(summary = "모닥불 이름 변경하기", description = "특정 모닥불의 이름을 변경합니다.")

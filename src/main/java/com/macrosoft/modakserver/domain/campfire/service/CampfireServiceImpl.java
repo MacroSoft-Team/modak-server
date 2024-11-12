@@ -119,7 +119,7 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
-    public CampfireJoinInfo getCampfireJoinInfo(int campfirePin) {
+    public CampfireJoinInfo getCampfireJoin(int campfirePin) {
         Campfire campfire = findCampfireByPin(campfirePin);
         return new CampfireJoinInfo(
                 campfire.getName(),
