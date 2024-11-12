@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toSet;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireInfo;
+import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfireJoinInfo;
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse.CampfirePin;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
@@ -118,6 +119,19 @@ public class CampfireServiceImpl implements CampfireService {
     }
 
     @Override
+    public CampfireJoinInfo getCampfireJoin(int campfirePin) {
+        Campfire campfire = findCampfireByPin(campfirePin);
+        return new CampfireJoinInfo(
+                campfire.getName(),
+                campfire.getCreatedAt(),
+                campfire.getMemberCampfires().stream()
+                        .map(MemberCampfire::getMember)
+                        .map(Member::getNickname)
+                        .collect(toSet())
+        );
+    }
+
+    @Override
     public CampfireResponse.CampfireMain getCampfireMain(Member member, int campfirePin) {
         Member memberInDB = memberService.getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
@@ -147,18 +161,22 @@ public class CampfireServiceImpl implements CampfireService {
     public CampfirePin joinCampfire(Member member, int campfirePin, String campfireName) {
         Member memberInDB = memberService.getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
+        validateMemberCampfireJoin(campfireName, campfire, memberInDB);
+
+        addMemberToCampfire(memberInDB, campfire);
+        return new CampfirePin(campfire.getPin());
+    }
+
+    private void validateMemberCampfireJoin(String campfireName, Campfire campfire, Member memberInDB) {
         if (isNameNotMatch(campfireName, campfire)) {
             throw new CustomException(CampfireErrorCode.CAMPFIRE_NAME_NOT_MATCH);
-        }
-        if (isCampfireMemberFull(campfire)) {
-            throw new CustomException(CampfireErrorCode.CAMPFIRE_MEMBER_FULL);
         }
         if (isMemberInCampfire(memberInDB, campfire)) {
             throw new CustomException(CampfireErrorCode.MEMBER_ALREADY_IN_CAMPFIRE);
         }
-
-        addMemberToCampfire(memberInDB, campfire);
-        return new CampfirePin(campfire.getPin());
+        if (isCampfireMemberFull(campfire)) {
+            throw new CustomException(CampfireErrorCode.CAMPFIRE_MEMBER_FULL);
+        }
     }
 
 
