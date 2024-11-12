@@ -49,7 +49,7 @@ public class TestServiceImpl implements TestService {
     private static final String IMAGE_PATH_6 = "dev/30f32344-9c59-4507-a52d-9f9e399c5dfd.jpg";
     private static final String IMAGE_PATH_7 = "dev/9347176d-b98f-4e9c-af0d-4e46e075c363.jpg";
     private static final String IMAGE_PATH_8 = "dev/fa4b41a7-8324-4aad-83a6-3f7703f4ed0f.jpg";
-    
+
     @Override
     public List<Member> get() {
         return memberRepository.findAll();
@@ -97,7 +97,7 @@ public class TestServiceImpl implements TestService {
         return new CampfireResponse.CampfireMain(
                 pin,
                 newCampfireName,
-                campfireService.getTodayImage(campfire),
+                campfireService.getTodayImageDTO(campfire),
                 campfire.getMemberCampfires().stream()
                         .map(MemberCampfire::getMember)
                         .map(Member::getId)

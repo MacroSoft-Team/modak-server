@@ -1,5 +1,8 @@
 package com.macrosoft.modakserver.domain.log.service;
 
+import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.LOG_CAMPFIRE_NOT_MATCH;
+import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.LOG_NOT_FOUND;
+
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
@@ -17,6 +20,7 @@ import com.macrosoft.modakserver.domain.log.repository.LocationRepository;
 import com.macrosoft.modakserver.domain.log.repository.LogRepository;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.service.MemberService;
+import com.macrosoft.modakserver.global.exception.CustomException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -188,8 +192,8 @@ public class LogServiceImpl implements LogService {
         for (Log log : logs) {
             Pageable pageable1 = PageRequest.of(0, 8, Sort.by("takenAt").ascending());
             Page<LogImage> logImages = logImageRepository.findAllByLog(log, pageable1);
-            List<ImageResponse.ImageName> imageNames = logImages.stream()
-                    .map(logImage -> new ImageResponse.ImageName(logImage.getName()))
+            List<String> imageNames = logImages.stream()
+                    .map(LogImage::getName)
                     .toList();
 
             LogOverview overview = new LogOverview(
@@ -201,5 +205,36 @@ public class LogServiceImpl implements LogService {
             overviews.add(overview);
         }
         return new LogResponse.LogOverviews(overviews, logs.hasNext());
+    }
+
+    @Override
+    public LogResponse.LogDetails getLogDetails(Member member, int campfirePin, Long logId, int page, int size) {
+        Member memberInDB = memberService.getMemberInDB(member);
+        Campfire campfire = campfireService.findCampfireByPin(campfirePin);
+        campfireService.validateMemberInCampfire(memberInDB, campfire);
+        Log log = getLog(logId);
+        validateLogInCampfire(log, campfire);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("takenAt").ascending());
+        Page<LogImage> logImages = logImageRepository.findAllByLog(log, pageable);
+
+        return new LogResponse.LogDetails(
+                log.getId(),
+                logImages.stream()
+                        .map(logImage -> new ImageResponse.ImageName(logImage.getId(), logImage.getName()))
+                        .toList(),
+                logImages.hasNext()
+        );
+    }
+
+    private Log getLog(Long logId) {
+        return logRepository.findById(logId)
+                .orElseThrow(() -> new CustomException(LOG_NOT_FOUND));
+    }
+
+    private void validateLogInCampfire(Log log, Campfire campfire) {
+        if (!log.getCampfire().equals(campfire)) {
+            throw new CustomException(LOG_CAMPFIRE_NOT_MATCH);
+        }
     }
 }

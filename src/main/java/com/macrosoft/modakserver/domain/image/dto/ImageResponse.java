@@ -10,12 +10,16 @@ public class ImageResponse {
     }
 
     public record ImageDTO(
+            @Schema(description = "이미지 ID", example = "1")
+            Long imageId,
             @Schema(description = "이미지 이름", example = "/dev/772b94e6-2081-4d1d-b331-20015cc287e0.jpeg")
             String name,
             List<ImageEmotionDTO> emotions) {
     }
 
     public record ImageName(
+            @Schema(description = "이미지 ID", example = "1")
+            Long imageId,
             @Schema(description = "이미지 이름", example = "/dev/772b94e6-2081-4d1d-b331-20015cc287e0.jpeg")
             String imageName) {
     }
@@ -25,10 +29,5 @@ public class ImageResponse {
             String memberNickname,
             @Schema(description = "감정표현", example = "😀")
             String emotion) {
-    }
-
-    public record ImageId(
-            @Schema(description = "이미지 ID", example = "1")
-            Long imageId) {
     }
 }

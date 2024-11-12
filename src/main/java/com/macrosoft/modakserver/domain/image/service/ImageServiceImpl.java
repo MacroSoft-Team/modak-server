@@ -1,7 +1,9 @@
 package com.macrosoft.modakserver.domain.image.service;
 
 import com.macrosoft.modakserver.domain.image.component.S3ImageComponent;
+import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
 import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageUrl;
+import com.macrosoft.modakserver.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,5 +22,10 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void deleteImageFromS3(String imageUrl) {
         s3ImageComponent.deleteImageFromS3(imageUrl);
+    }
+
+    @Override
+    public ImageDTO getImageDetail(Member member, int campfirePin, Long imageId) {
+        return null;
     }
 }
