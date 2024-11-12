@@ -15,7 +15,7 @@ public interface CampfireService {
     CampfireResponse.CampfireName getCampfireName(Member member, int campfirePin);
 
     CampfireResponse.CampfirePin joinCampfire(Member member, int campfirePin, String campfireName);
-    
+
     CampfireResponse.CampfireName updateCampfireName(Member member, int campfirePin, String newCampfireName);
 
     CampfireResponse.CampfirePin leaveCampfire(Member member, int campfirePin);
@@ -27,4 +27,6 @@ public interface CampfireService {
     void validateMemberInCampfire(Member member, Campfire campfire);
 
     ImageDTO getTodayImage(Campfire campfire);
+
+    CampfireResponse.CampfireJoinInfo getCampfireJoin(int campfirePin);
 }
