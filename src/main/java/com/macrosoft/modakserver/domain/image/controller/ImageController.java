@@ -33,7 +33,7 @@ public class ImageController {
 
     @Operation(summary = "사진 상세보기", description = "모닥불에 업로드된 사진의 세부 정보를 봅니다. 사진의 메타데이터와 감정표현을 불러옵니다. 사진을 눌러서 크게 본 화면에서 사용됩니다.")
     @GetMapping("/campfires/{campfirePin}/images/{imageId}")
-    public BaseResponse<ImageResponse.ImageDTO> getImageDetail(
+    public BaseResponse<ImageResponse.ImageDetail> getImageDetail(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "111111")
             @PathVariable("campfirePin") int campfirePin,

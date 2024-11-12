@@ -1,6 +1,8 @@
 package com.macrosoft.modakserver.domain.image.dto;
 
+import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ImageResponse {
@@ -15,6 +17,36 @@ public class ImageResponse {
             @Schema(description = "이미지 이름", example = "/dev/772b94e6-2081-4d1d-b331-20015cc287e0.jpeg")
             String name,
             List<ImageEmotionDTO> emotions) {
+    }
+
+    public record ImageDetail(
+            @Schema(description = "이미지 ID", example = "1")
+            Long imageId,
+            @Schema(description = "이미지 이름", example = "/dev/772b94e6-2081-4d1d-b331-20015cc287e0.jpeg")
+            String imageName,
+            double latitude,
+            double longitude,
+            LocalDateTime takenAt,
+            String memberNickname,
+            Long logId,
+            List<ImageEmotionDTO> emotions) {
+        public static ImageDetail of(LogImage logImage) {
+            return new ImageDetail(
+                    logImage.getId(),
+                    logImage.getName(),
+                    logImage.getLatitude(),
+                    logImage.getLongitude(),
+                    logImage.getTakenAt(),
+                    logImage.getMember().getNickname(),
+                    logImage.getLog().getId(),
+                    logImage.getEmotions().stream()
+                            .map(emotion -> new ImageEmotionDTO(
+                                    emotion.getMember().getNickname(),
+                                    emotion.getEmotion()
+                            ))
+                            .toList()
+            );
+        }
     }
 
     public record ImageName(

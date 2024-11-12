@@ -9,5 +9,5 @@ public interface ImageService {
 
     void deleteImageFromS3(String imageUrl);
 
-    ImageResponse.ImageDTO getImageDetail(Member member, int campfirePin, Long imageId);
+    ImageResponse.ImageDetail getImageDetail(Member member, int campfirePin, Long imageId);
 }
