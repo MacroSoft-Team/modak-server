@@ -288,7 +288,7 @@ class CampfireServiceTest {
             campfireService.joinCampfire(member1, campfirePin, campfireName);
 
             // then
-            List<MemberCampfire> memberCampfires = campfireRepository.findByPin(campfirePin).orElseThrow()
+            Set<MemberCampfire> memberCampfires = campfireRepository.findByPin(campfirePin).orElseThrow()
                     .getMemberCampfires();
             assertThat(memberCampfires.stream()
                     .map(MemberCampfire::getMember)

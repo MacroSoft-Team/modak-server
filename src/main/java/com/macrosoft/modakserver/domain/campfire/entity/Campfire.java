@@ -15,8 +15,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,11 +49,11 @@ public class Campfire extends BaseEntity {
 
     @OneToMany(mappedBy = "campfire", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
-    private List<Log> logs = new ArrayList<>();
+    private Set<Log> logs = new HashSet<>();
 
     @OneToMany(mappedBy = "campfire", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
-    private List<MemberCampfire> memberCampfires = new ArrayList<>();
+    private Set<MemberCampfire> memberCampfires = new HashSet<>();
 
     public void addLog(Log log) {
         log.setCampfire(this);

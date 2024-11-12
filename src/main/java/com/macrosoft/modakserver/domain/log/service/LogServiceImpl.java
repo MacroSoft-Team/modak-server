@@ -24,6 +24,7 @@ import com.macrosoft.modakserver.global.exception.CustomException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -64,6 +65,8 @@ public class LogServiceImpl implements LogService {
         // 겹치는 장작 없는 경우 새로운 장작 생성
         if (sameEventLogs.isEmpty()) {
             Log savedLog = logRepository.save(newLog);
+//            campfire.addLog(newLog);
+//            campfireRepository.save(campfire);
             registerTodayImage(campfire, newLog);
             return new LogId(savedLog.getId());
         }
@@ -77,10 +80,13 @@ public class LogServiceImpl implements LogService {
         // 이미 존재하는데 합치는데 사용한 나머지 장작들은 삭제하기
         for (int i = 1; i < sameEventLogs.size(); i++) {
             Log log = sameEventLogs.get(i);
+//            campfire.removeLog(log);
             logRepository.delete(log);
         }
 
         Log savedLog = logRepository.save(primaryLog);
+//        campfire.addLog(newLog);
+//        campfireRepository.save(campfire);
         registerTodayImage(campfire, primaryLog);
         return new LogId(savedLog.getId());
     }
@@ -161,7 +167,7 @@ public class LogServiceImpl implements LogService {
 
         List<LogResponse.LogMetadata> logMetadataList = new ArrayList<>();
 
-        List<Log> logs = campfire.getLogs();
+        Set<Log> logs = campfire.getLogs();
         for (Log log : logs) {
             Location location = log.getLocation();
             LogResponse.LogMetadata logMetadata = new LogResponse.LogMetadata(
