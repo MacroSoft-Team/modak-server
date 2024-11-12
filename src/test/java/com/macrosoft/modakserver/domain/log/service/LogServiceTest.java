@@ -18,6 +18,7 @@ import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
+import com.macrosoft.modakserver.global.exception.CustomException;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -143,7 +144,7 @@ class LogServiceTest {
     @Nested
     class AddLogOverviewsTests {
         @Test
-        void 장작을_업로드한다_Log_엔티티_검사() {
+        void 장작_업로드하면_디비에_업로드_된다() {
             // given
             UploadLog uploadLog = uploadLogList.get(0);
             String campfireName = "모닥불";
@@ -182,7 +183,7 @@ class LogServiceTest {
         }
 
         @Test
-        void 핀번호_없을때_예외발생() {
+        void 핀번호에_알맞은_모닥불_없을때_예외발생() {
             // given
             UploadLog uploadLog = uploadLogList.get(0);
             String campfireName = "모닥불";
@@ -323,7 +324,7 @@ class LogServiceTest {
     }
 
     @Nested
-    class GetLogOverviewsMetadataTest {
+    class GetLogsMetadataTest {
         @Test
         void 멤버가_모닥불에_없을_때_메타데이터를_가져오려고_하면_예외_발생() {
             // given
@@ -418,6 +419,53 @@ class LogServiceTest {
             assertThat(logOverviews2.hasNext()).isFalse();
             assertThat(logOverviews3.logOverviews().size()).isEqualTo(0);
             assertThat(logOverviews3.hasNext()).isFalse();
+        }
+    }
+
+    @Nested
+    class getLogDetailsTests {
+        @Test
+        void 멤버가_모닥불에_없을_때_장작_디테일을_가져오려고_하면_예외가_발생한다() {
+            // given
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            campfireService.joinCampfire(member1, campfirePin, campfireName);
+            Long logId = logService.addLogs(member0, campfirePin, uploadLogList.get(0)).logId();
+            campfireService.leaveCampfire(member0, campfirePin);
+
+            // when then
+            assertThatThrownBy(() -> logService.getLogDetails(member0, campfirePin, logId, 0, 10))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void 모닥불_소속이_아닌_장작_디테일_가져오려고_하면_예외가_발생한다() {
+            // given
+            String campfireName1 = "모닥불1";
+            String campfireName2 = "모닥불2";
+            int campfirePin1 = campfireService.createCampfire(member0, campfireName1).campfirePin();
+            int campfirePin2 = campfireService.createCampfire(member1, campfireName2).campfirePin();
+            Long logId = logService.addLogs(member0, campfirePin1, uploadLogList.get(0)).logId();
+
+            // when then
+            assertThatThrownBy(() -> logService.getLogDetails(member0, campfirePin2, logId, 0, 10))
+                    .isInstanceOf(CustomException.class);
+        }
+
+        @Test
+        void 디테일_불러오기() {
+            // given
+            UploadLog uploadLog = uploadLogList.get(0);
+            String campfireName = "모닥불";
+            int campfirePin = campfireService.createCampfire(member0, campfireName).campfirePin();
+            Long logId = logService.addLogs(member0, campfirePin, uploadLog).logId();
+
+            // when
+            LogResponse.LogDetails logDetails = logService.getLogDetails(member0, campfirePin, logId, 0, 10);
+
+            // then
+            assertThat(logDetails.logId()).isEqualTo(logId);
+            assertThat(logDetails.images().size()).isEqualTo(2);
         }
     }
 }
