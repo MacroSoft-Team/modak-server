@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageController {
     private final ImageService imageService;
 
-    @Operation(summary = "사진 업로드", description = "S3 버켓에 사진을 업로드하여 해당 사진의 URL 을 반환합니다.")
+    @Operation(summary = "사진 업로드", deprecated = true, description = "S3 버켓에 사진을 업로드하여 해당 사진의 URL 을 반환합니다.")
     @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse<ImageResponse.ImageUrl> uploadAvatarImage(@RequestPart(value = "image") MultipartFile image) {
         return BaseResponse.onSuccess(imageService.uploadImage(image));
