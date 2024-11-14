@@ -18,6 +18,7 @@ import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.service.MemberService;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -110,10 +111,9 @@ public class CampfireServiceImpl implements CampfireService {
         LogImage todayImage = campfire.getTodayImage();
         ImageDTO todayImageDTO;
         if (todayImage == null) {
-            todayImageDTO = new ImageDTO(0L, "", new ArrayList<>());
+            todayImageDTO = new ImageDTO(0L, "", new HashSet<>());
         } else {
-            // TODO: 감정 표현
-            todayImageDTO = new ImageDTO(todayImage.getId(), todayImage.getName(), new ArrayList<>());
+            todayImageDTO = ImageDTO.of(todayImage);
         }
         return todayImageDTO;
     }

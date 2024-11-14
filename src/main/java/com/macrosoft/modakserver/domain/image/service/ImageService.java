@@ -10,4 +10,8 @@ public interface ImageService {
     void deleteImageFromS3(String imageUrl);
 
     ImageResponse.ImageDetail getImageDetail(Member member, int campfirePin, Long imageId);
+
+    ImageResponse.ImageDTO emotion(Member member, int campfirePin, Long imageId, String emotion);
+
+    ImageResponse.ImageDTO deleteEmotion(Member member, int campfirePin, Long imageId);
 }
