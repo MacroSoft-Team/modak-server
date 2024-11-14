@@ -17,6 +17,7 @@ import com.macrosoft.modakserver.domain.image.entity.Emotion;
 import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.image.repository.EmotionRepository;
 import com.macrosoft.modakserver.domain.image.repository.LogImageRepository;
+import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.log.repository.LogRepository;
 import com.macrosoft.modakserver.domain.log.service.LogService;
 import com.macrosoft.modakserver.domain.member.entity.Member;
@@ -140,6 +141,7 @@ public class ImageServiceImpl implements ImageService {
         campfireService.validateMemberInCampfire(memberInDB, campfire);
 
         List<LogImage> logImages = getLogImages(imageIds);
+        Log log = logService.getLog(logId);
         validateLogImagesInCampfire(campfire, logImages);
 
         for (Long imageId : imageIds) {
@@ -149,6 +151,11 @@ public class ImageServiceImpl implements ImageService {
             deleteImageFromS3(imageName);
             deletedLogImages.add(imageId);
         }
+
+        if (log.getLogImages().isEmpty()) {
+            logRepository.delete(log);
+        }
+
         return new ImageIds(deletedLogImages);
     }
 

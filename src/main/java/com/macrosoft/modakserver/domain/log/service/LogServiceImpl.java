@@ -245,7 +245,8 @@ public class LogServiceImpl implements LogService {
         return null;
     }
 
-    private Log getLog(Long logId) {
+    @Override
+    public Log getLog(Long logId) {
         return logRepository.findById(logId)
                 .orElseThrow(() -> new CustomException(LOG_NOT_FOUND));
     }

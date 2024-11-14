@@ -3,6 +3,7 @@ package com.macrosoft.modakserver.domain.log.service;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogMetadataList;
+import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 
 public interface LogService {
@@ -15,4 +16,6 @@ public interface LogService {
     LogResponse.LogDetails getLogDetails(Member member, int campfirePin, Long logId, int page, int size);
 
     LogResponse.LogId removeLog(Member member, int campfirePin, Long logId);
+
+    Log getLog(Long logId);
 }
