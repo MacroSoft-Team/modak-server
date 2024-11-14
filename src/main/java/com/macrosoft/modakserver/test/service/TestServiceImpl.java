@@ -61,11 +61,6 @@ public class TestServiceImpl implements TestService {
             "dev/fa4b41a7-8324-4aad-83a6-3f7703f4ed0f.jpg"
     );
 
-    @Override
-    public List<Member> get() {
-        return memberRepository.findAll();
-    }
-
     @Transactional
     @Override
     public CampfireResponse.CampfireMain addMockData(Member member) {
