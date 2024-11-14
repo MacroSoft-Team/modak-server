@@ -11,10 +11,9 @@ import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.campfire.exception.CampfireErrorCode;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.repository.MemberCampfireRepository;
-import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
-import com.macrosoft.modakserver.domain.image.entity.LogImage;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.ImageDTO;
+import com.macrosoft.modakserver.domain.log.entity.LogImage;
 import com.macrosoft.modakserver.domain.member.entity.Member;
-import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.service.MemberService;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CampfireServiceImpl implements CampfireService {
     private final CampfireRepository campfireRepository;
     private final MemberCampfireRepository memberCampfireRepository;
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
 
     @Override

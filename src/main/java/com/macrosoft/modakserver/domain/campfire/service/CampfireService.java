@@ -2,7 +2,7 @@ package com.macrosoft.modakserver.domain.campfire.service;
 
 import com.macrosoft.modakserver.domain.campfire.dto.CampfireResponse;
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
-import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.ImageDTO;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 
 public interface CampfireService {

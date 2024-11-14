@@ -2,8 +2,8 @@ package com.macrosoft.modakserver.domain.campfire.service;
 
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
-import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.log.entity.Log;
+import com.macrosoft.modakserver.domain.log.entity.LogImage;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;

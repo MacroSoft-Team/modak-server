@@ -9,12 +9,12 @@ import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
-import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageName;
 import com.macrosoft.modakserver.domain.image.service.ImageService;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.ImageName;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogDetails;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogMetadata;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogOverview;
@@ -116,7 +116,7 @@ public class TestServiceImpl implements TestService {
         for (Long imageId : imageIds) {
             int randomNumber = RANDOM.nextInt(3);
             if (randomNumber < 2) {
-                imageService.emotion(member, pin, imageId, getRandomEmotion());
+                logService.emotion(member, pin, imageId, getRandomEmotion());
             }
         }
     }

@@ -1,6 +1,5 @@
-package com.macrosoft.modakserver.domain.image.entity;
+package com.macrosoft.modakserver.domain.log.entity;
 
-import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.CascadeType;

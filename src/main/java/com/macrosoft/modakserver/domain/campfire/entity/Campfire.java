@@ -1,7 +1,7 @@
 package com.macrosoft.modakserver.domain.campfire.entity;
 
-import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.log.entity.Log;
+import com.macrosoft.modakserver.domain.log.entity.LogImage;
 import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

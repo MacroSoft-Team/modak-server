@@ -20,4 +20,9 @@ public class LogRequest {
             @Schema(description = "사진 촬영 시각", example = "2024-11-06T02:21:05.43212")
             LocalDateTime takenAt) {
     }
+
+    public record EmotionDTO(
+            @Schema(description = "감정표현", example = "😀")
+            String emotion) {
+    }
 }
