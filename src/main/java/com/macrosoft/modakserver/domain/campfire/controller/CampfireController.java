@@ -113,7 +113,7 @@ public class CampfireController {
         return BaseResponse.onSuccess(campfireService.leaveCampfire(userDetails.getMember(), campfirePin));
     }
 
-    @Operation(summary = "모닥불 삭제하기", description = "특정 모닥불을 삭제합니다. 모닥불에 참여한 사용자가 한명일 경우에만 가능합니다.")
+    @Operation(summary = "모닥불 삭제하기", deprecated = true, description = "특정 모닥불을 삭제합니다. 모닥불에 참여한 사용자가 한명일 경우에만 가능합니다.")
     @DeleteMapping(CAMPFIRE_PIN_URI)
     public BaseResponse<CampfireResponse.CampfirePin> deleteCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
