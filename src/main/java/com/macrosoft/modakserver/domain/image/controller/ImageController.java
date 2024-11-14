@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-@Tag(name = "Image API", description = "S3로 이미지를 업로드 하는 API 입니다.")
+@Tag(name = "Image API", description = "장작 이미지 관련 API 입니다.")
 public class ImageController {
     private final ImageService imageService;
 
