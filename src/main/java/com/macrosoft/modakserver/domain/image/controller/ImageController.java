@@ -54,7 +54,7 @@ public class ImageController {
             @RequestBody ImageRequest.EmotionDTO emotionDTO
     ) {
         return BaseResponse.onSuccess(
-                imageService.emotion(userDetails.getMember(), campfirePin, imageId, emotionDTO.emote()));
+                imageService.emotion(userDetails.getMember(), campfirePin, imageId, emotionDTO.emotion()));
     }
 
     @Operation(summary = "감정 표현 삭제", description = "사진에 대한 사용자의 감정 표현을 삭제합니다.")

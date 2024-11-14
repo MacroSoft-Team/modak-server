@@ -23,7 +23,7 @@ public enum ImageErrorCode implements ErrorCodeInterface {
     LOG_IMAGE_NOT_FOUND("I009", "해당 이미지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     LOG_IMAGE_NOT_IN_CAMPFIRE("I010", "해당 이미지는 해당 모닥불에 속해 있지 않습니다.", HttpStatus.BAD_REQUEST),
     EMOTE_EMPTY("I011", "감정 표현이 비어 있습니다.", HttpStatus.BAD_REQUEST),
-    EMOTE_TOO_LONG("I012", "감정 표현은 " + MAX_EMOTE_LENGTH + "자 이하로 입력해주세요.", HttpStatus.BAD_REQUEST),
+    EMOTE_TOO_LONG("I012", "감정 표현은 " + MAX_EMOTE_LENGTH + "자 이하로 입력해주세요. 이모지는 2자로 취급됩니다.", HttpStatus.BAD_REQUEST),
     EMOTION_NOT_FOUND("I013", "해당 이미지에 사용자의 감정 표현을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     EMOTION_NOT_UPLOAD_USER("I014", "해당 감정 표현은 업로드한 사용자가 아닙니다.", HttpStatus.BAD_REQUEST),
     ;

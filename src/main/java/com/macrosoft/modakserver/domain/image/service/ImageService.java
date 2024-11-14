@@ -11,7 +11,7 @@ public interface ImageService {
 
     ImageResponse.ImageDetail getImageDetail(Member member, int campfirePin, Long imageId);
 
-    ImageResponse.ImageDTO emotion(Member member, int campfirePin, Long imageId, String emote);
+    ImageResponse.ImageDTO emotion(Member member, int campfirePin, Long imageId, String emotion);
 
     ImageResponse.ImageDTO deleteEmotion(Member member, int campfirePin, Long imageId);
 }

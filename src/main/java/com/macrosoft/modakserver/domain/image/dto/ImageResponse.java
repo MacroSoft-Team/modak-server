@@ -76,9 +76,4 @@ public class ImageResponse {
             @Schema(description = "감정표현", example = "😀")
             String emotion) {
     }
-
-    public record EmotionId(
-            @Schema(description = "감정 ID", example = "1")
-            Long emotionId) {
-    }
 }

@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
-    public static final int MAX_EMOTE_LENGTH = 2;
+    public static final int MAX_EMOTE_LENGTH = 10;
 
     private final EntityManager entityManager;
     private final S3ImageComponent s3ImageComponent;
@@ -67,22 +67,22 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional
-    public ImageDTO emotion(Member member, int campfirePin, Long imageId, String emote) {
-        validateEmoteLength(emote);
+    public ImageDTO emotion(Member member, int campfirePin, Long imageId, String emotion) {
+        validateEmoteLength(emotion);
         Member memberInDB = memberService.getMemberInDB(member);
         Campfire campfire = campfireService.findCampfireByPin(campfirePin);
         campfireService.validateMemberInCampfire(memberInDB, campfire);
         LogImage logImage = getLogImage(imageId);
         validateLogImageInCampfire(campfire, logImage);
 
-        Optional<Emotion> existingEmotion = findOneEmotion(member, logImage);
+        Optional<Emotion> optionalExistingEmotion = findOneEmotion(member, logImage);
 
-        if (existingEmotion.isPresent()) {
-            Emotion emotion = existingEmotion.get();
-            emotion.updateEmotion(emote);
-            emotionRepository.save(emotion);
+        if (optionalExistingEmotion.isPresent()) {
+            Emotion existingEmotion = optionalExistingEmotion.get();
+            existingEmotion.updateEmotion(emotion);
+            emotionRepository.save(existingEmotion);
         } else {
-            Emotion newEmotion = Emotion.of(emote, logImage, memberInDB);
+            Emotion newEmotion = Emotion.of(emotion, logImage, memberInDB);
             emotionRepository.save(newEmotion);
             logImage.addEmote(newEmotion);
         }
