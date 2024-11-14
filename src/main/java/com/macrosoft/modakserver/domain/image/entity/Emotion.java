@@ -39,4 +39,16 @@ public class Emotion extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public static Emotion of(String emotion, LogImage logImage, Member member) {
+        return Emotion.builder()
+                .emotion(emotion)
+                .logImage(logImage)
+                .member(member)
+                .build();
+    }
+
+    public void updateEmotion(String emotion) {
+        this.emotion = emotion;
+    }
 }

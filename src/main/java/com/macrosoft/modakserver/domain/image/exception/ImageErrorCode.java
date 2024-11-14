@@ -1,5 +1,7 @@
 package com.macrosoft.modakserver.domain.image.exception;
 
+import static com.macrosoft.modakserver.domain.image.service.ImageServiceImpl.MAX_EMOTE_LENGTH;
+
 import com.macrosoft.modakserver.global.exception.ErrorCode;
 import com.macrosoft.modakserver.global.exception.ErrorCodeInterface;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,10 @@ public enum ImageErrorCode implements ErrorCodeInterface {
     UNSUPPORTED_ENCODING_EXCEPTION("I008", "이미지 주소의 인코딩 방식이 지원되지 않습니다.", HttpStatus.BAD_REQUEST),
     LOG_IMAGE_NOT_FOUND("I009", "해당 이미지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     LOG_IMAGE_NOT_IN_CAMPFIRE("I010", "해당 이미지는 해당 모닥불에 속해 있지 않습니다.", HttpStatus.BAD_REQUEST),
+    EMOTE_EMPTY("I011", "감정 표현이 비어 있습니다.", HttpStatus.BAD_REQUEST),
+    EMOTE_TOO_LONG("I012", "감정 표현은 " + MAX_EMOTE_LENGTH + "자 이하로 입력해주세요.", HttpStatus.BAD_REQUEST),
+    EMOTION_NOT_FOUND("I013", "해당 이미지에 사용자의 감정 표현을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    EMOTION_NOT_UPLOAD_USER("I014", "해당 감정 표현은 업로드한 사용자가 아닙니다.", HttpStatus.BAD_REQUEST),
     ;
 
     private final String code;

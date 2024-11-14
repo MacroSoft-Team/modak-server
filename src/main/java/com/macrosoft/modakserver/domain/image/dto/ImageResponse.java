@@ -4,6 +4,8 @@ import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ImageResponse {
     public record ImageUrl(
@@ -16,7 +18,19 @@ public class ImageResponse {
             Long imageId,
             @Schema(description = "이미지 이름", example = "/dev/772b94e6-2081-4d1d-b331-20015cc287e0.jpeg")
             String name,
-            List<ImageEmotionDTO> emotions) {
+            Set<ImageEmotionDTO> emotions) {
+
+        public static ImageDTO of(LogImage logImage) {
+            return new ImageDTO(
+                    logImage.getId(),
+                    logImage.getName(),
+                    logImage.getEmotions().stream()
+                            .map(emotion -> new ImageEmotionDTO(
+                                    emotion.getMember().getNickname(),
+                                    emotion.getEmotion()
+                            ))
+                            .collect(Collectors.toUnmodifiableSet()));
+        }
     }
 
     public record ImageDetail(
@@ -61,5 +75,10 @@ public class ImageResponse {
             String memberNickname,
             @Schema(description = "감정표현", example = "😀")
             String emotion) {
+    }
+
+    public record EmotionId(
+            @Schema(description = "감정 ID", example = "1")
+            Long emotionId) {
     }
 }

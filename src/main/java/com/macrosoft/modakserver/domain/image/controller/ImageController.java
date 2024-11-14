@@ -1,6 +1,7 @@
 package com.macrosoft.modakserver.domain.image.controller;
 
 import com.macrosoft.modakserver.config.security.CustomUserDetails;
+import com.macrosoft.modakserver.domain.image.dto.ImageRequest;
 import com.macrosoft.modakserver.domain.image.dto.ImageResponse;
 import com.macrosoft.modakserver.domain.image.service.ImageService;
 import com.macrosoft.modakserver.global.BaseResponse;
@@ -9,8 +10,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,5 +41,33 @@ public class ImageController {
             @PathVariable("imageId") Long imageId
     ) {
         return BaseResponse.onSuccess(imageService.getImageDetail(userDetails.getMember(), campfirePin, imageId));
+    }
+
+    @Operation(summary = "감정 표현 하기", description = "사진에 대한 감정 표현을 등록합니다.")
+    @PutMapping("/campfires/{campfirePin}/images/{imageId}/emotions")
+    public BaseResponse<ImageResponse.ImageDTO> emotion(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Parameter(description = "모닥불 핀 번호", example = "111111")
+            @PathVariable("campfirePin") int campfirePin,
+            @Parameter(description = "사진 아이디", example = "1")
+            @PathVariable("imageId") Long imageId,
+            @RequestBody ImageRequest.EmotionDTO emotionDTO
+    ) {
+        return BaseResponse.onSuccess(
+                imageService.emotion(userDetails.getMember(), campfirePin, imageId, emotionDTO.emote()));
+    }
+
+    @Operation(summary = "감정 표현 삭제", description = "사진에 대한 사용자의 감정 표현을 삭제합니다.")
+    @DeleteMapping("/campfires/{campfirePin}/images/{imageId}/emotions")
+    public BaseResponse<ImageResponse.ImageDTO> deleteEmotion(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Parameter(description = "모닥불 핀 번호", example = "111111")
+            @PathVariable("campfirePin") int campfirePin,
+            @Parameter(description = "사진 아이디", example = "1")
+            @PathVariable("imageId") Long imageId
+    ) {
+        return BaseResponse.onSuccess(
+                imageService.deleteEmotion(userDetails.getMember(), campfirePin, imageId)
+        );
     }
 }
