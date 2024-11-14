@@ -180,10 +180,12 @@ public class TestServiceImpl implements TestService {
         int randomTime = RANDOM.nextInt(48) + 1;
         LocalDateTime endAt = startAt.plusHours(randomTime);
         String address = generateRandomAddress();
-        double minLatitude = RANDOM.nextDouble() * 10 + 30;
-        double maxLatitude = minLatitude + 0.01 * randomTime * RANDOM.nextDouble();
-        double minLongitude = RANDOM.nextDouble() * 10 + 120;
-        double maxLongitude = minLongitude + 0.01 * randomTime * RANDOM.nextDouble();
+        double minLatitude = Math.round((RANDOM.nextDouble() * 10 + 30) * 1_000_000.0) / 1_000_000.0;
+        double maxLatitude =
+                Math.round((minLatitude + 0.01 * randomTime * RANDOM.nextDouble()) * 1_000_000.0) / 1_000_000.0;
+        double minLongitude = Math.round((RANDOM.nextDouble() * 10 + 120) * 1_000_000.0) / 1_000_000.0;
+        double maxLongitude =
+                Math.round((minLongitude + 0.01 * randomTime * RANDOM.nextDouble()) * 1_000_000.0) / 1_000_000.0;
 
         LogMetadata mockLogMetadata = new LogResponse.LogMetadata(startAt, endAt, address, minLatitude, maxLatitude,
                 minLongitude, maxLongitude);
@@ -219,8 +221,8 @@ public class TestServiceImpl implements TestService {
     private ImageInfo generateMockImageInfo(double minLa, double maxLa, double minLo, double maxLo,
                                             LocalDateTime startAt, LocalDateTime endAt) {
         String imagePath = IMAGE_PATHS.get(RANDOM.nextInt(IMAGE_PATHS.size()));
-        double latitude = RANDOM.nextDouble() * (maxLa - minLa) + minLa;
-        double longitude = RANDOM.nextDouble() * (maxLo - minLo) + minLo;
+        double latitude = Math.round((RANDOM.nextDouble() * (maxLa - minLa) + minLa) * 1_000_000.0) / 1_000_000.0;
+        double longitude = Math.round((RANDOM.nextDouble() * (maxLo - minLo) + minLo) * 1_000_000.0) / 1_000_000.0;
 
         long secondsBetween = java.time.Duration.between(startAt, endAt).getSeconds();
         long randomSeconds = RANDOM.nextLong(secondsBetween + 1);
