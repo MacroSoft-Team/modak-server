@@ -29,7 +29,7 @@ public class TestController {
         return BaseResponse.onSuccess(memberList);
     }
 
-    @Operation(summary = "테스트용 임시 데이터 생성하기", description = "현재 로그인한 사용자가 모닥불을 생성하고 테스트용 유저 5명을 들어오게 합니다. 장작과 이미지도 랜덤으로 생성되고, 모닥불에 참여한 임의의 유저들도 생성합니다.")
+    @Operation(summary = "테스트용 임시 데이터 생성하기", description = "현재 로그인한 사용자가 모닥불을 생성하고 테스트용 유저 4명을 들어오게 합니다. 장작과 이미지와 감정표현이 모두 무작위로 생성됩니다.")
     @PostMapping("add-mock-data")
     public BaseResponse<CampfireResponse.CampfireMain> addMockData(
             @AuthenticationPrincipal CustomUserDetails userDetails
