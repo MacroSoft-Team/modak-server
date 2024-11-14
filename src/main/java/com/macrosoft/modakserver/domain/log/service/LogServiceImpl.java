@@ -12,7 +12,7 @@ import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.LOG_NO
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
-import com.macrosoft.modakserver.domain.image.service.ImageService;
+import com.macrosoft.modakserver.domain.file.service.FileService;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.ImageDTO;
@@ -54,7 +54,7 @@ public class LogServiceImpl implements LogService {
     private final LogImageRepository logImageRepository;
     private final CampfireRepository campfireRepository;
     private final LogRepository logRepository;
-    private final ImageService imageService;
+    private final FileService fileService;
     private final EmotionRepository emotionRepository;
     private final EntityManager entityManager;
 
@@ -370,7 +370,7 @@ public class LogServiceImpl implements LogService {
             LogImage logImage = getLogImage(imageId);
             String imageName = logImage.getName();
             removeImage(logImage);
-            imageService.deleteImageFromS3(imageName);
+            fileService.deleteImageFromS3(imageName);
             deletedLogImages.add(imageId);
         }
 

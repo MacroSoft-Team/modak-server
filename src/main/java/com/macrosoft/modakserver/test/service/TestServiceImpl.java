@@ -9,7 +9,6 @@ import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.entity.MemberCampfire;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
-import com.macrosoft.modakserver.domain.image.service.ImageService;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
@@ -46,7 +45,6 @@ public class TestServiceImpl implements TestService {
     private final CampfireService campfireService;
     private final AuthService authService;
     private final LogService logService;
-    private final ImageService imageService;
     private final EntityManager entityManager;
     private static final Random RANDOM = new Random();
 
