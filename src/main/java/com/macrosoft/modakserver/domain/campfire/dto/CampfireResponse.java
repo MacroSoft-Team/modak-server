@@ -1,6 +1,6 @@
 package com.macrosoft.modakserver.domain.campfire.dto;
 
-import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
+import com.macrosoft.modakserver.domain.log.dto.LogResponse.ImageDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;

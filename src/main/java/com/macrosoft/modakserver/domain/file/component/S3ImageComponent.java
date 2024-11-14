@@ -1,11 +1,11 @@
-package com.macrosoft.modakserver.domain.image.component;
+package com.macrosoft.modakserver.domain.file.component;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
-import com.macrosoft.modakserver.domain.image.exception.ImageErrorCode;
+import com.macrosoft.modakserver.domain.file.exception.FireErrorCode;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class S3ImageComponent {
 
     public String upload(MultipartFile image, String folderName) {
         if (image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
-            throw new CustomException(ImageErrorCode.EMPTY_FILE_EXCEPTION);
+            throw new CustomException(FireErrorCode.EMPTY_FILE_EXCEPTION);
         }
         return this.uploadImage(image, folderName);
     }
@@ -45,21 +45,21 @@ public class S3ImageComponent {
         try {
             return this.uploadImageToS3(image, folderName);
         } catch (IOException e) {
-            throw new CustomException(ImageErrorCode.IO_EXCEPTION_ON_IMAGE_UPLOAD);
+            throw new CustomException(FireErrorCode.IO_EXCEPTION_ON_IMAGE_UPLOAD);
         }
     }
 
     private void validateImageFileExtention(String filename) {
         int lastDotIndex = filename.lastIndexOf(".");
         if (lastDotIndex == -1) {
-            throw new CustomException(ImageErrorCode.NO_FILE_EXTENTION);
+            throw new CustomException(FireErrorCode.NO_FILE_EXTENTION);
         }
 
         String extention = filename.substring(lastDotIndex + 1).toLowerCase();
         List<String> allowedExtentionList = Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "heif");
 
         if (!allowedExtentionList.contains(extention)) {
-            throw new CustomException(ImageErrorCode.INVALID_FILE_EXTENTION);
+            throw new CustomException(FireErrorCode.INVALID_FILE_EXTENTION);
         }
     }
 
@@ -87,7 +87,7 @@ public class S3ImageComponent {
             log.error("Failed to upload image to S3.", e);
             log.error("Bucket: {}, S3 Key: {}, Metadata: ContentType={}, ContentLength={}",
                     bucketName, s3FileName, metadata.getContentType(), metadata.getContentLength());
-            throw new CustomException(ImageErrorCode.PUT_OBJECT_EXCEPTION);
+            throw new CustomException(FireErrorCode.PUT_OBJECT_EXCEPTION);
         } finally {
             byteArrayInputStream.close();
             is.close();
@@ -96,12 +96,20 @@ public class S3ImageComponent {
         return s3Client.getUrl(bucketName, s3FileName).toString();
     }
 
-    public void deleteImageFromS3(String imageAddress) {
+    public void deleteImageFromS3ByImageAddress(String imageAddress) {
         String key = getKeyFromImageAddress(imageAddress);
         try {
             s3Client.deleteObject(new DeleteObjectRequest(bucketName, key));
         } catch (Exception e) {
-            throw new CustomException(ImageErrorCode.IO_EXCEPTION_ON_IMAGE_DELETE);
+            throw new CustomException(FireErrorCode.IO_EXCEPTION_ON_IMAGE_DELETE);
+        }
+    }
+
+    public void deleteImageFromS3ByImageName(String imageName) {
+        try {
+            s3Client.deleteObject(new DeleteObjectRequest(bucketName, imageName));
+        } catch (Exception e) {
+            throw new CustomException(FireErrorCode.IO_EXCEPTION_ON_IMAGE_DELETE);
         }
     }
 
@@ -111,9 +119,9 @@ public class S3ImageComponent {
             String decodingKey = URLDecoder.decode(url.getPath(), "UTF-8");
             return decodingKey.substring(1); // 맨 앞의 '/' 제거
         } catch (MalformedURLException e) {
-            throw new CustomException(ImageErrorCode.MALFORMED_URL_EXCEPTION);
+            throw new CustomException(FireErrorCode.MALFORMED_URL_EXCEPTION);
         } catch (UnsupportedEncodingException e) {
-            throw new CustomException(ImageErrorCode.UNSUPPORTED_ENCODING_EXCEPTION);
+            throw new CustomException(FireErrorCode.UNSUPPORTED_ENCODING_EXCEPTION);
         }
     }
 }

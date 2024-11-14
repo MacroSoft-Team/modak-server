@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
-import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
@@ -13,6 +12,7 @@ import com.macrosoft.modakserver.domain.log.dto.LogResponse;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogOverview;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.LogOverviews;
 import com.macrosoft.modakserver.domain.log.entity.Log;
+import com.macrosoft.modakserver.domain.log.entity.LogImage;
 import com.macrosoft.modakserver.domain.log.repository.LogRepository;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.PermissionRole;

@@ -1,8 +1,8 @@
-package com.macrosoft.modakserver.domain.image.entity;
+package com.macrosoft.modakserver.domain.log.entity;
 
-import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.global.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -52,7 +52,7 @@ public class LogImage extends BaseEntity {
     @JoinColumn(name = "log_id")
     private Log log;
 
-    @OneToMany(mappedBy = "logImage", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "logImage", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<Emotion> emotions = new HashSet<>();
 

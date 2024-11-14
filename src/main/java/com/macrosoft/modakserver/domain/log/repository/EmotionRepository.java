@@ -1,7 +1,7 @@
-package com.macrosoft.modakserver.domain.image.repository;
+package com.macrosoft.modakserver.domain.log.repository;
 
-import com.macrosoft.modakserver.domain.image.entity.Emotion;
-import com.macrosoft.modakserver.domain.image.entity.LogImage;
+import com.macrosoft.modakserver.domain.log.entity.Emotion;
+import com.macrosoft.modakserver.domain.log.entity.LogImage;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import java.util.Optional;
 import java.util.Set;
