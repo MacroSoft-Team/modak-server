@@ -96,10 +96,18 @@ public class S3ImageComponent {
         return s3Client.getUrl(bucketName, s3FileName).toString();
     }
 
-    public void deleteImageFromS3(String imageAddress) {
+    public void deleteImageFromS3ByImageAddress(String imageAddress) {
         String key = getKeyFromImageAddress(imageAddress);
         try {
             s3Client.deleteObject(new DeleteObjectRequest(bucketName, key));
+        } catch (Exception e) {
+            throw new CustomException(ImageErrorCode.IO_EXCEPTION_ON_IMAGE_DELETE);
+        }
+    }
+
+    public void deleteImageFromS3ByImageName(String imageName) {
+        try {
+            s3Client.deleteObject(new DeleteObjectRequest(bucketName, imageName));
         } catch (Exception e) {
             throw new CustomException(ImageErrorCode.IO_EXCEPTION_ON_IMAGE_DELETE);
         }

@@ -46,8 +46,8 @@ public class ImageServiceImpl implements ImageService {
     private final EmotionRepository emotionRepository;
 
     @Override
-    public void deleteImageFromS3(String imageUrl) {
-        s3ImageComponent.deleteImageFromS3(imageUrl);
+    public void deleteImageFromS3(String imageName) {
+        s3ImageComponent.deleteImageFromS3ByImageName(imageName);
     }
 
     @Override
@@ -144,7 +144,9 @@ public class ImageServiceImpl implements ImageService {
 
         for (Long imageId : imageIds) {
             LogImage logImage = getLogImage(imageId);
+            String imageName = logImage.getName();
             removeImage(logImage);
+            deleteImageFromS3(imageName);
             deletedLogImages.add(imageId);
         }
         return new ImageIds(deletedLogImages);

@@ -73,7 +73,9 @@ public class ImageController {
     @DeleteMapping(API_CAMPFIRES_LOG + "/{logId}/images")
     public BaseResponse<ImageResponse.ImageIds> removeImages(
             @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Parameter(description = "모닥불 핀 번호", example = "111111")
             @PathVariable("campfirePin") int campfirePin,
+            @Parameter(description = "장작 아이디", example = "1")
             @PathVariable("logId") long logId,
             @RequestParam(value = "imageIds") List<Long> imageIds
     ) {

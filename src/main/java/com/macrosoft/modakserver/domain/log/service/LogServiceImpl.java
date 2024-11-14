@@ -235,6 +235,13 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public LogId removeLog(Member member, int campfirePin, Long logId) {
+        Member memberInDB = memberService.getMemberInDB(member);
+        Campfire campfire = campfireService.findCampfireByPin(campfirePin);
+        campfireService.validateMemberInCampfire(memberInDB, campfire);
+        Log log = getLog(logId);
+        validateLogInCampfire(log, campfire);
+
+        logRepository.delete(log);
         return null;
     }
 
