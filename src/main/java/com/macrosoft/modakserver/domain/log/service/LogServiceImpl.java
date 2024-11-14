@@ -233,6 +233,11 @@ public class LogServiceImpl implements LogService {
         );
     }
 
+    @Override
+    public LogId removeLog(Member member, int campfirePin, Long logId) {
+        return null;
+    }
+
     private Log getLog(Long logId) {
         return logRepository.findById(logId)
                 .orElseThrow(() -> new CustomException(LOG_NOT_FOUND));

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,7 +67,7 @@ public class LogController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "모닥불 핀 번호", example = "111111")
             @PathVariable("campfirePin") int campfirePin,
-            @Parameter(description = "장작 번호", example = "1")
+            @Parameter(description = "장작 아이디", example = "1")
             @PathVariable("logId") long logId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "21") int size
@@ -75,15 +76,15 @@ public class LogController {
                 logService.getLogDetails(userDetails.getMember(), campfirePin, logId, page, size));
     }
 
-//    @Operation(summary = "모닥불에 장작 빼기", description = "모닥불에 장작들을 제거합니다.")
-//    @DeleteMapping(API_CAMPFIRES_LOG)
-//    public BaseResponse<LogResponse.LogIds> removeLogs(
-//            @AuthenticationPrincipal CustomUserDetails userDetails,
-//            @Parameter(description = "모닥불 핀 번호", example = "000000")
-//            @PathVariable("campfirePin") int campfirePin
-//            @RequestBody CampfireRequest.Logs logOverviews
-//    ) {
-//        return BaseResponse.onSuccess(logService.removeLogs(userDetails.getMember(), campfirePin, logOverviews));
-//        return null;
-//    }
+    @Operation(summary = "모닥불에서 장작 삭제하기", description = "모닥불에 장작을 삭제합니다.")
+    @DeleteMapping(API_CAMPFIRES_LOG + "/{logId}")
+    public BaseResponse<LogResponse.LogId> removeLog(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Parameter(description = "모닥불 핀 번호", example = "111111")
+            @PathVariable("campfirePin") int campfirePin,
+            @Parameter(description = "장작 아이디", example = "1")
+            @PathVariable("logId") long logId
+    ) {
+        return BaseResponse.onSuccess(logService.removeLog(userDetails.getMember(), campfirePin, logId));
+    }
 }

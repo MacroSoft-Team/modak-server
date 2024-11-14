@@ -12,7 +12,7 @@ import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
 import com.macrosoft.modakserver.domain.image.component.S3ImageComponent;
 import com.macrosoft.modakserver.domain.image.dto.ImageResponse;
 import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageDTO;
-import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageUrl;
+import com.macrosoft.modakserver.domain.image.dto.ImageResponse.ImageIds;
 import com.macrosoft.modakserver.domain.image.entity.Emotion;
 import com.macrosoft.modakserver.domain.image.entity.LogImage;
 import com.macrosoft.modakserver.domain.image.repository.EmotionRepository;
@@ -23,12 +23,13 @@ import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.service.MemberService;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import jakarta.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -43,12 +44,6 @@ public class ImageServiceImpl implements ImageService {
     private final LogRepository logRepository;
     private final LogImageRepository logImageRepository;
     private final EmotionRepository emotionRepository;
-
-    @Override
-    public ImageUrl uploadImage(MultipartFile image) {
-        String folderName = "dev/"; // TODO: 추후 프로필 이미지, 게시글 이미지 등 다양한 이미지 업로드를 위한 폴더명 설정
-        return new ImageUrl(s3ImageComponent.upload(image, folderName));
-    }
 
     @Override
     public void deleteImageFromS3(String imageUrl) {
@@ -135,7 +130,44 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    private LogImage getLogImage(Long imageId) {
+    // 1. Emote 삭제 안됨
+    @Override
+    @Transactional
+    public ImageIds removeImages(Member member, int campfirePin, Long logId, List<Long> imageIds) {
+        List<Long> deletedLogImages = new ArrayList<>();
+        Member memberInDB = memberService.getMemberInDB(member);
+        Campfire campfire = campfireService.findCampfireByPin(campfirePin);
+        campfireService.validateMemberInCampfire(memberInDB, campfire);
+
+        List<LogImage> logImages = getLogImages(imageIds);
+        validateLogImagesInCampfire(campfire, logImages);
+
+        for (Long imageId : imageIds) {
+            LogImage logImage = getLogImage(imageId);
+            removeImage(logImage);
+            deletedLogImages.add(imageId);
+        }
+        return new ImageIds(deletedLogImages);
+    }
+
+    private List<LogImage> getLogImages(List<Long> imageIds) {
+        return imageIds.stream()
+                .map(this::getLogImage)
+                .toList();
+    }
+
+    private void validateLogImagesInCampfire(Campfire campfire, List<LogImage> logImages) {
+        for (LogImage logImage : logImages) {
+            validateLogImageInCampfire(campfire, logImage);
+        }
+    }
+
+    private void removeImage(LogImage logImage) {
+        logImage.getLog().removeLogImage(logImage);
+        logImageRepository.delete(logImage);
+    }
+
+    public LogImage getLogImage(Long imageId) {
         return logImageRepository.findById(imageId)
                 .orElseThrow(() -> new CustomException(LOG_IMAGE_NOT_FOUND));
     }

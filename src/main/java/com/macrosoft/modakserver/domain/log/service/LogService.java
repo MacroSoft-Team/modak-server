@@ -13,4 +13,6 @@ public interface LogService {
     LogResponse.LogOverviews getLogOverviews(Member member, int campfirePin, int page, int size);
 
     LogResponse.LogDetails getLogDetails(Member member, int campfirePin, Long logId, int page, int size);
+
+    LogResponse.LogId removeLog(Member member, int campfirePin, Long logId);
 }

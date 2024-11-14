@@ -76,4 +76,8 @@ public class ImageResponse {
             @Schema(description = "감정표현", example = "😀")
             String emotion) {
     }
+
+    public record ImageIds(
+            List<Long> imageIds) {
+    }
 }
