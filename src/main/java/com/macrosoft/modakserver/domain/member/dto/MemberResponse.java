@@ -15,4 +15,12 @@ public class MemberResponse {
     public record AccessToken(
             String accessToken) {
     }
+
+    public record MemberNicknameAvatar(
+            Long memberId,
+            String nickname,
+            int hatType,
+            int faceType,
+            int topType) {
+    }
 }

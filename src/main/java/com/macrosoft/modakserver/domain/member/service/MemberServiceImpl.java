@@ -2,6 +2,8 @@ package com.macrosoft.modakserver.domain.member.service;
 
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse.MemberNickname;
+import com.macrosoft.modakserver.domain.member.dto.MemberResponse.MemberNicknameAvatar;
+import com.macrosoft.modakserver.domain.member.entity.Avatar;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
@@ -39,6 +41,25 @@ public class MemberServiceImpl implements MemberService {
         member.setNickname(nickname);
         memberRepository.save(member);
         return new MemberNickname(member.getId(), member.getNickname());
+    }
+
+    @Override
+    public List<MemberNicknameAvatar> getNicknamesAndAvatars(List<Long> memberIds) {
+        List<Member> members = memberRepository.findAllById(memberIds);
+        validateMemberNotFound(members, memberIds);
+        return members.stream()
+                .map(this::getMemberNicknameAvatar)
+                .toList();
+    }
+
+    private MemberNicknameAvatar getMemberNicknameAvatar(Member member) {
+        Avatar avatar = member.getAvatar();
+        return new MemberNicknameAvatar(
+                member.getId(),
+                member.getNickname(),
+                avatar.getHatType(),
+                avatar.getFaceType(),
+                avatar.getTopType());
     }
 
     private void validateNickname(Member member, String newNickname) {

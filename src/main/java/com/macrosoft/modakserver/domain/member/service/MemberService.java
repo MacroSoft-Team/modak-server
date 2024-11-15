@@ -9,5 +9,7 @@ public interface MemberService {
 
     MemberResponse.MemberNickname updateNickname(Member member, String nickname);
 
+    List<MemberResponse.MemberNicknameAvatar> getNicknamesAndAvatars(List<Long> memberIds);
+
     Member getMemberInDB(Member member);
 }
