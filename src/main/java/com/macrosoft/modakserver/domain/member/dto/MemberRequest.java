@@ -21,4 +21,10 @@ public class MemberRequest {
             String refreshToken
     ) {
     }
+
+    public record MemberAvatar(
+            int hatType,
+            int faceType,
+            int topType) {
+    }
 }
