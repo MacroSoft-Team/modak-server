@@ -1,6 +1,7 @@
 package com.macrosoft.modakserver.domain.member.service;
 
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
+import com.macrosoft.modakserver.domain.member.dto.MemberResponse.MemberAvatar;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse.MemberNickname;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse.MemberNicknameAvatar;
 import com.macrosoft.modakserver.domain.member.entity.Avatar;
@@ -52,14 +53,42 @@ public class MemberServiceImpl implements MemberService {
                 .toList();
     }
 
+    @Override
+    @Transactional
+    public MemberAvatar updateAvatar(Member member, int hatType, int faceType, int topType) {
+        validateAvatarType(hatType, faceType, topType);
+        Avatar avatar = member.getAvatar();
+        avatar.setHatType(hatType);
+        avatar.setFaceType(faceType);
+        avatar.setTopType(topType);
+        memberRepository.save(member);
+        return new MemberAvatar(hatType, faceType, topType);
+    }
+
+    private void validateAvatarType(int hatType, int faceType, int topType) {
+        if (hatType < 0) {
+            throw new CustomException(MemberErrorCode.MEMBER_AVATAR_TYPE_INVALID);
+        }
+        if (faceType < 0) {
+            throw new CustomException(MemberErrorCode.MEMBER_AVATAR_TYPE_INVALID);
+        }
+        if (topType < 0) {
+            throw new CustomException(MemberErrorCode.MEMBER_AVATAR_TYPE_INVALID);
+        }
+    }
+
+
     private MemberNicknameAvatar getMemberNicknameAvatar(Member member) {
         Avatar avatar = member.getAvatar();
         return new MemberNicknameAvatar(
                 member.getId(),
                 member.getNickname(),
-                avatar.getHatType(),
-                avatar.getFaceType(),
-                avatar.getTopType());
+                new MemberAvatar(
+                        avatar.getHatType(),
+                        avatar.getFaceType(),
+                        avatar.getTopType()
+                )
+        );
     }
 
     private void validateNickname(Member member, String newNickname) {

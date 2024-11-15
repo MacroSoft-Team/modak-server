@@ -19,6 +19,10 @@ public class MemberResponse {
     public record MemberNicknameAvatar(
             Long memberId,
             String nickname,
+            MemberAvatar avatar) {
+    }
+
+    public record MemberAvatar(
             int hatType,
             int faceType,
             int topType) {

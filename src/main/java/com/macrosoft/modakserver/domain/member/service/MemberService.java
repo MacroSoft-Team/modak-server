@@ -11,5 +11,7 @@ public interface MemberService {
 
     List<MemberResponse.MemberNicknameAvatar> getNicknamesAndAvatars(List<Long> memberIds);
 
+    MemberResponse.MemberAvatar updateAvatar(Member member, int hatType, int faceType, int topType);
+
     Member getMemberInDB(Member member);
 }
