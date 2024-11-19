@@ -66,6 +66,7 @@ public class Member extends BaseEntity {
         this.clientId = "";
         this.nickname = "알 수 없음";
         this.deviceToken = null;
+        this.avatar = null;
     }
 
     public void addMemberCampfire(MemberCampfire memberCampfire) {

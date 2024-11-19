@@ -5,11 +5,13 @@ import com.macrosoft.modakserver.config.jwt.JwtUtil;
 import com.macrosoft.modakserver.domain.campfire.repository.MemberCampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
+import com.macrosoft.modakserver.domain.member.entity.Avatar;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
 import com.macrosoft.modakserver.domain.member.entity.RefreshToken;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
+import com.macrosoft.modakserver.domain.member.repository.AvatarRepository;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.repository.RefreshTokenRepository;
 import com.macrosoft.modakserver.domain.member.util.NicknameGenerator;
@@ -32,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProperties jwtProperties;
     private final MemberCampfireRepository memberCampfireRepository;
     private final CampfireService campfireService;
+    private final AvatarRepository avatarRepository;
 
     @Override
     @Transactional
@@ -90,6 +93,8 @@ public class AuthServiceImpl implements AuthService {
         Member member = findMemberByClientId(clientId);
 
         // 1. 닉네임와 식별 정보, 디바이스 토큰 삭제
+        Avatar avatar = member.getAvatar();
+        avatarRepository.delete(avatar);
         member.deactivate();
 
         // 2. 모든 캠프파이어 나가기

@@ -74,10 +74,11 @@ public class TestServiceImpl implements TestService {
             campfire = changeCampfirePinTo(pin, campfire);
         }
 
-        List<Member> members = makeMockCampfireMemberAndLogsBy(pin, newCampfireName, 4);
+        List<Member> members = makeMockCampfireMemberAndLogsBy(pin, newCampfireName, 3);
+        members.add(member);
 
         for (Member memberInCampfire : members) {
-            int randomLogCount = RANDOM.nextInt(3) + 3;
+            int randomLogCount = RANDOM.nextInt(2) + 3;
 
             makeMockLogsBy(memberInCampfire, pin, randomLogCount);
         }
