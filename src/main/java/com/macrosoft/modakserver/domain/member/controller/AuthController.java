@@ -45,7 +45,7 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다. `Refresh Token` 을 삭제합니다.")
+    @Operation(summary = "로그아웃", description = "로그아웃 합니다. `Refresh Token` 을 삭제합니다.")
     @PostMapping("/logout")
     public BaseResponse<Void> logout(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -55,7 +55,7 @@ public class AuthController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 진행합니다. 유저의 식별 정보와 닉네임이 삭제됩니다.")
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 합니다. 유저 식별 정보와 닉네임과 아바타가 삭제됩니다. 또한 모든 모닥불에서 나가지고 각 모닥불 안에서 남긴 모든 감정표현이 삭제됩니다. (장작과 사진은 삭제되지 않습니다).")
     @DeleteMapping("/deactivate")
     public BaseResponse<Void> deactivate(
             @AuthenticationPrincipal CustomUserDetails userDetails

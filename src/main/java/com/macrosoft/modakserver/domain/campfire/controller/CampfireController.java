@@ -103,7 +103,7 @@ public class CampfireController {
                         campfireUpdateName.newCampfireName()));
     }
 
-    @Operation(summary = "모닥불 나가기", description = "특정 모닥불에서 나갑니다. 마지막 멤버이면 모닥불이 삭제됩니다.")
+    @Operation(summary = "모닥불 나가기", description = "특정 모닥불에서 나갑니다. 모닥불 안에서 남긴 모든 감정표현이 삭제됩니다. (장작과 사진은 삭제되지 않습니다) 마지막 멤버이면 모닥불이 삭제되어 내부의 장작, 사진, 감정표현 등 모든 데이터가 삭제됩니다.")
     @DeleteMapping(CAMPFIRE_PIN_URI + "/leave")
     public BaseResponse<CampfireResponse.CampfirePin> leaveCampfire(
             @AuthenticationPrincipal CustomUserDetails userDetails,
