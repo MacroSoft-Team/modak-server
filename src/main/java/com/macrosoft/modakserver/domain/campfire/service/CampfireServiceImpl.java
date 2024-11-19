@@ -12,7 +12,11 @@ import com.macrosoft.modakserver.domain.campfire.exception.CampfireErrorCode;
 import com.macrosoft.modakserver.domain.campfire.repository.CampfireRepository;
 import com.macrosoft.modakserver.domain.campfire.repository.MemberCampfireRepository;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.ImageDTO;
+import com.macrosoft.modakserver.domain.log.entity.Log;
 import com.macrosoft.modakserver.domain.log.entity.LogImage;
+import com.macrosoft.modakserver.domain.log.repository.EmotionRepository;
+import com.macrosoft.modakserver.domain.log.repository.LogImageRepository;
+import com.macrosoft.modakserver.domain.log.repository.LogRepository;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.service.MemberService;
 import com.macrosoft.modakserver.global.exception.CustomException;
@@ -33,6 +37,9 @@ public class CampfireServiceImpl implements CampfireService {
     private final CampfireRepository campfireRepository;
     private final MemberCampfireRepository memberCampfireRepository;
     private final MemberService memberService;
+    private final LogImageRepository logImageRepository;
+    private final LogRepository logRepository;
+    private final EmotionRepository emotionRepository;
 
     @Override
     @Transactional
@@ -204,9 +211,19 @@ public class CampfireServiceImpl implements CampfireService {
         Campfire campfire = findCampfireByPin(campfirePin);
         validateMemberInCampfire(memberInDB, campfire);
 
+        // 마지막 멤버이면 모닥불 삭제
         if (isLastMember(campfire)) {
             return deleteCampfire(memberInDB, campfirePin);
         }
+
+        // 올렸던 장작과 이미지는 남기고 올렸던 감정표현은 모두 삭제
+        for (Log log : campfire.getLogs()) {
+            for (LogImage logImage : log.getLogImages()) {
+                emotionRepository.findByMemberAndLogImage(memberInDB, logImage)
+                        .ifPresent(emotionRepository::delete);
+            }
+        }
+
         deleteMemberFromCampfire(memberInDB, campfire);
         return new CampfirePin(campfirePin);
     }
@@ -215,9 +232,7 @@ public class CampfireServiceImpl implements CampfireService {
         return campfire.getMemberCampfires().size() == 1;
     }
 
-    @Override
-    @Transactional
-    public CampfireResponse.CampfirePin deleteCampfire(Member member, int campfirePin) {
+    private CampfireResponse.CampfirePin deleteCampfire(Member member, int campfirePin) {
         Member memberInDB = memberService.getMemberInDB(member);
         Campfire campfire = findCampfireByPin(campfirePin);
         validateMemberInCampfire(memberInDB, campfire);
@@ -233,6 +248,12 @@ public class CampfireServiceImpl implements CampfireService {
         for (Member m : members) {
             deleteMemberFromCampfire(m, campfire);
         }
+
+        // TODO: 모닥불 내부의 모든 장작, 이미지 ,위치, 감정표현 삭제
+        for (Log log : campfire.getLogs()) {
+            logImageRepository.deleteAll(log.getLogImages());
+        }
+        logRepository.deleteAll(campfire.getLogs());
 
         campfireRepository.delete(campfire);
         return new CampfirePin(campfirePin);
