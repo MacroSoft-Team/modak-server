@@ -368,9 +368,7 @@ public class LogServiceImpl implements LogService {
 
         for (Long imageId : imageIds) {
             LogImage logImage = getLogImage(imageId);
-            String imageName = logImage.getName();
-            removeImage(logImage);
-            fileService.deleteImageFromS3(imageName);
+            removeImage(log, logImage);
             deletedLogImages.add(imageId);
         }
 
@@ -393,9 +391,11 @@ public class LogServiceImpl implements LogService {
         }
     }
 
-    private void removeImage(LogImage logImage) {
-        logImage.getLog().removeLogImage(logImage);
+    private void removeImage(Log log, LogImage logImage) {
+        String imageName = logImage.getName();
+        log.removeLogImage(logImage);
         logImageRepository.delete(logImage);
+        fileService.deleteImageFromS3(imageName);
     }
 
     public LogImage getLogImage(Long imageId) {

@@ -19,9 +19,7 @@ public interface CampfireService {
     CampfireResponse.CampfireName updateCampfireName(Member member, int campfirePin, String newCampfireName);
 
     CampfireResponse.CampfirePin leaveCampfire(Member member, int campfirePin);
-
-    CampfireResponse.CampfirePin deleteCampfire(Member member, int campfirePin);
-
+    
     Campfire findCampfireByPin(int campfirePin);
 
     void validateMemberInCampfire(Member member, Campfire campfire);

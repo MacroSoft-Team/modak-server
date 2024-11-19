@@ -2,18 +2,23 @@ package com.macrosoft.modakserver.domain.member.service;
 
 import com.macrosoft.modakserver.config.jwt.JwtProperties;
 import com.macrosoft.modakserver.config.jwt.JwtUtil;
+import com.macrosoft.modakserver.domain.campfire.repository.MemberCampfireRepository;
+import com.macrosoft.modakserver.domain.campfire.service.CampfireService;
 import com.macrosoft.modakserver.domain.member.dto.MemberResponse;
+import com.macrosoft.modakserver.domain.member.entity.Avatar;
 import com.macrosoft.modakserver.domain.member.entity.Member;
 import com.macrosoft.modakserver.domain.member.entity.PermissionRole;
 import com.macrosoft.modakserver.domain.member.entity.RefreshToken;
 import com.macrosoft.modakserver.domain.member.entity.SocialType;
 import com.macrosoft.modakserver.domain.member.exception.MemberErrorCode;
+import com.macrosoft.modakserver.domain.member.repository.AvatarRepository;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import com.macrosoft.modakserver.domain.member.repository.RefreshTokenRepository;
 import com.macrosoft.modakserver.domain.member.util.NicknameGenerator;
 import com.macrosoft.modakserver.global.exception.AuthErrorCode;
 import com.macrosoft.modakserver.global.exception.CustomException;
 import java.util.Date;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +32,9 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
     private final JwtProperties jwtProperties;
+    private final MemberCampfireRepository memberCampfireRepository;
+    private final CampfireService campfireService;
+    private final AvatarRepository avatarRepository;
 
     @Override
     @Transactional
@@ -83,11 +91,19 @@ public class AuthServiceImpl implements AuthService {
     public void deactivate(String clientId) {
         logout(clientId);
         Member member = findMemberByClientId(clientId);
+
+        // 1. 닉네임와 식별 정보, 디바이스 토큰 삭제
+        Avatar avatar = member.getAvatar();
+        avatarRepository.delete(avatar);
         member.deactivate();
-        // MARK: 개인 장작 업로드 기능 삭제됨
-//        int deletedPrivateLogs = privateLogRepository.deleteAllByMemberId(member.getId());
-//        log.info("Member deactivated: {} {}, Deleted PrivateLog Count: {}", member.getId(), member.getNickname(),
-//                deletedPrivateLogs);
+
+        // 2. 모든 캠프파이어 나가기
+        List<Integer> campfirePins = memberCampfireRepository.findAllByMember(member).stream()
+                .map(memberCampfire -> memberCampfire.getCampfire().getPin())
+                .toList();
+        for (int campfirePin : campfirePins) {
+            campfireService.leaveCampfire(member, campfirePin);
+        }
     }
 
     private Member createNewMember(String clientId, SocialType socialType) {
