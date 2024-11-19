@@ -249,7 +249,6 @@ public class CampfireServiceImpl implements CampfireService {
             deleteMemberFromCampfire(m, campfire);
         }
 
-        // TODO: 모닥불 내부의 모든 장작, 이미지 ,위치, 감정표현 삭제
         for (Log log : campfire.getLogs()) {
             logImageRepository.deleteAll(log.getLogImages());
         }
