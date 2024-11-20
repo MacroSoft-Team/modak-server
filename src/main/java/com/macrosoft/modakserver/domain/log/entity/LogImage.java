@@ -54,6 +54,7 @@ public class LogImage extends BaseEntity {
 
     @OneToMany(mappedBy = "logImage", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @Column(columnDefinition = "TIMESTAMP(0)")
     private Set<Emotion> emotions = new HashSet<>();
 
     public void addEmote(Emotion emotion) {
