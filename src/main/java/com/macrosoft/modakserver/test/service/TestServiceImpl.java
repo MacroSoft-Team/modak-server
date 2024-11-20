@@ -181,7 +181,7 @@ public class TestServiceImpl implements TestService {
         double maxLongitude =
                 Math.round((minLongitude + 0.01 * randomTime * RANDOM.nextDouble()) * 1_000_000.0) / 1_000_000.0;
 
-        LogMetadata mockLogMetadata = new LogResponse.LogMetadata(startAt, endAt, address, minLatitude, maxLatitude,
+        LogMetadata mockLogMetadata = LogResponse.LogMetadata.of(startAt, endAt, address, minLatitude, maxLatitude,
                 minLongitude, maxLongitude);
         List<ImageInfo> mockImageInfos = new ArrayList<>();
         int randomInt = RANDOM.nextInt(50) + 3;

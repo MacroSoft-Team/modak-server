@@ -40,10 +40,10 @@ public class Log extends BaseEntity {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime startAt;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime endAt;
 
     @Setter
@@ -82,8 +82,8 @@ public class Log extends BaseEntity {
         );
 
         Log log = Log.builder()
-                .startAt(logMetadata.startAt())
-                .endAt(logMetadata.endAt())
+                .startAt(logMetadata.startAt().toLocalDateTime())
+                .endAt(logMetadata.endAt().toLocalDateTime())
                 .campfire(campfire)
                 .location(location)
                 .build();

@@ -3,6 +3,8 @@ package com.macrosoft.modakserver.domain.log.dto;
 import com.macrosoft.modakserver.domain.log.entity.LogImage;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,10 +14,10 @@ public class LogResponse {
     }
 
     public record LogMetadata(
-            @Schema(description = "장작 사건 시작 시간", example = "2024-11-06T01:41:01.83819")
-            LocalDateTime startAt,
-            @Schema(description = "장작 사건 종료 시간", example = "2024-11-06T02:21:05.43212")
-            LocalDateTime endAt,
+            @Schema(description = "장작 사건 시작 시간", example = "2024-11-06T01:41:01.83819Z")
+            OffsetDateTime startAt,
+            @Schema(description = "장작 사건 종료 시간", example = "2024-11-06T02:21:05.43212Z")
+            OffsetDateTime endAt,
             @Schema(description = "장작 주소", example = "포항시 남구")
             String address,
             @Schema(description = "장작 최소 위도", example = "37.123456")
@@ -24,9 +26,21 @@ public class LogResponse {
             Double maxLatitude,
             @Schema(description = "장작 최소 경도", example = "127.123456")
             Double minLongitude,
-            @Schema(description = "장작 최대 위도", example = "127.654321")
+            @Schema(description = "장작 최대 경도", example = "127.654321")
             Double maxLongitude
     ) {
+        public static LogMetadata of(LocalDateTime startAt, LocalDateTime endAt, String address,
+                                     Double minLat, Double maxLat, Double minLong, Double maxLong) {
+            return new LogMetadata(
+                    startAt.atOffset(ZoneOffset.UTC),
+                    endAt.atOffset(ZoneOffset.UTC),
+                    address,
+                    minLat,
+                    maxLat,
+                    minLong,
+                    maxLong
+            );
+        }
     }
 
     public record LogId(Long logId) {

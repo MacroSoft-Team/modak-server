@@ -33,5 +33,6 @@ public class RefreshToken extends BaseEntity {
     private String token;
 
     @Setter
+    @Column(columnDefinition = "TIMESTAMP(0)")
     private Date expirationDate;
 }
