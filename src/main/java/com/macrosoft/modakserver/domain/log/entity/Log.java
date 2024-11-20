@@ -73,13 +73,13 @@ public class Log extends BaseEntity {
 
     public static Log of(Campfire campfire, Member member, UploadLog uploadLog) {
         LogMetadata logMetadata = uploadLog.logMetadata();
-        Location location = Location.builder()
-                .minLatitude(logMetadata.minLatitude())
-                .maxLatitude(logMetadata.maxLatitude())
-                .minLongitude(logMetadata.minLongitude())
-                .maxLongitude(logMetadata.maxLongitude())
-                .address(logMetadata.address())
-                .build();
+        Location location = Location.of(
+                logMetadata.minLatitude(),
+                logMetadata.maxLatitude(),
+                logMetadata.minLongitude(),
+                logMetadata.maxLongitude(),
+                logMetadata.address()
+        );
 
         Log log = Log.builder()
                 .startAt(logMetadata.startAt())

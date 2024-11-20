@@ -34,6 +34,23 @@ public class Location extends BaseEntity {
     @Column(nullable = false)
     private String address;
 
+    public static Location of(Double minLatitude, Double maxLatitude, Double minLongitude, Double maxLongitude,
+                              String address) {
+
+        double truncatedMinLatitude = Math.round(minLatitude * 1_000_000) / 1_000_000.0;
+        double truncatedMaxLatitude = Math.round(maxLatitude * 1_000_000) / 1_000_000.0;
+        double truncatedMinLongitude = Math.round(minLongitude * 1_000_000) / 1_000_000.0;
+        double truncatedMaxLongitude = Math.round(maxLongitude * 1_000_000) / 1_000_000.0;
+
+        return Location.builder()
+                .minLatitude(truncatedMinLatitude)
+                .maxLatitude(truncatedMaxLatitude)
+                .minLongitude(truncatedMinLongitude)
+                .maxLongitude(truncatedMaxLongitude)
+                .address(address)
+                .build();
+    }
+
     public boolean isOverlap(Location other) {
         return this.minLatitude < other.maxLatitude &&
                 this.maxLatitude > other.minLatitude &&
