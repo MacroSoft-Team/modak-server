@@ -182,7 +182,7 @@ public class LogServiceImpl implements LogService {
         Set<Log> logs = campfire.getLogs();
         for (Log log : logs) {
             Location location = log.getLocation();
-            LogResponse.LogMetadata logMetadata = new LogResponse.LogMetadata(
+            LogResponse.LogMetadata logMetadata = LogResponse.LogMetadata.of(
                     log.getStartAt(),
                     log.getEndAt(),
                     location.getAddress(),

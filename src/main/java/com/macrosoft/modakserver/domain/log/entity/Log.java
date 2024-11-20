@@ -82,8 +82,8 @@ public class Log extends BaseEntity {
         );
 
         Log log = Log.builder()
-                .startAt(logMetadata.startAt())
-                .endAt(logMetadata.endAt())
+                .startAt(logMetadata.startAt().toLocalDateTime())
+                .endAt(logMetadata.endAt().toLocalDateTime())
                 .campfire(campfire)
                 .location(location)
                 .build();

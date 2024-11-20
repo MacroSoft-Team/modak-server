@@ -47,6 +47,7 @@ class LogServiceTest {
     private Member member0;
     private Member member1;
     private List<LogRequest.UploadLog> uploadLogList;
+
     @Autowired
     private LogRepository logRepository;
 
@@ -78,7 +79,7 @@ class LogServiceTest {
     private List<LogRequest.UploadLog> createUploadLogList() {
         return List.of(
                 new LogRequest.UploadLog(
-                        new LogResponse.LogMetadata(
+                        LogResponse.LogMetadata.of(
                                 LocalDateTime.of(2023, 3, 3, 3, 3, 3),
                                 LocalDateTime.of(2025, 5, 5, 5, 5, 5),
                                 "포항시 북구",
@@ -94,7 +95,7 @@ class LogServiceTest {
                         )
                 ),
                 new LogRequest.UploadLog(
-                        new LogResponse.LogMetadata(
+                        LogResponse.LogMetadata.of(
                                 LocalDateTime.of(2022, 2, 2, 2, 2, 2),
                                 LocalDateTime.of(2024, 4, 4, 4, 4, 4),
                                 "부산시 중구",
@@ -109,7 +110,7 @@ class LogServiceTest {
                         )
                 ),
                 new LogRequest.UploadLog( // 위 두개와 시간과 날짜 모두 겹치지 않는다.
-                        new LogResponse.LogMetadata(
+                        LogResponse.LogMetadata.of(
                                 LocalDateTime.of(2021, 1, 1, 1, 1, 1),
                                 LocalDateTime.of(2022, 2, 2, 2, 2, 2),
                                 "서울시 강남구",
@@ -124,7 +125,7 @@ class LogServiceTest {
                         )
                 ),
                 new LogRequest.UploadLog( // 모든 데이터가 겹친다.
-                        new LogResponse.LogMetadata(
+                        LogResponse.LogMetadata.of(
                                 LocalDateTime.of(2020, 1, 1, 1, 1, 1),
                                 LocalDateTime.of(2026, 2, 2, 2, 2, 2),
                                 "지구",
