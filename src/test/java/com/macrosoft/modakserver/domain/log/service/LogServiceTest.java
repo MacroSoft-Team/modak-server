@@ -159,8 +159,8 @@ class LogServiceTest {
             List<String> imageNames = logsInDB.getLogImages().stream().map(LogImage::getName).toList();
             assertThat(imageNames).isEqualTo(
                     uploadLog.imageInfos().stream().map(ImageInfo::imageName).toList());
-            assertThat(logsInDB.getEndAt()).isEqualTo(uploadLog.logMetadata().endAt());
-            assertThat(logsInDB.getStartAt()).isEqualTo(uploadLog.logMetadata().startAt());
+            assertThat(logsInDB.getEndAt()).isEqualTo(uploadLog.logMetadata().endAt().toLocalDateTime());
+            assertThat(logsInDB.getStartAt()).isEqualTo(uploadLog.logMetadata().startAt().toLocalDateTime());
             assertThat(logsInDB.getLocation().getAddress()).isEqualTo(uploadLog.logMetadata().address());
             assertThat(logsInDB.getLocation().getMinLatitude()).isEqualTo(uploadLog.logMetadata().minLatitude());
             assertThat(logsInDB.getLocation().getMaxLatitude()).isEqualTo(uploadLog.logMetadata().maxLatitude());
@@ -213,8 +213,8 @@ class LogServiceTest {
             List<Log> logsInDB = logRepository.findAllByCampfirePin(campfirePin);
             assertThat(logsInDB.size()).isEqualTo(1);
             Log logInDB = logsInDB.get(0);
-            assertThat(logInDB.getEndAt()).isEqualTo(uploadLog0.logMetadata().endAt());
-            assertThat(logInDB.getStartAt()).isEqualTo(uploadLog1.logMetadata().startAt());
+            assertThat(logInDB.getEndAt()).isEqualTo(uploadLog0.logMetadata().endAt().toLocalDateTime());
+            assertThat(logInDB.getStartAt()).isEqualTo(uploadLog1.logMetadata().startAt().toLocalDateTime());
             assertThat(logInDB.getLocation().getAddress()).isEqualTo(uploadLog1.logMetadata().address());
             assertThat(logInDB.getLocation().getMinLatitude()).isEqualTo(uploadLog1.logMetadata().minLatitude());
             assertThat(logInDB.getLocation().getMaxLatitude()).isEqualTo(uploadLog0.logMetadata().maxLatitude());
@@ -270,8 +270,8 @@ class LogServiceTest {
             List<Log> logsInDB = logRepository.findAllByCampfirePin(campfirePin);
             assertThat(logsInDB.size()).isEqualTo(1);
             Log logInDB = logsInDB.get(0);
-            assertThat(logInDB.getEndAt()).isEqualTo(uploadLog3.logMetadata().endAt());
-            assertThat(logInDB.getStartAt()).isEqualTo(uploadLog3.logMetadata().startAt());
+            assertThat(logInDB.getEndAt()).isEqualTo(uploadLog3.logMetadata().endAt().toLocalDateTime());
+            assertThat(logInDB.getStartAt()).isEqualTo(uploadLog3.logMetadata().startAt().toLocalDateTime());
             assertThat(logInDB.getLocation().getAddress()).isEqualTo(uploadLog3.logMetadata().address());
             assertThat(logInDB.getLocation().getMinLatitude()).isEqualTo(uploadLog2.logMetadata().minLatitude());
             assertThat(logInDB.getLocation().getMaxLatitude()).isEqualTo(uploadLog0.logMetadata().maxLatitude());
