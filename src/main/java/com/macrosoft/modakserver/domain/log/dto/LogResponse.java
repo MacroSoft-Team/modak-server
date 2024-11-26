@@ -55,12 +55,20 @@ public class LogResponse {
             @Schema(description = "장작 아이디", example = "1")
             Long logId,
             @Schema(description = "장작 사건 시작 시간", example = "2024-11-06T01:41:01.83819")
-            LocalDateTime startAt,
+            OffsetDateTime startAt,
             @Schema(description = "장작 주소", example = "포항시 남구")
             String address,
             @Schema(description = "장작 미리보기 사진들, 최대 8장")
             List<String> imageNames
     ) {
+        public static LogOverview of(Long logId, LocalDateTime startAt, String address, List<String> imageNames) {
+            return new LogOverview(
+                    logId,
+                    startAt.atOffset(ZoneOffset.UTC),
+                    address,
+                    imageNames
+            );
+        }
     }
 
     public record LogDetails(
@@ -99,7 +107,7 @@ public class LogResponse {
             String imageName,
             double latitude,
             double longitude,
-            LocalDateTime takenAt,
+            OffsetDateTime takenAt,
             String memberNickname,
             Long logId,
             List<ImageEmotionDTO> emotions) {
@@ -109,7 +117,7 @@ public class LogResponse {
                     logImage.getName(),
                     logImage.getLatitude(),
                     logImage.getLongitude(),
-                    logImage.getTakenAt(),
+                    logImage.getTakenAt().atOffset(ZoneOffset.UTC),
                     logImage.getMember().getNickname(),
                     logImage.getLog().getId(),
                     logImage.getEmotions().stream()

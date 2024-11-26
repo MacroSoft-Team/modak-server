@@ -3,6 +3,8 @@ package com.macrosoft.modakserver.domain.campfire.dto;
 import com.macrosoft.modakserver.domain.log.dto.LogResponse.ImageDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 
@@ -16,8 +18,11 @@ public class CampfireResponse {
             @Schema(description = "모닥불 이름", example = "매크로")
             String campfireName,
             @Schema(description = "모닥불 개설시간", example = "2024-11-06T02:21:05.43212")
-            LocalDateTime createdAt,
+            OffsetDateTime createdAt,
             Set<String> membersNames) {
+        public static CampfireJoinInfo of(String campfireName, LocalDateTime createdAt, Set<String> membersNames) {
+            return new CampfireJoinInfo(campfireName, createdAt.atOffset(ZoneOffset.UTC), membersNames);
+        }
     }
 
     public record CampfireInfos(

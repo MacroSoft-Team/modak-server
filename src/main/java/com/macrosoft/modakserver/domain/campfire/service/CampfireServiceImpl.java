@@ -41,6 +41,10 @@ public class CampfireServiceImpl implements CampfireService {
     private final LogRepository logRepository;
     private final EmotionRepository emotionRepository;
 
+    private static boolean isLastMember(Campfire campfire) {
+        return campfire.getMemberCampfires().size() == 1;
+    }
+
     @Override
     @Transactional
     public CampfirePin createCampfire(Member member, String campfireName) {
@@ -126,7 +130,7 @@ public class CampfireServiceImpl implements CampfireService {
     @Override
     public CampfireJoinInfo getCampfireJoin(int campfirePin) {
         Campfire campfire = findCampfireByPin(campfirePin);
-        return new CampfireJoinInfo(
+        return CampfireJoinInfo.of(
                 campfire.getName(),
                 campfire.getCreatedAt(),
                 campfire.getMemberCampfires().stream()
@@ -184,7 +188,6 @@ public class CampfireServiceImpl implements CampfireService {
         }
     }
 
-
     private boolean isCampfireMemberFull(Campfire campfire) {
         return campfire.getMemberCampfires().size() >= 6;
     }
@@ -226,10 +229,6 @@ public class CampfireServiceImpl implements CampfireService {
 
         deleteMemberFromCampfire(memberInDB, campfire);
         return new CampfirePin(campfirePin);
-    }
-
-    private static boolean isLastMember(Campfire campfire) {
-        return campfire.getMemberCampfires().size() == 1;
     }
 
     private CampfireResponse.CampfirePin deleteCampfire(Member member, int campfirePin) {

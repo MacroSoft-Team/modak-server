@@ -214,7 +214,7 @@ public class LogServiceImpl implements LogService {
                     .map(LogImage::getName)
                     .toList();
 
-            LogOverview overview = new LogOverview(
+            LogOverview overview = LogOverview.of(
                     log.getId(),
                     log.getStartAt(),
                     log.getLocation().getAddress(),
