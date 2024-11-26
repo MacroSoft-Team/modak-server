@@ -2,7 +2,7 @@ package com.macrosoft.modakserver.domain.log.util;
 
 public class CoordinateUtil {
 
-    private static final int DEFAULT_SCALE = 6; // 소수점 이하 6자리 기본
+    private static final int DEFAULT_SCALE = 6;
 
     /**
      * 주어진 값을 소수점 이하 특정 자리수로 자릅니다.
@@ -22,7 +22,7 @@ public class CoordinateUtil {
      * @param value 대상 값
      * @return 자른 값
      */
-    public static double truncateToDefaultScale(double value) {
+    public static double truncate(double value) {
         return truncate(value, DEFAULT_SCALE);
     }
 }
