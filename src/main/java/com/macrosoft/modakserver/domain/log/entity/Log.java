@@ -61,16 +61,6 @@ public class Log extends BaseEntity {
     @OrderBy("takenAt ASC")
     private List<LogImage> logImages = new ArrayList<>();
 
-    public void addLogImage(LogImage logImage) {
-        logImage.setLog(this);
-        this.logImages.add(logImage);
-    }
-
-    public void removeLogImage(LogImage logImage) {
-        logImage.setLog(null);
-        this.logImages.remove(logImage);
-    }
-
     public static Log of(Campfire campfire, Member member, UploadLog uploadLog) {
         LogMetadata logMetadata = uploadLog.logMetadata();
         Location location = Location.of(
@@ -103,8 +93,19 @@ public class Log extends BaseEntity {
         return log;
     }
 
+    public void addLogImage(LogImage logImage) {
+        logImage.setLog(this);
+        this.logImages.add(logImage);
+    }
+
+    public void removeLogImage(LogImage logImage) {
+        logImage.setLog(null);
+        this.logImages.remove(logImage);
+    }
+
     public boolean isSameEvent(Log other) {
-        return isTimeOverlap(other) && isLocationOverlap(other);
+        return isTimeOverlap(other);
+//        return isTimeOverlap(other) && isLocationOverlap(other);
     }
 
     private boolean isTimeOverlap(Log other) {
