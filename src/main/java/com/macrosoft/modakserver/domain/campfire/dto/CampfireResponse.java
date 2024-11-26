@@ -51,6 +51,7 @@ public class CampfireResponse {
             @Schema(description = "모닥불 이름", example = "매크로")
             String campfireName,
             Set<String> membersNames,
+            Set<Long> memberIds,
             @Schema(description = "이미지 이름", example = "/dev/772b94e6-2081-4d1d-b331-20015cc287e0.jpeg")
             String imageName) {
     }
