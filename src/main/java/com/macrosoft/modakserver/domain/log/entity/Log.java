@@ -1,5 +1,7 @@
 package com.macrosoft.modakserver.domain.log.entity;
 
+import static com.macrosoft.modakserver.domain.log.util.CoordinateUtil.truncateToDefaultScale;
+
 import com.macrosoft.modakserver.domain.campfire.entity.Campfire;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.ImageInfo;
 import com.macrosoft.modakserver.domain.log.dto.LogRequest.UploadLog;
@@ -79,10 +81,12 @@ public class Log extends BaseEntity {
                 .build();
 
         for (ImageInfo imageInfo : uploadLog.imageInfos()) {
+            double truncatedLatitude = truncateToDefaultScale(imageInfo.latitude());
+            double truncatedLongitude = truncateToDefaultScale(imageInfo.longitude());
             LogImage logImage = LogImage.builder()
                     .name(imageInfo.imageName())
-                    .latitude(imageInfo.latitude())
-                    .longitude(imageInfo.longitude())
+                    .latitude(truncatedLatitude)
+                    .longitude(truncatedLongitude)
                     .takenAt(imageInfo.takenAt())
                     .member(member)
                     .log(log)
