@@ -1,5 +1,7 @@
 package com.macrosoft.modakserver.domain.log.entity;
 
+import static com.macrosoft.modakserver.domain.log.util.CoordinateUtil.truncate;
+
 import com.macrosoft.modakserver.global.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,10 +39,10 @@ public class Location extends BaseEntity {
     public static Location of(Double minLatitude, Double maxLatitude, Double minLongitude, Double maxLongitude,
                               String address) {
 
-        double truncatedMinLatitude = Math.round(minLatitude * 1_000_000) / 1_000_000.0;
-        double truncatedMaxLatitude = Math.round(maxLatitude * 1_000_000) / 1_000_000.0;
-        double truncatedMinLongitude = Math.round(minLongitude * 1_000_000) / 1_000_000.0;
-        double truncatedMaxLongitude = Math.round(maxLongitude * 1_000_000) / 1_000_000.0;
+        double truncatedMinLatitude = truncate(minLatitude);
+        double truncatedMaxLatitude = truncate(maxLatitude);
+        double truncatedMinLongitude = truncate(minLongitude);
+        double truncatedMaxLongitude = truncate(maxLongitude);
 
         return Location.builder()
                 .minLatitude(truncatedMinLatitude)
