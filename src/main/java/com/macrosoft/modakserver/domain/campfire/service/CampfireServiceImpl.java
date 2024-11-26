@@ -110,6 +110,7 @@ public class CampfireServiceImpl implements CampfireService {
                             .map(MemberCampfire::getMember)
                             .map(Member::getNickname)
                             .collect(toSet()),
+                    getMemberIdsFromCampfire(campfire),
                     getTodayImageDTO(campfire).name()
             ));
         }
@@ -150,11 +151,15 @@ public class CampfireServiceImpl implements CampfireService {
                 campfire.getPin(),
                 campfire.getName(),
                 getTodayImageDTO(campfire),
-                campfire.getMemberCampfires().stream()
-                        .map(MemberCampfire::getMember)
-                        .map(Member::getId)
-                        .collect(toSet())
+                getMemberIdsFromCampfire(campfire)
         );
+    }
+
+    private Set<Long> getMemberIdsFromCampfire(Campfire campfire) {
+        return campfire.getMemberCampfires().stream()
+                .map(MemberCampfire::getMember)
+                .map(Member::getId)
+                .collect(toSet());
     }
 
     @Override
