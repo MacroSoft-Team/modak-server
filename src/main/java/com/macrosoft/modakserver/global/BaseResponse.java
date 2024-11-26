@@ -2,6 +2,8 @@ package com.macrosoft.modakserver.global;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,7 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @JsonPropertyOrder({"timeStamp", "code", "message", "result"})
 public class BaseResponse<T> {
-    private final LocalDateTime timeStamp = LocalDateTime.now();
+    private final OffsetDateTime timeStamp = LocalDateTime.now().atOffset(ZoneOffset.UTC);
     private final String code;
     private final String message;
     private T result;
