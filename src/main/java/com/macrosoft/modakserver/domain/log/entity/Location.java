@@ -38,7 +38,6 @@ public class Location extends BaseEntity {
 
     public static Location of(Double minLatitude, Double maxLatitude, Double minLongitude, Double maxLongitude,
                               String address) {
-
         double truncatedMinLatitude = truncate(minLatitude);
         double truncatedMaxLatitude = truncate(maxLatitude);
         double truncatedMinLongitude = truncate(minLongitude);
