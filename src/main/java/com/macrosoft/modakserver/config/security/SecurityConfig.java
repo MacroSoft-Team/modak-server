@@ -39,11 +39,8 @@ public class SecurityConfig {
                         "/admin-page/**" // admin Web TODO: 관리자 권한만 접근 가능하도록 변경
                 ).permitAll() // 인증 필요없는 API
                 .requestMatchers("/api/**").authenticated() // 인증 요구
-                .requestMatchers("/api/campfires/**").authenticated() // 인증 요구
-                .requestMatchers("/api/files/**").authenticated() // 인증 요구
                 .anyRequest().denyAll() // 나머지는 거부
         );
-
         return http.build();
     }
 }
