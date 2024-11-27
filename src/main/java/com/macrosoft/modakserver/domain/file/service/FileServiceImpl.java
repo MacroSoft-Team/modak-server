@@ -30,7 +30,7 @@ public class FileServiceImpl implements FileService {
         if (isInvalidExtension(extension)) {
             throw new CustomException(INVALID_FILE_EXTENSION);
         }
-        String prefix = "dev";
+        String prefix = "prod";
         String fileName = createPath(prefix, extension);
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(bucketName, fileName);
