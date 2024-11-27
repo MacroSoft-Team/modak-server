@@ -5,6 +5,7 @@ import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.EMOTE_
 import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.EMOTION_NOT_FOUND;
 import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.EMOTION_NOT_UPLOAD_USER;
 import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.LOG_CAMPFIRE_NOT_MATCH;
+import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.LOG_IMAGE_EMPTY;
 import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.LOG_IMAGE_NOT_FOUND;
 import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.LOG_IMAGE_NOT_IN_CAMPFIRE;
 import static com.macrosoft.modakserver.domain.log.exception.LogErrorCode.LOG_NOT_FOUND;
@@ -66,6 +67,8 @@ public class LogServiceImpl implements LogService {
         Campfire campfire = campfireService.findCampfireByPin(campfirePin);
         campfireService.validateMemberInCampfire(memberInDB, campfire);
 
+        validateUploadLog(uploadLog);
+
         // DTO -> Entity
         Log newLog = Log.of(campfire, memberInDB, uploadLog);
         List<Log> existLogs = logRepository.findAllByCampfirePin(campfirePin);
@@ -101,6 +104,12 @@ public class LogServiceImpl implements LogService {
 //        campfireRepository.save(campfire);
         registerTodayImage(campfire, primaryLog);
         return new LogId(savedLog.getId());
+    }
+
+    private void validateUploadLog(LogRequest.UploadLog uploadLog) {
+        if (uploadLog.logMetadata() == null || uploadLog.imageInfos().isEmpty()) {
+            throw new CustomException(LOG_IMAGE_EMPTY);
+        }
     }
 
     // 올라가는 장작에서 랜덤으로 하나 골라서 오늘의 사진 등록
