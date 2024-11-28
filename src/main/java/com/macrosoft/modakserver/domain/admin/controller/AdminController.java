@@ -7,14 +7,12 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin")
@@ -25,7 +23,6 @@ public class AdminController {
     @Operation(deprecated = true)
     @PutMapping("/statistics")
     public void saveStatics() {
-        log.info("통계 저장 실행");
         LocalDate date = LocalDate.now(ZoneId.of("Asia/Seoul")).minusDays(1);
         adminService.saveStatics(date);
     }
