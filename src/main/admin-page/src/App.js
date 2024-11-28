@@ -55,7 +55,7 @@ function App() {
         IMAGE: filterDataByDateRange(statisticsData?.IMAGE || {}),
         EMOTION: filterDataByDateRange(statisticsData?.EMOTION || {}),
         CAMPFIRE: filterDataByDateRange(statisticsData?.CAMPFIRE || {}),
-        ACTIVE_CAMPFIRE: filterDataByDateRange(statisticsData?.ACTIVE_CAMPFIRE || {}),
+        ACTIVE_MEMBER: filterDataByDateRange(statisticsData?.ACTIVE_MEMBER || {}),
         MEMBER: filterDataByDateRange(statisticsData?.MEMBER || {}),
         LOG: filterDataByDateRange(statisticsData?.LOG || {}),
     };
@@ -125,16 +125,6 @@ function App() {
                     )}
                 </div>
                 <div className="chart-row">
-                    {chartData.MEMBER && (
-                        <div className="chart">
-                            <LineChart
-                                data={chartData.MEMBER}
-                                chartTitle="회원 수"
-                                borderColor="rgba(255, 159, 64, 1)"
-                                backgroundColor="rgba(255, 159, 64, 0.2)"
-                            />
-                        </div>
-                    )}
                     {chartData.CAMPFIRE && (
                         <div className="chart">
                             <LineChart
@@ -145,11 +135,21 @@ function App() {
                             />
                         </div>
                     )}
-                    {chartData.ACTIVE_CAMPFIRE && (
+                    {chartData.MEMBER && (
                         <div className="chart">
                             <LineChart
-                                data={chartData.ACTIVE_CAMPFIRE}
-                                chartTitle="활성 캠프파이어 개수"
+                                data={chartData.MEMBER}
+                                chartTitle="회원 수"
+                                borderColor="rgba(255, 159, 64, 1)"
+                                backgroundColor="rgba(255, 159, 64, 0.2)"
+                            />
+                        </div>
+                    )}
+                    {chartData.ACTIVE_MEMBER && (
+                        <div className="chart">
+                            <LineChart
+                                data={chartData.ACTIVE_MEMBER}
+                                chartTitle="활성 회원 수 (1주일 안에 감정표현 남긴 회원)"
                                 borderColor="rgba(153, 102, 255, 1)"
                                 backgroundColor="rgba(153, 102, 255, 0.2)"
                             />
