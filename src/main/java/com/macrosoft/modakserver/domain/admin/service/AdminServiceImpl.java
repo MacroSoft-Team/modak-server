@@ -9,7 +9,6 @@ import com.macrosoft.modakserver.domain.log.repository.LogImageRepository;
 import com.macrosoft.modakserver.domain.log.repository.LogRepository;
 import com.macrosoft.modakserver.domain.member.repository.MemberRepository;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public void saveStatics() {
-        LocalDate date = LocalDate.now(ZoneId.of("Asia/Seoul")).minusDays(1);
+    public void saveStatics(LocalDate date) {
         log.info("{} 통계 저장 실행", date);
         Long totalEmotionCount = emotionRepository.count();
         Long totalCampfireCount = campfireRepository.count();
@@ -55,8 +53,26 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Map<StatEntityType, Map<LocalDate, Long>> getStatistics() {
-        Map<StatEntityType, Map<LocalDate, Long>> statistics = new HashMap<>();
         List<Statistics> statisticsList = statisticsRepository.findAll();
-        return Map.of();
+        Map<StatEntityType, Map<LocalDate, Long>> statistics = new HashMap<>();
+
+        statistics.put(StatEntityType.EMOTION, new HashMap<>());
+        statistics.put(StatEntityType.CAMPFIRE, new HashMap<>());
+        statistics.put(StatEntityType.ACTIVE_CAMPFIRE, new HashMap<>());
+        statistics.put(StatEntityType.LOG, new HashMap<>());
+        statistics.put(StatEntityType.IMAGE, new HashMap<>());
+        statistics.put(StatEntityType.MEMBER, new HashMap<>());
+
+        for (Statistics stat : statisticsList) {
+            LocalDate date = stat.getDate();
+            statistics.get(StatEntityType.EMOTION).put(date, stat.getEmotionCount());
+            statistics.get(StatEntityType.CAMPFIRE).put(date, stat.getCampfireCount());
+            statistics.get(StatEntityType.ACTIVE_CAMPFIRE).put(date, stat.getActiveCampfireCount());
+            statistics.get(StatEntityType.LOG).put(date, stat.getLogCount());
+            statistics.get(StatEntityType.IMAGE).put(date, stat.getImageCount());
+            statistics.get(StatEntityType.MEMBER).put(date, stat.getMemberCount());
+        }
+
+        return statistics;
     }
 }

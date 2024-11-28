@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 public interface AdminService {
-    void saveStatics();
+    void saveStatics(LocalDate date);
 
     Map<StatEntityType, Map<LocalDate, Long>> getStatistics();
 }
