@@ -20,8 +20,8 @@ public class Statistics {
     private LocalDate date;
     private Long emotionCount;
     private Long campfireCount;
-    private Long activeCampfireCount;
     private Long logCount;
     private Long imageCount;
     private Long memberCount;
+    private Long activeMemberCount;
 }
