@@ -11,7 +11,6 @@ import {
     Legend,
 } from 'chart.js';
 
-// Chart.js 기본 설정 등록
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -22,7 +21,6 @@ ChartJS.register(
     Legend
 );
 
-// LineChart 컴포넌트 (익명 함수)
 const LineChart = ({
     data,
     chartTitle = 'Chart Title',
