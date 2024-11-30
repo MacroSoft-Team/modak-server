@@ -32,15 +32,14 @@ public class SecurityConfig {
         http.addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", // Swagger docs
-                        "/api/test/", // test API
-                        "/api/auth/refresh-access-token", "/api/auth/{}/login").permitAll() // 인증 필요없는 API
+                .requestMatchers(
+                        "/swagger-ui/**", "/v3/api-docs/**", // Swagger docs
+                        "/api/auth/refresh-access-token", "/api/auth/{}/login"
+                ).permitAll() // 인증 필요없는 API
                 .requestMatchers("/api/**").authenticated() // 인증 요구
-                .requestMatchers("/api/campfires/**").authenticated() // 인증 요구
-                .requestMatchers("/api/files/**").authenticated() // 인증 요구
+                .requestMatchers("/api/admin/**").authenticated() // TODO: 관리자 권한만 접근 가능하도록 변경
                 .anyRequest().denyAll() // 나머지는 거부
         );
-
         return http.build();
     }
 }
