@@ -37,7 +37,6 @@ public class SecurityConfig {
                         "/api/auth/refresh-access-token", "/api/auth/{}/login"
                 ).permitAll() // 인증 필요없는 API
                 .requestMatchers("/api/**").authenticated() // 인증 요구
-                .requestMatchers("/admin-page/**").authenticated() // TODO: 관리자 권한만 접근 가능하도록 변경
                 .requestMatchers("/api/admin/**").authenticated() // TODO: 관리자 권한만 접근 가능하도록 변경
                 .anyRequest().denyAll() // 나머지는 거부
         );
