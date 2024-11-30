@@ -1,5 +1,5 @@
-### application config ###
-#application-*.yml
+### React Build File ###
+src/main/resources/static/
 
 ### default ###
 
