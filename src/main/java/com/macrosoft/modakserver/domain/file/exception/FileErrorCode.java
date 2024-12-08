@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum FireErrorCode implements ErrorCodeInterface {
+public enum FileErrorCode implements ErrorCodeInterface {
     INVALID_FILE_EXTENSION("F001", "파일 확장자가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
     EMPTY_FILE_EXCEPTION("I001", "업로드된 파일이 없거나 파일 이름이 비어 있습니다.", HttpStatus.BAD_REQUEST),
     IO_EXCEPTION_ON_IMAGE_UPLOAD("I002", "이미지 업로드 중에 서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),

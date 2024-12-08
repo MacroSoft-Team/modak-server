@@ -25,6 +25,6 @@ public class FileController {
             @Parameter(description = "파일 확장자", example = "webp")
             @PathVariable(name = "extension")
             String extension) {
-        return BaseResponse.onSuccess(fileServiceImpl.getPresignedUrl(extension));
+        return BaseResponse.onSuccess(fileServiceImpl.getPresignedPutUrl(extension));
     }
 }
