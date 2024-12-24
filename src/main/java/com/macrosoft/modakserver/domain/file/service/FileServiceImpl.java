@@ -1,42 +1,60 @@
 package com.macrosoft.modakserver.domain.file.service;
 
-import static com.macrosoft.modakserver.domain.file.exception.FireErrorCode.INVALID_FILE_EXTENSION;
+import static com.macrosoft.modakserver.domain.file.exception.FileErrorCode.INVALID_FILE_EXTENSION;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.macrosoft.modakserver.domain.file.component.S3ImageComponent;
 import com.macrosoft.modakserver.global.exception.CustomException;
-import java.net.URL;
-import java.util.Date;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
-    private final AmazonS3 s3Client;
+    public static final String IMAGE_FOLDER_NAME = "prod";
+    private final S3Presigner presigner;
     private final S3ImageComponent s3ImageComponent;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
 
     @Override
-    public Map<String, String> getPresignedUrl(String extension) {
+    public Map<String, String> getPresignedPutUrl(String extension) {
         if (isInvalidExtension(extension)) {
             throw new CustomException(INVALID_FILE_EXTENSION);
         }
-        String prefix = "prod";
-        String fileName = createPath(prefix, extension);
+        String fileName = createPath(extension);
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(bucketName, fileName);
-        URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+        String presignUrl = createPresignedPutUrl(bucketName, fileName);
+        return Map.of("url", presignUrl);
+    }
 
-        return Map.of("url", url.toString());
+    private String createPresignedPutUrl(String bucketName, String keyName) {
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(keyName)
+                .build();
+
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(5)) // URL 은 5분간 유효하다.
+                .putObjectRequest(objectRequest)
+                .build();
+
+        PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
+        log.info("Presigned URL: [{}]", presignedRequest.url().toString());
+        log.info("HTTP method: [{}]", presignedRequest.httpRequest().method());
+
+        return presignedRequest.url().toExternalForm();
     }
 
 
@@ -45,35 +63,13 @@ public class FileServiceImpl implements FileService {
         s3ImageComponent.deleteImageFromS3ByImageName(imageName);
     }
 
-    private String createPath(String prefix, String extension) {
+    private String createPath(String extension) {
         String fileId = createFileId();
-        return String.format("%s/%s.%s", prefix, fileId, extension);
+        return String.format("%s/%s.%s", FileServiceImpl.IMAGE_FOLDER_NAME, fileId, extension);
     }
 
     private String createFileId() {
         return UUID.randomUUID().toString();
-    }
-
-    private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String bucket, String fileName) {
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, fileName)
-                .withMethod(HttpMethod.PUT)
-                .withExpiration(getPresignedUrlExpiration());
-
-//        generatePresignedUrlRequest.addRequestParameter(
-//                Headers.S3_CANNED_ACL,
-//                CannedAccessControlList.PublicRead.toString()
-//        );
-
-        return generatePresignedUrlRequest;
-    }
-
-    private Date getPresignedUrlExpiration() {
-        Date expiration = new Date();
-        long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60 * 5;
-        expiration.setTime(expTimeMillis);
-
-        return expiration;
     }
 
     private boolean isInvalidExtension(String extension) {
