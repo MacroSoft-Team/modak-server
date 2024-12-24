@@ -5,6 +5,7 @@ import com.macrosoft.modakserver.config.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,12 +33,15 @@ public class SecurityConfig {
         http.addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.GET, "/api/admin/statistics").permitAll() // 통계 데이터 GET 만 허용
+                .requestMatchers("/admin-page.html").permitAll() // 통계 화면 접근 허용
                 .requestMatchers(
-                        "/swagger-ui/**", "/v3/api-docs/**", // Swagger docs
-                        "/api/auth/refresh-access-token", "/api/auth/{}/login"
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/api/auth/refresh-access-token",
+                        "/api/auth/{}/login"
                 ).permitAll() // 인증 필요없는 API
                 .requestMatchers("/api/**").authenticated() // 인증 요구
-                .requestMatchers("/api/admin/**").authenticated() // TODO: 관리자 권한만 접근 가능하도록 변경
                 .anyRequest().denyAll() // 나머지는 거부
         );
         return http.build();
