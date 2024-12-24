@@ -3,7 +3,7 @@ name: Deploy to Amazon EC2
 on:
   push:
     branches:
-      - develop
+      - master
 
 env:
   AWS_REGION: ap-northeast-2
@@ -16,10 +16,10 @@ jobs:
   build-with-gradle:
     runs-on: ubuntu-latest
     steps:
-      - name: develop 브랜치로 이동 및 서브모듈 초기화
+      - name: master 브랜치로 이동 및 서브모듈 초기화
         uses: actions/checkout@v4
         with:
-          ref: develop
+          ref: master
           submodules: true
           token: ${{ secrets.SUBMODULE_ACCESS_TOKEN }}
       - name: JDK 17 설치
