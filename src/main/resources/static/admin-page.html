@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Admin Statistics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+<h1>관리자 통계</h1>
+
+<div id="charts">
+    <div class="chart-container">
+        <canvas id="logChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="imageChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="emotionChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="campfireChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="memberChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="activeMemberChart"></canvas>
+    </div>
+</div>
+
+<script>
+    async function fetchStatistics() {
+        try {
+            const response = await axios.get('/api/admin/statistics');
+            return response.data;
+        } catch (error) {
+            console.error("API 호출 에러:", error);
+            return null;
+        }
+    }
+
+    function filterDataByDateRange(data) {
+        return data;
+    }
+
+    function createChart(ctx, data, title, borderColor, backgroundColor) {
+        const sortedLabels = Object.keys(data).sort((a, b) => new Date(a) - new Date(b));
+        const sortedData = sortedLabels.map(label => data[label]);
+
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortedLabels,
+                datasets: [{
+                    label: title,
+                    data: sortedData,
+                    borderColor,
+                    backgroundColor,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {title: {display: true, text: "날짜"}},
+                    y: {title: {display: true, text: "개수"}}
+                }
+            }
+        });
+    }
+
+    async function initialize() {
+        const statisticsData = await fetchStatistics();
+        if (!statisticsData) return;
+
+        const logData = filterDataByDateRange(statisticsData.LOG || {});
+        const imageData = filterDataByDateRange(statisticsData.IMAGE || {});
+        const emotionData = filterDataByDateRange(statisticsData.EMOTION || {});
+        const campfireData = filterDataByDateRange(statisticsData.CAMPFIRE || {});
+        const memberData = filterDataByDateRange(statisticsData.MEMBER || {});
+        const activeMemberData = filterDataByDateRange(statisticsData.ACTIVE_MEMBER || {});
+
+        createChart(document.getElementById("logChart"), logData, "장작 총 개수", "rgba(75, 192, 192, 1)", "rgba(75, 192, 192, 0.2)");
+        createChart(document.getElementById("imageChart"), imageData, "이미지 총 개수", "rgba(255, 99, 132, 1)", "rgba(255, 99, 132, 0.2)");
+        createChart(document.getElementById("emotionChart"), emotionData, "감정 표현 총 개수", "rgba(54, 162, 235, 1)", "rgba(54, 162, 235, 0.2)");
+        createChart(document.getElementById("campfireChart"), campfireData, "모닥불 총 개수", "rgba(153, 102, 255, 1)", "rgba(153, 102, 255, 0.2)");
+        createChart(document.getElementById("memberChart"), memberData, "회원 수", "rgba(255, 159, 64, 1)", "rgba(255, 159, 64, 0.2)");
+        createChart(document.getElementById("activeMemberChart"), activeMemberData, "활성 회원 수", "rgba(255, 206, 86, 1)", "rgba(255, 206, 86, 0.2)");
+    }
+
+    initialize();
+</script>
+</body>
+</html>
