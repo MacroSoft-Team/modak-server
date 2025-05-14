@@ -21,8 +21,9 @@ public enum GlobalErrorCode implements ErrorCodeInterface {
     CLIENT_ERROR("GLOBAL012", "클라이언트 오류", HttpStatus.BAD_REQUEST),
     SERVER_ERROR("GLOBAL013", "서버 오류", HttpStatus.INTERNAL_SERVER_ERROR),
     ETC_SERVER_ERROR("GLOBAL014", "기타 서버 오류", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_TOKEN("GLOBAL015", "유효하지 않은 토큰", HttpStatus.UNAUTHORIZED), // 새로 추가
     ;
-    
+
     private final String code;
     private final String message;
     private final HttpStatus httpStatus;
